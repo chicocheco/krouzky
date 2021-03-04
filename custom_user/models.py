@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
+from catalog.models import Organization
 
 
 class UserManager(BaseUserManager):
@@ -31,11 +32,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         TEACHER = 'TEACHER', 'Teacher'
         SUPERVISOR = 'SUPERVISOR', 'Supervisor'
 
-    email = models.EmailField(max_length=255, unique=True)
-    name = models.CharField(max_length=255, null=True, blank=True)
-    phone = models.CharField(max_length=255, null=True, blank=True)
-    role = models.CharField(max_length=255, choices=Roles.choices, default=Roles.STUDENT)
+    email = models.EmailField(max_length=50, unique=True)
+    name = models.CharField(max_length=50, null=True, blank=True)
+    phone = models.CharField(max_length=9, null=True, blank=True)
+    role = models.CharField(max_length=30, choices=Roles.choices, default=Roles.STUDENT)  # another FK?
     # organization = models.ForeignKey(Organization, related_name='users', on_delete=models.CASCADE)
+    photo = models.ImageField(upload_to='users/%Y/%m/%d/', blank=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
