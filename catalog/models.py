@@ -3,8 +3,6 @@ from django.conf import settings
 
 
 class Organization(models.Model):
-    founder = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    # founder can create/edit/remove courses and is default 'teacher'
     name = models.CharField(max_length=100, blank=False)
     company_id = models.CharField(max_length=8, blank=False)
     vat_id = models.CharField(max_length=10, blank=False)
@@ -43,7 +41,6 @@ class Course(models.Model):
     hours = models.IntegerField(null=False, blank=False)
     capacity = models.IntegerField(null=True, blank=True)
     teacher = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='courses', on_delete=models.CASCADE)
-    # if teacher != organization.founder then teacher can only edit/delete this course
     organization = models.ForeignKey(Organization, related_name='courses', on_delete=models.CASCADE)
     age_category = models.ForeignKey(AgeCategory, related_name='courses', on_delete=models.CASCADE)  # choices instead?
     topic = models.ManyToManyField(Topic)  # choices instead?

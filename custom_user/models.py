@@ -28,9 +28,16 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    class Roles(models.TextChoices):
+        STUDENT = 'STUDENT', 'Student'
+        TEACHER = 'TEACHER', 'Teacher'
+        COORDINATOR = 'COORDINATOR', 'Coordinator'
+
     email = models.EmailField(max_length=50, unique=True)
     name = models.CharField(max_length=50, blank=True)
     phone = models.CharField(max_length=9, blank=True)
+    role = models.CharField(max_length=30, choices=Roles.choices, default=Roles.STUDENT)  # another FK?
+    organization = models.ForeignKey(Organization, null=True, related_name='users', on_delete=models.CASCADE)
     photo = models.ImageField(upload_to='users/%Y/%m/%d/', blank=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
@@ -43,3 +50,54 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = []
 
     objects = UserManager()
+
+
+class StudentManager(models.Manager):
+    def get_queryset(self, *args, **kwargs):
+        return super().get_queryset(*args, **kwargs).filter(role=User.Roles.STUDENT)
+
+
+class TeacherManager(models.Manager):
+    def get_queryset(self, *args, **kwargs):
+        return super().get_queryset(*args, **kwargs).filter(role=User.Roles.TEACHER)
+
+
+class CoordinatorManager(models.Manager):
+    def get_queryset(self, *args, **kwargs):
+        return super().get_queryset(*args, **kwargs).filter(role=User.Roles.COORDINATOR)
+
+
+class Student(User):
+    objects = StudentManager()
+
+    class Meta:
+        proxy = True
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.role = User.Roles.STUDENT
+        return super().save(*args, **kwargs)
+
+
+class Teacher(User):
+    objects = TeacherManager()
+
+    class Meta:
+        proxy = True
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.role = User.Roles.TEACHER
+        return super().save(*args, **kwargs)
+
+
+class Coordinator(User):
+    objects = CoordinatorManager()
+
+    class Meta:
+        proxy = True
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.role = User.Roles.COORDINATOR
+        return super().save(*args, **kwargs)
