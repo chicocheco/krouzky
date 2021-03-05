@@ -1,5 +1,5 @@
 from pathlib import Path
-
+from django.urls import reverse_lazy
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
@@ -34,6 +34,7 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
+LOGIN_REDIRECT_URL = reverse_lazy('home')
 
 AUTH_USER_MODEL = 'custom_user.User'
 
