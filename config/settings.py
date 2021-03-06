@@ -1,6 +1,7 @@
 from pathlib import Path
 from django.urls import reverse_lazy
 from django.contrib.messages import constants as messages
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
@@ -19,7 +20,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
-    'custom_user.apps.CustomUserConfig',
+    'users.apps.UsersConfig',
     'catalog.apps.CatalogConfig',
 
     'allauth',
@@ -35,12 +36,14 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 LOGIN_REDIRECT_URL = reverse_lazy('home')
+ACCOUNT_SIGNUP_REDIRECT_URL = reverse_lazy('home')
 
 ACCOUNT_FORMS = {
-    'login': 'custom_user.forms.CustomLoginForm',
+    'login': 'users.forms.CustomLoginForm',
+    'signup': 'users.forms.CustomSignupForm',
 }
 
-AUTH_USER_MODEL = 'custom_user.User'
+AUTH_USER_MODEL = 'users.User'
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -117,6 +120,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static', ]  # for dev
 
+# for bootstrap5
 MESSAGE_TAGS = {
     messages.DEBUG: 'alert-info',
     messages.INFO: 'alert-info',
@@ -124,3 +128,5 @@ MESSAGE_TAGS = {
     messages.WARNING: 'alert-warning',
     messages.ERROR: 'alert-danger',
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

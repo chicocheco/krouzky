@@ -7,3 +7,6 @@ class OrganizationForm(forms.ModelForm):
     class Meta:
         model = Organization
         fields = ('name', 'company_id', 'vat_id', 'address', 'town', 'zip_code')
+        # widgets = {
+        #     'name': forms.CharField(attrs={'placeholder': 'Pokus'})
+        # }

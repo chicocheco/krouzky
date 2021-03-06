@@ -8,6 +8,6 @@
     <form action="" method="post">
         {% csrf_token %}
         {{ organization_form.as_p }}
-        <p><input type="submit" value="Potvrdit"></p>
+        <p><input type="submit" class="btn btn-primary" value="Potvrdit"></p>
     </form>
 {% endblock %}

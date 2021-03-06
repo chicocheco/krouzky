@@ -1,14 +1,15 @@
 from django.db import models
 from django.conf import settings
+from django.utils.translation import gettext_lazy as _
 
 
 class Organization(models.Model):
-    name = models.CharField(max_length=100, blank=False)
-    company_id = models.CharField(max_length=8, blank=False)
-    vat_id = models.CharField(max_length=10, blank=False)
-    address = models.CharField(max_length=100, blank=False)
-    town = models.CharField(max_length=40, blank=False)
-    zip_code = models.CharField(max_length=5, blank=False)
+    name = models.CharField(_('název organizace'), max_length=100, blank=False)
+    company_id = models.CharField(_('IČO'), max_length=8, blank=False)
+    vat_id = models.CharField(_('DIČ'), max_length=10, blank=False)
+    address = models.CharField(_('adresa'), max_length=100, blank=False)
+    town = models.CharField(_('město'), max_length=40, blank=False)
+    zip_code = models.CharField(_('PSČ'), max_length=5, blank=False)
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -37,9 +38,9 @@ class Topic(models.Model):
 class Course(models.Model):
     title = models.CharField(max_length=100, blank=False)
     description = models.TextField(blank=True)
-    price = models.IntegerField(null=False, blank=False)
-    hours = models.IntegerField(null=False, blank=False)
-    capacity = models.IntegerField(null=True, blank=True)
+    price = models.PositiveIntegerField(null=False, blank=False)
+    hours = models.PositiveIntegerField(null=False, blank=False)
+    capacity = models.PositiveIntegerField(null=True, blank=True)
     teacher = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='courses', on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, related_name='courses', on_delete=models.CASCADE)
     age_category = models.ForeignKey(AgeCategory, related_name='courses', on_delete=models.CASCADE)  # choices instead?

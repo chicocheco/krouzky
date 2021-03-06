@@ -2,7 +2,7 @@
 
 {% load i18n %}
 
-{% block head_title %}Zaregistrovat se{% endblock %}
+{% block title %}Zaregistrovat se{% endblock %}
 
 {% block content %}
     <h1>Zaregistrovat se</h1>
@@ -15,7 +15,6 @@
         {% if redirect_field_value %}
             <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
         {% endif %}
-        <button type="button" class="btn btn-primary">Zaregistrovat se &raquo;</button>
+        <button type="submit" class="btn btn-primary">Zaregistrovat se</button>
     </form>
-
 {% endblock %}
