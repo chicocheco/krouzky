@@ -4,6 +4,7 @@
 
 {% block content %}
     <h1>Můj účet</h1>
-    <p><a href="{% url 'organization_edit' %}">Moje organizace</a></p>
-
+    <hr>
+    <p><a class="btn btn-primary" href="{% url 'organization_edit' %}">Moje organizace</a></p>
+    <p><a href="#" class="btn btn-primary">Moje kroužky</a></p>
 {% endblock %}

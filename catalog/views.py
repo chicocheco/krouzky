@@ -1,8 +1,9 @@
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import OrganizationForm
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.shortcuts import render
+
+from .forms import OrganizationForm
 from .models import Course
 
 
@@ -36,7 +37,7 @@ def dashboard(request):
     return render(request, 'catalog/dashboard.html')
 
 
-def list_courses(request):
+def course_list(request):
     object_list = Course.objects.all()
     paginator = Paginator(object_list, 10)
     page = request.GET.get('page')
@@ -47,3 +48,7 @@ def list_courses(request):
     except EmptyPage:
         courses = paginator.page(paginator.num_pages)
     return render(request, 'catalog/course/list.html', {'page': page, 'courses': courses})
+
+
+def about_us(request):
+    return render(request, 'catalog/about.html')
