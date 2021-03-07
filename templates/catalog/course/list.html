@@ -1,0 +1,33 @@
+{% extends '_base.html' %}
+
+{% block title %}Katalog{% endblock %}
+
+{% block content %}
+    <h1>Katalog</h1>
+    <p>Kroužky bez hranic. Online kroužek s lektorem z druhé strany republiky? Proč ne. Hledáme možnosti, ne překážky.
+        Z domova, od babičky a dědy, spolu nebo po jednom. Vybírejte podle zaměření, nebo dne konání.
+    </p>
+    {% for course in courses %}
+        <div class="card mb-3">
+            <div class="row g-0">
+                <div class="col-md-4 m-auto">
+                    <img class="img-fluid" src="{{ course.image.url }}">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ course.title }}</h5>
+                        <p class="card-text"><small class="text-muted">{{ course.organization.name }}</small></p>
+                        <p class="card-text">{{ course.description }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+
+    {#    {% for course in courses %}#}
+    {#        <h3>{{ course.title }}</h3>#}
+    {#        <p>{{ course.organization.name }}</p>#}
+    {#        <p>{{ course.description }}</p>#}
+    {#    {% endfor %}#}
+{% endblock %}

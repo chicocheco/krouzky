@@ -1,12 +1,13 @@
-from django.db import models
 from django.conf import settings
+from django.db import models
+from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
 
 class Organization(models.Model):
-    name = models.CharField(_('název organizace'), max_length=100, blank=False)
-    company_id = models.CharField(_('IČO'), max_length=8, blank=False)
-    vat_id = models.CharField(_('DIČ'), max_length=10, blank=False)
+    name = models.CharField(_('název organizace'), max_length=100, unique=True, blank=False)
+    company_id = models.CharField(_('IČO'), max_length=8, unique=True, blank=False)
+    vat_id = models.CharField(_('DIČ'), max_length=10, unique=True, blank=False)
     address = models.CharField(_('adresa'), max_length=100, blank=False)
     town = models.CharField(_('město'), max_length=40, blank=False)
     zip_code = models.CharField(_('PSČ'), max_length=5, blank=False)
@@ -18,8 +19,8 @@ class Organization(models.Model):
 
 class AgeCategory(models.Model):
     name = models.CharField(max_length=30, blank=False)
-    age_from = models.IntegerField(blank=False)
-    age_to = models.IntegerField(blank=False)
+    age_from = models.PositiveIntegerField(blank=False)
+    age_to = models.PositiveIntegerField(blank=False)
 
     class Meta:
         verbose_name_plural = 'Age Categories'
@@ -38,6 +39,7 @@ class Topic(models.Model):
 class Course(models.Model):
     title = models.CharField(max_length=100, blank=False)
     description = models.TextField(blank=True)
+    image = models.ImageField(null=True, upload_to='images/%Y/%m/%d')
     price = models.PositiveIntegerField(null=False, blank=False)
     hours = models.PositiveIntegerField(null=False, blank=False)
     capacity = models.PositiveIntegerField(null=True, blank=True)

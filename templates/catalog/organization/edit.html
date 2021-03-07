@@ -7,7 +7,11 @@
     <hr>
     <form action="" method="post">
         {% csrf_token %}
-        {{ organization_form.as_p }}
+        {% for field in organization_form %}
+            <div class="mb-3">
+                {{ field }}
+            </div>
+        {% endfor %}
         <p><input type="submit" class="btn btn-primary" value="Potvrdit"></p>
     </form>
 {% endblock %}

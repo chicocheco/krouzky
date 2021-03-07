@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from .forms import OrganizationForm
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from .models import Course
 
 
 def home(request):
@@ -17,6 +20,7 @@ def edit_organization(request):
             request.user.role = 'COORDINATOR'
             new_org.save()
             request.user.save()
+            messages.add_message(request, messages.SUCCESS, 'Informace o organizaci uložena!')
             return render(request, 'catalog/home.html')
     else:
         if request.user.organization:
@@ -30,3 +34,16 @@ def edit_organization(request):
 @login_required
 def dashboard(request):
     return render(request, 'catalog/dashboard.html')
+
+
+def list_courses(request):
+    object_list = Course.objects.all()
+    paginator = Paginator(object_list, 10)
+    page = request.GET.get('page')
+    try:
+        courses = paginator.page(page)
+    except PageNotAnInteger:
+        courses = paginator.page(1)
+    except EmptyPage:
+        courses = paginator.page(paginator.num_pages)
+    return render(request, 'catalog/course/list.html', {'page': page, 'courses': courses})
