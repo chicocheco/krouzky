@@ -5,6 +5,26 @@
 {% block content %}
     <h1>Můj účet</h1>
     <hr>
-    <p><a class="btn btn-primary" href="{% url 'organization_edit' %}">Moje organizace</a></p>
-    <p><a href="#" class="btn btn-primary">Moje kroužky</a></p>
+{% endblock %}
+
+{% block sidebar %}
+    <h5>Moje organizace</h5>
+
+    <hr>
+    {% if request.user.organization %}
+        <p><a href="{% url 'rename_organization' %}">Editace názvu</a></p>
+        <p><a href="{% url 'update_organization' %}">Editace údajů</a></p>
+        <p><a href="#">Odstranit organizaci</a></p>
+    {% else %}
+        <p>Staňte se koordinátorem - <a href="{% url 'register_organization' %}">zaregistrujte svou organizaci.</a></p>
+    {% endif %}
+    <h5>Moje kroužky</h5>
+    <hr>
+    {% if not request.user.organization %}
+        <p>Prosím zaregistrujte nejdříve vaší organizaci viz výše.</p>
+    {% elif request.user.organization.courses.count == 0 %}
+        <p>Nemáte vytvořené žádné kroužky.</p>
+    {% else %}
+        <p><a href="{% url 'course_list' request.user.organization.slug %}">Moje kroužky</a></p>
+    {% endif %}
 {% endblock %}
