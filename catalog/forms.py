@@ -13,7 +13,7 @@ class FormHorizontalHelper(FormHelper):
         self.label_class = 'col-lg-2'
         self.field_class = 'col-lg-8'
         self.form_show_labels = True
-        self.add_input(Submit('submit', 'Potvrdit'))
+        self.add_input(Submit('submit', 'Potvrdit'))  # uses class="btn btn-primary"
 
 
 class RegisterOrganizationForm(forms.ModelForm):

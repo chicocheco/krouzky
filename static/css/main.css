@@ -19,6 +19,14 @@ a {
 i {
     bottom: .125em;
     position: relative;
-    padding-left: 10px;
-    /*padding-right: 10px;*/
 }
+
+.i-extra-padding-left {
+    padding-left: 10px;
+}
+
+.i-extra-padding-right {
+    padding-right: 10px;
+
+}
+

@@ -39,11 +39,11 @@
                     {% if user.is_authenticated %}
                         <span class="navbar-text text-secondary">
                             <a href="{% url 'dashboard' %}" >{{ user.email }}
-                                <i class="bi bi-person-circle" style="font-size:19px;"></i></a>
+                                <i class="bi bi-person-circle i-extra-padding-left" style="font-size:19px;"></i></a>
                         </span>
                     {% else %}
-                        <button type="button" href="{% url 'account_login' %}" class="btn btn-outline-secondary">
-                            Přihlásit se<i class="bi bi-box-arrow-in-right"></i></button>
+                        <a type="button" href="{% url 'account_login' %}" class="btn btn-outline-secondary">
+                            Přihlásit se<i class="bi bi-box-arrow-in-right i-extra-padding-left"></i></a>
                     {% endif %}
                 </li>
             </ul>
