@@ -11,3 +11,14 @@ body {
 a {
     text-decoration: none;
 }
+
+/*.asteriskField {*/
+/*    display: none;*/
+/*}*/
+
+i {
+    bottom: .125em;
+    position: relative;
+    padding-left: 10px;
+    /*padding-right: 10px;*/
+}

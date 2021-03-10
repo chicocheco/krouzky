@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 class Organization(models.Model):
-    name = models.CharField(_('název organizace'), max_length=100, unique=True, blank=False)
+    name = models.CharField(_('název'), max_length=100, unique=True, blank=False)
     slug = models.SlugField(_('slug'), max_length=100)
     company_id = models.CharField(_('IČO'), max_length=8, blank=False)
     vat_id = models.CharField(_('DIČ'), max_length=10, blank=False)

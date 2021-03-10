@@ -1,5 +1,5 @@
 {% extends '_base.html' %}
-{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
 
 {% block title %}{{ request.user.organization.name }} - Editace údajů{% endblock %}
 
@@ -7,9 +7,7 @@
     <h1>{{ request.user.organization.name }}</h1>
     <p>Editace údajů</p>
     <hr>
-    <form method="post">
-        {% csrf_token %}
-        {{ organization_form|crispy }}
-        <p><input type="submit" class="btn btn-primary" value="Potvrdit"></p>
-    </form>
+    {% crispy organization_form %}
 {% endblock %}
+
+{% block sidebar %}{% include 'dashboard_sidebar.html' %}{% endblock %}
