@@ -4,16 +4,20 @@
 {% if request.user.organization %}
     <p><a href="{% url 'organization_rename' %}">Editace názvu</a></p>
     <p><a href="{% url 'organization_update' %}">Editace údajů</a></p>
-    <p><a href="#">Odstranit organizaci</a></p>
+    <p><a href="{% url 'organization_delete' %}">Odstranit organizaci</a></p>
 {% else %}
     <p>Staňte se koordinátorem - <a href="{% url 'organization_register' %}">zaregistrujte svou organizaci.</a></p>
 {% endif %}
 <h5><i class="bi bi-file-earmark-check i-extra-padding-left i-extra-padding-right"></i> Moje kroužky</h5>
 <hr>
-{% if not request.user.organization %}
-    <p>Prosím zaregistrujte nejdříve vaší organizaci viz výše.</p>
-{% elif request.user.organization.courses.count == 0 %}
-    <p>Nemáte vytvořené žádné kroužky.</p>
-{% else %}
-    <p><a href="{% url 'course_list_by_organization' request.user.organization.slug %}">Moje kroužky</a></p>
-{% endif %}
+{% with request.user.organization.courses.count as total_courses %}
+    {% if not request.user.organization %}
+        <p>Prosím zaregistrujte nejdříve vaší organizaci viz výše.</p>
+    {% elif not total_courses %}
+        <p>Nemáte vytvořené žádné kroužky.</p>
+    {% else %}
+        <p><a href="{% url 'course_list_by_organization' request.user.organization.slug %}">
+            Moje kroužky <span class="badge rounded-pill bg-primary">{{ total_courses }}</span>
+        </a></p>
+    {% endif %}
+{% endwith %}

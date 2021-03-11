@@ -37,7 +37,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=50, blank=True)
     phone = models.CharField(max_length=9, blank=True)
     role = models.CharField(max_length=30, choices=Roles.choices, default=Roles.STUDENT)  # another FK?
-    organization = models.ForeignKey(Organization, null=True, related_name='users', on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, null=True, related_name='users', on_delete=models.SET_NULL)
     photo = models.ImageField(upload_to='users/%Y/%m/%d/', blank=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)

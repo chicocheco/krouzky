@@ -6,6 +6,9 @@
     <h1>Můj účet</h1>
     <hr>
     <p>Vítejte,<br>jste přihlášeni jako uživatel <b>{{ request.user.email }}</b>. </p>
+    {% if request.user.organization %}
+        <p>Jste koordinátorem organizace <b>{{ request.user.organization.name }}</b>.</p>
+    {% endif %}
     <a class="btn btn-primary" href="{% url 'account_logout' %}">Odhlásit se</a>
 {% endblock %}
 

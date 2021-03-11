@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.utils.text import slugify
 
 from users.models import User
@@ -55,7 +55,7 @@ def organization_register(request):
             request.user.role = User.Roles.COORDINATOR
             request.user.save()
             messages.add_message(request, messages.SUCCESS, f'Organizace "{org_name}" zaregistrována!')
-            return render(request, 'catalog/dashboard.html')
+            return redirect(dashboard)
     else:
         organization_form = RegisterOrganizationForm()
     return render(request, 'catalog/organization/register.html', {'organization_form': organization_form})
@@ -76,7 +76,7 @@ def organization_update(request):
             organization.save()
 
             messages.add_message(request, messages.SUCCESS, 'Údaje organizace uloženy!')
-            return render(request, 'catalog/dashboard.html')
+            return redirect(dashboard)
     else:
         organization_form = UpdateOrganizationForm(instance=request.user.organization)
     return render(request, 'catalog/organization/update.html', {'organization_form': organization_form})
@@ -93,7 +93,20 @@ def organization_rename(request):
             organization.slug = slugify(org_name)
             organization.save()
             messages.add_message(request, messages.SUCCESS, f'Organizace přejmenována na {org_name}')
-            return render(request, 'catalog/dashboard.html')
+            return redirect(dashboard)
     else:
         organization_form = RenameOrganizationForm(instance=request.user.organization)
     return render(request, 'catalog/organization/rename.html', {'organization_form': organization_form})
+
+
+@login_required
+def organization_delete(request):
+    if request.method == 'POST':
+        request.user.role = User.Roles.STUDENT
+        request.user.save()
+        # change status of all teachers to 'student' as well
+
+        request.user.organization.delete()
+        messages.add_message(request, messages.SUCCESS, f'Organizace odstraněna')
+        return redirect(dashboard)
+    return render(request, 'catalog/organization/delete.html')

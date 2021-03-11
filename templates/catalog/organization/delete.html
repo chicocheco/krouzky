@@ -1,0 +1,16 @@
+{% extends '_base.html' %}
+
+{% block title %}Odstranění organizace{% endblock %}
+
+{% block content %}
+    <h2>Odstranění organizace</h2>
+    <hr>
+    <p>Jste si jisti, že se chcete odstranit organizaci <b>{{ request.user.organization.name }}</b>?</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button class="btn btn-primary" type="submit">Potvrdit</button>
+    </form>
+{% endblock %}
+
+{% block sidebar %}{% include 'dashboard_sidebar.html' %}{% endblock %}
