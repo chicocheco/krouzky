@@ -2,11 +2,11 @@
 
 <hr>
 {% if request.user.organization %}
-    <p><a href="{% url 'rename_organization' %}">Editace názvu</a></p>
-    <p><a href="{% url 'update_organization' %}">Editace údajů</a></p>
+    <p><a href="{% url 'organization_rename' %}">Editace názvu</a></p>
+    <p><a href="{% url 'organization_update' %}">Editace údajů</a></p>
     <p><a href="#">Odstranit organizaci</a></p>
 {% else %}
-    <p>Staňte se koordinátorem - <a href="{% url 'register_organization' %}">zaregistrujte svou organizaci.</a></p>
+    <p>Staňte se koordinátorem - <a href="{% url 'organization_register' %}">zaregistrujte svou organizaci.</a></p>
 {% endif %}
 <h5><i class="bi bi-file-earmark-check i-extra-padding-left i-extra-padding-right"></i> Moje kroužky</h5>
 <hr>
@@ -15,5 +15,5 @@
 {% elif request.user.organization.courses.count == 0 %}
     <p>Nemáte vytvořené žádné kroužky.</p>
 {% else %}
-    <p><a href="{% url 'course_list_organization' request.user.organization.slug %}">Moje kroužky</a></p>
+    <p><a href="{% url 'course_list_by_organization' request.user.organization.slug %}">Moje kroužky</a></p>
 {% endif %}

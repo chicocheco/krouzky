@@ -43,7 +43,7 @@ def about_us(request):
 
 
 @login_required
-def register_organization(request):
+def organization_register(request):
     if request.method == 'POST':
         organization_form = RegisterOrganizationForm(data=request.POST)
         if organization_form.is_valid():
@@ -62,7 +62,7 @@ def register_organization(request):
 
 
 @login_required
-def update_organization(request):
+def organization_update(request):
     if request.method == 'POST':
         organization_form = UpdateOrganizationForm(data=request.POST)
         if organization_form.is_valid():
@@ -83,7 +83,7 @@ def update_organization(request):
 
 
 @login_required
-def rename_organization(request):
+def organization_rename(request):
     if request.method == 'POST':
         organization_form = RenameOrganizationForm(data=request.POST)
         if organization_form.is_valid():
