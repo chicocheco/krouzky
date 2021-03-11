@@ -6,11 +6,7 @@
 {% block content %}
     <h1>Přejmenovat organizaci</h1>
     <hr>
-    <form method="post">
-        {% csrf_token %}
-        {% crispy organization_form %}
-        <p><input type="submit" class="btn btn-primary" value="Potvrdit"></p>
-    </form>
+    {% crispy organization_form %}
 {% endblock %}
 
 {% block sidebar %}{% include 'dashboard_sidebar.html' %}{% endblock %}

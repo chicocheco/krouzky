@@ -40,7 +40,7 @@ class Topic(models.Model):
 
 class Course(models.Model):
     title = models.CharField(max_length=100, blank=False)
-    slug = AutoSlugField(populate_from='title')
+    slug = AutoSlugField(populate_from='title')  # make unique with organization?
     description = models.TextField(blank=True)
     image = models.ImageField(null=True, upload_to='images/%Y/%m/%d')
     price = models.PositiveIntegerField(null=False, blank=False)
@@ -56,6 +56,6 @@ class Course(models.Model):
     def __str__(self):
         return f'{self.title} [{self.organization.name}]'
 
-    # def get_absolute_url(self):
-    #     return reverse('blog:post_detail',
-    #                    args=[])
+    def get_absolute_url(self):
+        return reverse('',
+                       args=[])

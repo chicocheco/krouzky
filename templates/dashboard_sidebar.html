@@ -15,5 +15,5 @@
 {% elif request.user.organization.courses.count == 0 %}
     <p>Nemáte vytvořené žádné kroužky.</p>
 {% else %}
-    <p><a href="{% url 'course_list' request.user.organization.slug %}">Moje kroužky</a></p>
+    <p><a href="{% url 'course_list_organization' request.user.organization.slug %}">Moje kroužky</a></p>
 {% endif %}
