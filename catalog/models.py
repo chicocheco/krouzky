@@ -13,49 +13,63 @@ class Organization(models.Model):
     address = models.CharField(_('adresa'), max_length=100, blank=False)
     town = models.CharField(_('město'), max_length=40, blank=False)
     zip_code = models.CharField(_('PSČ'), max_length=5, blank=False)
-    date_created = models.DateTimeField(auto_now_add=True)
+    date_created = models.DateTimeField(_('vytvořeno'), auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Organizace"
+        verbose_name_plural = "Organizace"
 
     def __str__(self):
         return self.name
 
 
 class AgeCategory(models.Model):
-    name = models.CharField(max_length=30, blank=False)
-    age_from = models.PositiveIntegerField(blank=False)
-    age_to = models.PositiveIntegerField(blank=False)
+    name = models.CharField(_('název'), max_length=30, blank=False)
+    age_from = models.PositiveIntegerField(_('od věku'), blank=False)
+    age_to = models.PositiveIntegerField(_('do věku'), blank=False)
 
     class Meta:
-        verbose_name_plural = 'Age Categories'
+        verbose_name = 'Věková kategorie'
+        verbose_name_plural = 'Věkové kategorie'
 
     def __str__(self):
         return f'{self.name} ({self.age_from}-{self.age_to})'
 
 
 class Topic(models.Model):
-    name = models.CharField(max_length=50, blank=False)
+    name = models.CharField(_('název'), max_length=50, blank=False)
+
+    class Meta:
+        verbose_name = 'Zaměření'
+        verbose_name_plural = 'Zaměření'
 
     def __str__(self):
         return self.name
 
 
 class Course(models.Model):
-    title = models.CharField(max_length=100, blank=False)
-    slug = AutoSlugField(populate_from='title')  # make unique with organization?
-    description = models.TextField(blank=True)
-    image = models.ImageField(null=True, upload_to='images/%Y/%m/%d')
-    price = models.PositiveIntegerField(null=False, blank=False)
-    hours = models.PositiveIntegerField(null=False, blank=False)
-    capacity = models.PositiveIntegerField(null=True, blank=True)
-    teacher = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='courses', on_delete=models.CASCADE)
-    organization = models.ForeignKey(Organization, related_name='courses', on_delete=models.CASCADE)
-    age_category = models.ForeignKey(AgeCategory, related_name='courses', on_delete=models.CASCADE)
-    topic = models.ManyToManyField(Topic)
-    date_modified = models.DateTimeField(auto_now=True)
-    date_created = models.DateTimeField(auto_now_add=True)
+    title = models.CharField(_('název'), max_length=100, blank=False)
+    slug = AutoSlugField(_('slug'), populate_from='title')  # make unique with organization?
+    description = models.TextField(_('popis'), blank=True)
+    image = models.ImageField(_('obrázek'), null=True, upload_to='images/%Y/%m/%d')
+    price = models.PositiveIntegerField(_('cena'), null=False, blank=False)
+    hours = models.PositiveIntegerField(_('počet hodin'), null=False, blank=False)
+    capacity = models.PositiveIntegerField(_('kapacita'), null=True, blank=True)
+    teacher = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                verbose_name='učitel', related_name='courses', on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization,
+                                     verbose_name='organizace', related_name='courses', on_delete=models.CASCADE)
+    age_category = models.ForeignKey(AgeCategory,
+                                     verbose_name='věková kategorie', related_name='courses', on_delete=models.CASCADE)
+    topic = models.ManyToManyField(Topic, verbose_name='zaměření')
+    date_modified = models.DateTimeField(_('upraveno'), auto_now=True)
+    date_created = models.DateTimeField(_('vytvořeno'), auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Kroužek'
+        verbose_name_plural = 'Kroužky'
 
     def __str__(self):
         return f'{self.title} [{self.organization.name}]'
 
-    def get_absolute_url(self):
-        return reverse('',
-                       args=[])
+    # def get_absolute_url(self):

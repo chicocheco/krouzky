@@ -13,11 +13,14 @@
 {% with request.user.organization.courses.count as total_courses %}
     {% if not request.user.organization %}
         <p>Prosím zaregistrujte nejdříve vaší organizaci viz výše.</p>
-    {% elif not total_courses %}
-        <p>Nemáte vytvořené žádné kroužky.</p>
     {% else %}
-        <p><a href="{% url 'course_list_by_organization' request.user.organization.slug %}">
-            Moje kroužky <span class="badge rounded-pill bg-primary">{{ total_courses }}</span>
-        </a></p>
+        {% if not total_courses %}
+            <p>Nemáte vytvořené žádné kroužky.</p>
+        {% else %}
+            <p><a href="{% url 'course_list_by_organization' request.user.organization.slug %}">
+                Moje kroužky <span class="badge rounded-pill bg-primary">{{ total_courses }}</span>
+            </a></p>
+        {% endif %}
+        <p><a href="{% url 'course_create' %}">Přidat kroužek</a></p>
     {% endif %}
 {% endwith %}

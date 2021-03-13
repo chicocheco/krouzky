@@ -12,6 +12,7 @@ urlpatterns = [
     path('organizace/<slug:slug>/krouzky/', catalog_views.course_list, name='course_list_by_organization'),
 
     path('krouzky/', catalog_views.course_list, name='course_list'),
-    # path('krouzky/<slug:slug>/', catalog_views.course_detail, name='course_detail'),
+    path('krouzek/vytvorit', catalog_views.course_create, name='course_create'),
+    # path('krouzek/<slug:slug>/', catalog_views.course_detail, name='course_detail'),
     path('o-nas/', catalog_views.about_us, name='about_us')
 ]

@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.utils.text import slugify
 
 from users.models import User
-from .forms import UpdateOrganizationForm, RenameOrganizationForm, RegisterOrganizationForm
+from .forms import UpdateOrganizationForm, RenameOrganizationForm, RegisterOrganizationForm, CreateCourseForm
 from .models import Course, Organization
 
 
@@ -75,7 +75,7 @@ def organization_update(request):
             organization.zip_code = cd['zip_code']
             organization.save()
 
-            messages.add_message(request, messages.SUCCESS, 'Údaje organizace uloženy!')
+            messages.add_message(request, messages.SUCCESS, 'Údaje organizace upraveny!')
             return redirect(dashboard)
     else:
         organization_form = UpdateOrganizationForm(instance=request.user.organization)
@@ -107,6 +107,26 @@ def organization_delete(request):
         # change status of all teachers to 'student' as well
 
         request.user.organization.delete()
-        messages.add_message(request, messages.SUCCESS, f'Organizace odstraněna')
+        messages.add_message(request, messages.SUCCESS, 'Organizace byla odstraněna')
         return redirect(dashboard)
     return render(request, 'catalog/organization/delete.html')
+
+
+@login_required
+def course_create(request):
+    if request.method == 'POST':
+        course_form = CreateCourseForm(data=request.POST, files=request.FILES)
+        if course_form.is_valid():
+            course = course_form.save(commit=False)
+            course.organization = request.user.organization
+            course.save()
+            course_form.save_m2m()  # save Topic
+            messages.add_message(request, messages.SUCCESS, 'Kroužek byl úspěšně zaregistrován!')
+            return redirect(dashboard)
+        else:
+            messages.add_message(request, messages.ERROR, 'Chyba při pokusu zaregistrovat kroužek!')
+            return redirect(dashboard)
+    else:
+        course_form = CreateCourseForm()
+        course_form.fields['teacher'].queryset = User.objects.filter(organization_id=request.user.organization.id)
+    return render(request, 'catalog/course/create.html', {'course_form': course_form})

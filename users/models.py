@@ -51,6 +51,11 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
+    class Meta:
+        verbose_name = 'Uživatel'
+        verbose_name_plural = 'Uživatelé'
+
+
 
 class StudentManager(models.Manager):
     def get_queryset(self, *args, **kwargs):

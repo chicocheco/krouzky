@@ -1,0 +1,12 @@
+{% extends '_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Registrace kroužku{% endblock %}
+
+{% block content %}
+    <h2>Registrace kroužku</h2>
+    <hr>
+    {% crispy course_form %}
+{% endblock %}
+
+{% block sidebar %}{% include 'dashboard_sidebar.html' %}{% endblock %}
