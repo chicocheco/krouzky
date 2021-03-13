@@ -49,7 +49,7 @@ class RenameOrganizationForm(forms.ModelForm):
         fields = ('name',)
 
 
-class CreateCourseForm(forms.ModelForm):
+class CourseForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -72,4 +72,5 @@ class Course(models.Model):
     def __str__(self):
         return f'{self.title} [{self.organization.name}]'
 
-    # def get_absolute_url(self):
+    def get_absolute_url(self):
+        return reverse('course_detail', args=[self.slug])

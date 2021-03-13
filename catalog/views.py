@@ -1,11 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.text import slugify
 
 from users.models import User
-from .forms import UpdateOrganizationForm, RenameOrganizationForm, RegisterOrganizationForm, CreateCourseForm
+from .forms import UpdateOrganizationForm, RenameOrganizationForm, RegisterOrganizationForm, CourseForm
 from .models import Course, Organization
 
 
@@ -63,22 +63,16 @@ def organization_register(request):
 
 @login_required
 def organization_update(request):
+    organization_form = UpdateOrganizationForm(instance=request.user.organization)
     if request.method == 'POST':
-        organization_form = UpdateOrganizationForm(data=request.POST)
+        organization_form = UpdateOrganizationForm(data=request.POST, instance=request.user.organization)
         if organization_form.is_valid():
-            cd = organization_form.cleaned_data
-            organization = request.user.organization
-            organization.company_id = cd['company_id']
-            organization.vat_id = cd['vat_id']
-            organization.address = cd['address']
-            organization.town = cd['town']
-            organization.zip_code = cd['zip_code']
-            organization.save()
-
+            organization_form.save()
             messages.add_message(request, messages.SUCCESS, 'Údaje organizace upraveny!')
             return redirect(dashboard)
-    else:
-        organization_form = UpdateOrganizationForm(instance=request.user.organization)
+        else:
+            messages.add_message(request, messages.SUCCESS, 'Chyba při pokusu upravit údaje organizace')
+            return redirect(dashboard)
     return render(request, 'catalog/organization/update.html', {'organization_form': organization_form})
 
 
@@ -115,7 +109,7 @@ def organization_delete(request):
 @login_required
 def course_create(request):
     if request.method == 'POST':
-        course_form = CreateCourseForm(data=request.POST, files=request.FILES)
+        course_form = CourseForm(data=request.POST, files=request.FILES)  # includes image upload
         if course_form.is_valid():
             course = course_form.save(commit=False)
             course.organization = request.user.organization
@@ -127,6 +121,23 @@ def course_create(request):
             messages.add_message(request, messages.ERROR, 'Chyba při pokusu zaregistrovat kroužek!')
             return redirect(dashboard)
     else:
-        course_form = CreateCourseForm()
+        course_form = CourseForm()
         course_form.fields['teacher'].queryset = User.objects.filter(organization_id=request.user.organization.id)
     return render(request, 'catalog/course/create.html', {'course_form': course_form})
+
+
+@login_required
+def course_update(request, slug=None):
+    course = get_object_or_404(Course, slug=slug)
+    course_form = CourseForm(instance=course)
+    course_form.fields['teacher'].queryset = User.objects.filter(organization_id=request.user.organization.id)
+    if request.method == 'POST':
+        course_form = CourseForm(data=request.POST, files=request.FILES, instance=course)  # relate to the existing obj!
+        if course_form.is_valid():
+            course_form.save()
+            messages.add_message(request, messages.SUCCESS, 'Kroužek byl úspěšně upraven!')
+            return redirect(dashboard)
+        else:
+            messages.add_message(request, messages.ERROR, 'Chyba při pokusu upravit kroužek!')
+            return redirect(dashboard)
+    return render(request, 'catalog/course/update.html', {'course_form': course_form})
