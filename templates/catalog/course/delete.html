@@ -1,11 +1,11 @@
 {% extends '_base.html' %}
 
-{% block title %}Odstranění organizace{% endblock %}
+{% block title %}Odstranění kroužku{% endblock %}
 
 {% block content %}
-    <h2>Odstranění organizace</h2>
+    <h2>Odstranění kroužku</h2>
     <hr>
-    <p>Jste si jisti, že se chcete odstranit organizaci <b>{{ request.user.organization.name }}</b>?</p>
+    <p>Jste si jisti, že chcete odstranit kroužek <b>{{ course_name }}</b>?</p>
 
     <form method="post">
         {% csrf_token %}

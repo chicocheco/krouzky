@@ -109,7 +109,7 @@ def organization_delete(request):
 @login_required
 def course_create(request):
     if request.method == 'POST':
-        course_form = CourseForm(data=request.POST, files=request.FILES)  # includes image upload
+        course_form = CourseForm(data=request.POST, files=request.FILES)  # 'files' includes image upload
         if course_form.is_valid():
             course = course_form.save(commit=False)
             course.organization = request.user.organization
@@ -132,7 +132,8 @@ def course_update(request, slug=None):
     course_form = CourseForm(instance=course)
     course_form.fields['teacher'].queryset = User.objects.filter(organization_id=request.user.organization.id)
     if request.method == 'POST':
-        course_form = CourseForm(data=request.POST, files=request.FILES, instance=course)  # relate to the existing obj!
+        # 'instance' parameter to relate to the existing object!
+        course_form = CourseForm(data=request.POST, files=request.FILES, instance=course)
         if course_form.is_valid():
             course_form.save()
             messages.add_message(request, messages.SUCCESS, 'Kroužek byl úspěšně upraven!')
@@ -141,3 +142,18 @@ def course_update(request, slug=None):
             messages.add_message(request, messages.ERROR, 'Chyba při pokusu upravit kroužek!')
             return redirect(dashboard)
     return render(request, 'catalog/course/update.html', {'course_form': course_form})
+
+
+def course_detail(request, slug=None):
+    course = get_object_or_404(Course, slug=slug)
+    return render(request, 'catalog/course/detail.html', {'course': course})
+
+
+def course_delete(request, slug=None):
+    course = get_object_or_404(Course, slug=slug)
+    course_name = course.name
+    if request.method == 'POST':
+        course.delete()
+        messages.add_message(request, messages.SUCCESS, 'Organizace byla odstraněna')
+        return redirect(dashboard)
+    return render(request, 'catalog/course/delete.html', {'course_name': course_name})

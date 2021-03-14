@@ -48,8 +48,8 @@ class Topic(models.Model):
 
 
 class Course(models.Model):
-    title = models.CharField(_('název'), max_length=100, blank=False)
-    slug = AutoSlugField(_('slug'), populate_from='title')  # make unique with organization?
+    name = models.CharField(_('název'), max_length=100, blank=False)
+    slug = AutoSlugField(_('slug'), populate_from='name')  # make unique with organization?
     description = models.TextField(_('popis'), blank=True)
     image = models.ImageField(_('obrázek'), null=True, upload_to='images/%Y/%m/%d')
     price = models.PositiveIntegerField(_('cena'), null=False, blank=False)
@@ -70,7 +70,7 @@ class Course(models.Model):
         verbose_name_plural = 'Kroužky'
 
     def __str__(self):
-        return f'{self.title} [{self.organization.name}]'
+        return f'{self.name} [{self.organization.name}]'
 
     def get_absolute_url(self):
         return reverse('course_detail', args=[self.slug])

@@ -1,0 +1,40 @@
+{% extends '_base.html' %}
+
+{% block title %}{{ course.name }}{% endblock %}
+
+{% block content %}
+    <h2>{{ course.name }}</h2>
+    <hr>
+    <p>{{ course.description|linebreaks }}</p>
+    <div class="row">
+        <div class="col-6">
+            <img src="{{ course.image.url }}" alt="" class="img-fluid">
+        </div>
+        <div class="col-6">
+            <p><b>Cena:</b><br>{{ course.price }} Kč</p>
+            <p><b>Trvání kroužku:</b><br>{{ course.hours }} hodin</p>
+            <p><b>Kapacita:</b><br>{{ course.capacity }} osob</p>
+            <p><b>Věková skupina:</b><br>{{ course.age_category }}</p>
+
+
+            <p><b>Zaměření kroužku:</b><br>
+                {% for topic in course.topic.all %}
+                    {{ topic.name }}
+                    {% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block sidebar %}
+    <p><b>Kroužek organizuje:</b><br>{{ course.organization.name }}</p>
+    <p><b>Vedoucí kroužku:</b><br>
+        {% if course.teacher.name %}
+            {{ course.teacher.name }}<br>
+        {% endif %}
+        {% if course.teacher.phone %}
+            Telefonní číslo: {{ course.teacher.phone }}<br>
+        {% endif %}
+        <a href="mailto:{{ course.teacher.email }}">{{ course.teacher.email }}</a></p>
+{% endblock %}
