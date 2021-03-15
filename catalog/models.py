@@ -47,7 +47,16 @@ class Topic(models.Model):
         return self.name
 
 
+class PublishedManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(status='published')
+
+
 class Course(models.Model):
+    STATUS_CHOICES = (
+        ('draft', 'Ke schválení'),
+        ('published', 'Publikováno'),
+    )
     name = models.CharField(_('název'), max_length=100, blank=False)
     slug = AutoSlugField(_('slug'), populate_from='name')  # make unique with organization?
     description = models.TextField(_('popis'), blank=True)
@@ -56,14 +65,17 @@ class Course(models.Model):
     hours = models.PositiveIntegerField(_('počet hodin'), null=False, blank=False)
     capacity = models.PositiveIntegerField(_('kapacita'), null=True, blank=True)
     teacher = models.ForeignKey(settings.AUTH_USER_MODEL,
-                                verbose_name='učitel', related_name='courses', on_delete=models.CASCADE)
+                                verbose_name='vedoucí', related_name='courses', on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization,
                                      verbose_name='organizace', related_name='courses', on_delete=models.CASCADE)
     age_category = models.ForeignKey(AgeCategory,
                                      verbose_name='věková kategorie', related_name='courses', on_delete=models.CASCADE)
     topic = models.ManyToManyField(Topic, verbose_name='zaměření')
+    status = models.CharField(_('stav'), max_length=10, choices=STATUS_CHOICES, default='draft')
     date_modified = models.DateTimeField(_('upraveno'), auto_now=True)
     date_created = models.DateTimeField(_('vytvořeno'), auto_now_add=True)
+    objects = models.Manager()  # define implicitly to preserve this manager
+    published = PublishedManager()
 
     class Meta:
         verbose_name = 'Kroužek'
