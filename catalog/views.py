@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.text import slugify
@@ -20,12 +21,16 @@ def dashboard(request):
 
 def course_list(request, slug=None):
     if slug:
-        organization = Organization.objects.get(slug=slug)
+        organization = get_object_or_404(Organization, slug=slug)
+        if not request.user.is_authenticated:
+            return redirect('home')
+        if organization != request.user.organization:  # display 403 (todo: custom template)
+            raise PermissionDenied()
         organization_name = organization.name
         object_list = Course.objects.filter(organization=organization)
     else:
         organization_name = None
-        object_list = Course.objects.all()
+        object_list = Course.published.all()
     paginator = Paginator(object_list, 10)
     page = request.GET.get('page')
     try:
@@ -98,7 +103,7 @@ def organization_delete(request):
     if request.method == 'POST':
         request.user.role = User.Roles.STUDENT
         request.user.save()
-        # change status of all teachers to 'student' as well
+        # todo: change status of all teachers to 'student' as well
 
         request.user.organization.delete()
         messages.add_message(request, messages.SUCCESS, 'Organizace byla odstraněna')
@@ -115,7 +120,7 @@ def course_create(request):
             course.organization = request.user.organization
             course.save()
             course_form.save_m2m()  # save Topic
-            messages.add_message(request, messages.SUCCESS, 'Kroužek byl úspěšně zaregistrován!')
+            messages.add_message(request, messages.SUCCESS, 'Kroužek byl úspěšně vytvořen a odeslán ke schválení!')
             return redirect(dashboard)
         else:
             messages.add_message(request, messages.ERROR, 'Chyba při pokusu zaregistrovat kroužek!')
