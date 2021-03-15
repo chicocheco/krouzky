@@ -5,7 +5,8 @@ from django.urls import path, include
 
 urlpatterns = [
     path('spravce/', admin.site.urls),
-    path('ucet/', include('allauth.urls')),
+    path('ucet/', include('users.urls')),  # customized czech urls of allauth
+    # path('ucet/', include('allauth.urls')),  # fallback
     path('', include('catalog.urls')),
 ]
 
