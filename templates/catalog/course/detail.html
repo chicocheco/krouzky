@@ -3,7 +3,7 @@
 {% block title %}{{ course.name }}{% endblock %}
 
 {% block content %}
-    <h2>{{ course.name }}</h2>
+    <h2>{{ course.name|capfirst }}</h2>
     <hr>
     <p>{{ course.description|linebreaks }}</p>
     <div class="row">
@@ -34,7 +34,9 @@
             {{ course.teacher.name }}<br>
         {% endif %}
         {% if course.teacher.phone %}
-            Telefonní číslo: {{ course.teacher.phone }}<br>
+            Telefonní číslo:
+            {% for i in course.teacher.phone %}{{ i }}{% if forloop.counter == 3 or forloop.counter == 6 %} {% endif %}{% endfor %}
+            <br>
         {% endif %}
         <a href="mailto:{{ course.teacher.email }}">{{ course.teacher.email }}</a></p>
 {% endblock %}
