@@ -1,3 +1,4 @@
+from os import environ
 from pathlib import Path
 from django.urls import reverse_lazy
 from django.contrib.messages import constants as messages
@@ -6,10 +7,12 @@ from django.contrib.messages import constants as messages
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = '(g3!x1m_^^r^*g#q+2ncft%s%=k(-rzm%mt+zt^xs5%di5g=k6'
-DEBUG = True
+# read environmental variables from docker-compose file
+ENVIRONMENT = environ.get('ENVIRONMENT', default='development')
+SECRET_KEY = environ.get('DJANGO_SECRET_KEY')
+DEBUG = int(environ.get('DEBUG', default=0))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['0.0.0.0']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -90,8 +93,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'db',
+        'PORT': 5432
     }
 }
 
@@ -99,18 +106,10 @@ DATABASES = {
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator', },
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', },
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator', },
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator', },
 ]
 
 # Internationalization
