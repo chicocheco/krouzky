@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from catalog.models import Organization
 
@@ -33,12 +34,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         TEACHER = 'TEACHER', 'Teacher'
         COORDINATOR = 'COORDINATOR', 'Coordinator'
 
-    email = models.EmailField(max_length=50, unique=True)
-    name = models.CharField(max_length=50, blank=True)
-    phone = models.CharField(max_length=9, blank=True)
+    email = models.EmailField(_('emailová adresa'), max_length=50, unique=True)
+    name = models.CharField(_('celé jméno'), max_length=30, blank=True)
+    phone = models.CharField(_('telefonní číslo'), max_length=9, blank=True)
     role = models.CharField(max_length=30, choices=Roles.choices, default=Roles.STUDENT)  # another FK?
     organization = models.ForeignKey(Organization, null=True, related_name='users', on_delete=models.SET_NULL)
-    photo = models.ImageField(upload_to='users/%Y/%m/%d/', blank=True)
+    photo = models.ImageField(_('fotka'), upload_to='users/%Y/%m/%d/', blank=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
