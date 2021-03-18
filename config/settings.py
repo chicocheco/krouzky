@@ -47,6 +47,7 @@ LOGOUT_REDIRECT_URL = reverse_lazy('home')
 ACCOUNT_FORMS = {
     'login': 'users.forms.CustomLoginForm',
     'signup': 'users.forms.CustomSignupForm',
+    'change_password': 'users.forms.CustomChangePasswordForm',
 }
 
 AUTH_USER_MODEL = 'users.User'
