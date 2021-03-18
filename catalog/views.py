@@ -60,7 +60,7 @@ def organization_register(request):
             request.user.role = User.Roles.COORDINATOR
             request.user.save()
             messages.add_message(request, messages.SUCCESS, f'Organizace "{org_name}" zaregistrována!')
-            return redirect(dashboard)
+        return redirect(dashboard)
     else:
         organization_form = RegisterOrganizationForm()
     return render(request, 'catalog/organization/register.html', {'organization_form': organization_form})
@@ -74,10 +74,9 @@ def organization_update(request):
         if organization_form.is_valid():
             organization_form.save()
             messages.add_message(request, messages.SUCCESS, 'Údaje organizace upraveny!')
-            return redirect(dashboard)
         else:
             messages.add_message(request, messages.SUCCESS, 'Chyba při pokusu upravit údaje organizace')
-            return redirect(dashboard)
+        return redirect(dashboard)
     return render(request, 'catalog/organization/update.html', {'organization_form': organization_form})
 
 
@@ -121,10 +120,9 @@ def course_create(request):
             course.save()
             course_form.save_m2m()  # save Topic
             messages.add_message(request, messages.SUCCESS, 'Kroužek byl úspěšně vytvořen a odeslán ke schválení!')
-            return redirect(dashboard)
         else:
             messages.add_message(request, messages.ERROR, 'Chyba při pokusu zaregistrovat kroužek!')
-            return redirect(dashboard)
+        return redirect(dashboard)
     else:
         course_form = CourseForm()
         course_form.fields['teacher'].queryset = User.objects.filter(organization_id=request.user.organization.id)
@@ -142,10 +140,9 @@ def course_update(request, slug=None):
         if course_form.is_valid():
             course_form.save()
             messages.add_message(request, messages.SUCCESS, 'Kroužek byl úspěšně upraven!')
-            return redirect(dashboard)
         else:
             messages.add_message(request, messages.ERROR, 'Chyba při pokusu upravit kroužek!')
-            return redirect(dashboard)
+        return redirect(dashboard)
     return render(request, 'catalog/course/update.html', {'course_form': course_form})
 
 
