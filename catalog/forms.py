@@ -10,8 +10,8 @@ class FormHorizontalHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.form_class = 'form-horizontal'
-        self.label_class = 'col-lg-2'
-        self.field_class = 'col-lg-8'
+        self.label_class = 'col-lg-3'
+        self.field_class = 'col-lg-9'
         self.form_show_labels = True
         self.add_input(Submit('submit', 'Potvrdit'))  # uses class="btn btn-primary"
 
@@ -53,12 +53,10 @@ class CourseForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-lg-3'
-        self.helper.field_class = 'col-lg-9'
-        self.helper.form_show_labels = True
-        self.helper.add_input(Submit('submit', 'Potvrdit'))
+        self.helper = FormHorizontalHelper()
+        self.fields['image'].widget.attrs.update({
+            'class': 'form-control'
+        })
 
     class Meta:
         model = Course
