@@ -24,7 +24,7 @@ class RegisterOrganizationForm(forms.ModelForm):
 
     class Meta:
         model = Organization
-        fields = ('name', 'company_id', 'vat_id', 'address', 'town', 'zip_code')
+        fields = ('name', 'url', 'company_id', 'vat_id', 'address', 'town', 'zip_code')
 
 
 class UpdateOrganizationForm(forms.ModelForm):
@@ -35,7 +35,7 @@ class UpdateOrganizationForm(forms.ModelForm):
 
     class Meta:
         model = Organization
-        fields = ('company_id', 'vat_id', 'address', 'town', 'zip_code')
+        fields = ('url', 'company_id', 'vat_id', 'address', 'town', 'zip_code')
 
 
 class RenameOrganizationForm(forms.ModelForm):

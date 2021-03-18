@@ -6,8 +6,9 @@ from django.utils.translation import gettext_lazy as _
 
 
 class Organization(models.Model):
-    name = models.CharField(_('název'), max_length=100, unique=True, blank=False)
-    slug = models.SlugField(_('slug'), max_length=100)
+    name = models.CharField(_('název'), max_length=30, unique=True, blank=False)
+    url = models.URLField(_('URL'), max_length=35, blank=True)
+    slug = models.SlugField(_('slug'), max_length=30)
     company_id = models.CharField(_('IČO'), max_length=8, blank=False)
     vat_id = models.CharField(_('DIČ'), max_length=10, blank=True)
     address = models.CharField(_('adresa'), max_length=100, blank=False)
@@ -57,7 +58,7 @@ class Course(models.Model):
         ('draft', 'Ke schválení'),
         ('published', 'Publikováno'),
     )
-    name = models.CharField(_('název'), max_length=100, blank=False)
+    name = models.CharField(_('název'), max_length=50, blank=False)
     slug = AutoSlugField(_('slug'), populate_from='name')  # make unique with organization?
     description = models.TextField(_('popis'), blank=True)
     image = models.ImageField(_('obrázek'), null=True, upload_to='images/%Y/%m/%d')

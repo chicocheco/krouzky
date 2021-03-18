@@ -28,7 +28,9 @@
 {% endblock %}
 
 {% block sidebar %}
-    <p><b>Kroužek organizuje:</b><br>{{ course.organization.name }}</p>
+    <p><b>Kroužek organizuje:</b><br>
+        {{ course.organization.name }}<br>
+        <a href="{{ course.organization.url }}">{{ course.organization.url }}</a></p>
     <p><b>Vedoucí kroužku:</b><br>
         {% if course.teacher.name %}
             {{ course.teacher.name }}<br>
