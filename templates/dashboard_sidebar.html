@@ -1,13 +1,17 @@
-<h5><i class="bi bi-house i-extra-padding-left i-extra-padding-right"></i> Moje organizace</h5>
+<h5><i class="bi bi-person i-extra-padding-left i-extra-padding-right"></i> Můj účet</h5>
+<hr>
+<p><a href="{% url 'user_update' %}">Úprava údajů</a></p>
 
+<h5><i class="bi bi-house i-extra-padding-left i-extra-padding-right"></i> Moje organizace</h5>
 <hr>
 {% if request.user.organization %}
-    <p><a href="{% url 'organization_rename' %}">Editace názvu</a></p>
-    <p><a href="{% url 'organization_update' %}">Editace údajů</a></p>
+    <p><a href="{% url 'organization_rename' %}">Úprava názvu</a></p>
+    <p><a href="{% url 'organization_update' %}">Úprava údajů</a></p>
     <p><a href="{% url 'organization_delete' %}">Odstranit organizaci</a></p>
 {% else %}
     <p>Staňte se koordinátorem - <a href="{% url 'organization_register' %}">zaregistrujte svou organizaci.</a></p>
 {% endif %}
+
 <h5><i class="bi bi-file-earmark-check i-extra-padding-left i-extra-padding-right"></i> Moje kroužky</h5>
 <hr>
 {% with request.user.organization.courses.count as total_courses %}

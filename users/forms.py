@@ -1,10 +1,24 @@
 from allauth.account.forms import LoginForm, SignupForm
 from crispy_forms.bootstrap import PrependedText
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout
+from crispy_forms.layout import Layout, Submit
+from django import forms
+from django.contrib.auth import get_user_model
+
+
+class FormHorizontalHelper(FormHelper):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.form_class = 'form-horizontal'
+        self.label_class = 'col-lg-3'
+        self.field_class = 'col-lg-9'
+        self.form_show_labels = True
+        self.add_input(Submit('submit', 'Potvrdit'))  # uses class="btn btn-primary"
 
 
 class CustomLoginForm(LoginForm):
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -18,6 +32,7 @@ class CustomLoginForm(LoginForm):
 
 
 class CustomSignupForm(SignupForm):
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -28,3 +43,17 @@ class CustomSignupForm(SignupForm):
         )
         self.helper.form_tag = False
         self.helper.form_show_labels = False
+
+
+class UserUpdateForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHorizontalHelper()
+        self.fields['photo'].widget.attrs.update({
+            'class': 'form-control'
+        })
+
+    class Meta:
+        model = get_user_model()
+        fields = ('email', 'name', 'phone', 'photo')

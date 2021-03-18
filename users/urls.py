@@ -1,9 +1,12 @@
 from django.urls import path, re_path
 
 from allauth.account import views as allauth_views
+from . import views as users_views
 
 # czech urls of allauth
 urlpatterns = [
+    path('upravit', users_views.update, name='user_update'),
+
     path("registrace/", allauth_views.signup, name="account_signup"),
     path("prihlaseni/", allauth_views.login, name="account_login"),
     path("odhlaseni/", allauth_views.logout, name="account_logout"),
