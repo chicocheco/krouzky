@@ -3,16 +3,13 @@ from pathlib import Path
 from django.urls import reverse_lazy
 from django.contrib.messages import constants as messages
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 # read environmental variables from docker-compose file
 ENVIRONMENT = environ.get('ENVIRONMENT', default='development')
 SECRET_KEY = environ.get('DJANGO_SECRET_KEY')
 DEBUG = int(environ.get('DEBUG', default=0))
 
-ALLOWED_HOSTS = ['0.0.0.0']
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1']
 
 INSTALLED_APPS = [
     'django.contrib.admin',

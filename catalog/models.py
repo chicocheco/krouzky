@@ -9,7 +9,7 @@ class Organization(models.Model):
     name = models.CharField(_('název'), max_length=100, unique=True, blank=False)
     slug = models.SlugField(_('slug'), max_length=100)
     company_id = models.CharField(_('IČO'), max_length=8, blank=False)
-    vat_id = models.CharField(_('DIČ'), max_length=10, blank=False)
+    vat_id = models.CharField(_('DIČ'), max_length=10, blank=True)
     address = models.CharField(_('adresa'), max_length=100, blank=False)
     town = models.CharField(_('město'), max_length=40, blank=False)
     zip_code = models.CharField(_('PSČ'), max_length=5, blank=False)
