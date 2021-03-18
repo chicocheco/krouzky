@@ -1,4 +1,4 @@
-from allauth.account.forms import LoginForm, SignupForm, ChangePasswordForm
+from allauth.account.forms import LoginForm, SignupForm, ChangePasswordForm, ResetPasswordForm
 from crispy_forms.bootstrap import PrependedText
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit
@@ -59,6 +59,18 @@ class CustomChangePasswordForm(ChangePasswordForm):
         self.helper.form_show_labels = False
 
 
+class CustomResetPasswordForm(ResetPasswordForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            PrependedText('email', '<i class="bi bi-person-fill"></i>'),
+        )
+        self.helper.form_tag = False
+        self.helper.form_show_labels = False
+
+
 class UserUpdateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
@@ -71,5 +83,3 @@ class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = get_user_model()
         fields = ('email', 'name', 'phone', 'photo')
-
-

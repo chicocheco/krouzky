@@ -48,6 +48,7 @@ ACCOUNT_FORMS = {
     'login': 'users.forms.CustomLoginForm',
     'signup': 'users.forms.CustomSignupForm',
     'change_password': 'users.forms.CustomChangePasswordForm',
+    'reset_password': 'users.forms.CustomResetPasswordForm',
 }
 
 AUTH_USER_MODEL = 'users.User'
