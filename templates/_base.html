@@ -28,8 +28,8 @@
                        href="{% url 'course_list' %}">Katalog</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {% if section == 'about_us' %}active{% endif %}" href="{% url 'about_us' %}">O
-                        nás</a>
+                    <a class="nav-link {% if section == 'about_us' %}active{% endif %}"
+                       href="{% url 'about_us' %}">O nás</a>
                 </li>
             </ul>
             <!--right side-->
@@ -37,7 +37,12 @@
                 <li class="nav-item">
                     {% if user.is_authenticated %}
                         <span class="navbar-text text-secondary">
-                            <a href="{% url 'dashboard' %}" >{{ user.email }}
+                            <a href="{% url 'dashboard' %}">
+                                {% if user.name %}
+                                    {{ user.name }}
+                                {% else %}
+                                    {{ user.email }}
+                                {% endif %}
                                 <i class="bi bi-person-circle i-extra-padding-left" style="font-size:19px;"></i></a>
                         </span>
                     {% else %}
@@ -50,25 +55,30 @@
     </div>
 </nav>
 
-{% if messages %}
-    {% for message in messages %}
-        <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zavřít"></button>
-        </div>
-    {% endfor %}
-{% endif %}
 
-{% if form.non_field_errors %}
-    {% for error in form.non_field_errors %}
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{ error }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zavřít"></button>
+<main class="container-md px-1 pb-3 min-vh-100">
+    <!--errors-->
+    <div class="row py-3">
+        <div class="col">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert {{ message.tags }} alert-dismissible fade show container-fluid" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zavřít"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% if form.non_field_errors %}
+                {% for error in form.non_field_errors %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ error }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zavřít"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
         </div>
-    {% endfor %}
-{% endif %}
-
-<main class="container-md p-5 min-vh-100">
+    </div>
+    <!--content-->
     <div class="row g-5">
         <div class="col-lg-8">
             <div class="border p-4 bg-light">
