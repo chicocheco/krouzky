@@ -13,6 +13,7 @@ class FormHorizontalHelper(FormHelper):
         self.label_class = 'col-lg-3'
         self.field_class = 'col-lg-9'
         self.form_show_labels = True
+        self.form_show_errors = False  # displayed under navbar instead
         self.add_input(Submit('submit', 'Potvrdit'))  # uses class="btn btn-primary"
 
 

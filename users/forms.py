@@ -14,6 +14,7 @@ class FormHorizontalHelper(FormHelper):
         self.label_class = 'col-lg-3'
         self.field_class = 'col-lg-9'
         self.form_show_labels = True
+        self.form_show_errors = False  # displayed under navbar instead
         self.add_input(Submit('submit', 'Potvrdit'))  # uses class="btn btn-primary"
 
 
@@ -28,6 +29,7 @@ class CustomLoginForm(LoginForm):
         )
         self.helper.form_tag = False
         self.helper.form_show_labels = False
+        self.helper.form_show_errors = False  # displayed under navbar instead
         self.fields['remember'].widget.attrs.update({'class': 'form-check-input'})
 
 
@@ -43,6 +45,7 @@ class CustomSignupForm(SignupForm):
         )
         self.helper.form_tag = False
         self.helper.form_show_labels = False
+        self.helper.form_show_errors = False  # displayed under navbar instead
 
 
 class CustomChangePasswordForm(ChangePasswordForm):
@@ -57,6 +60,7 @@ class CustomChangePasswordForm(ChangePasswordForm):
         )
         self.helper.form_tag = False
         self.helper.form_show_labels = False
+        self.helper.form_show_errors = False  # displayed under navbar instead
 
 
 class CustomResetPasswordForm(ResetPasswordForm):
@@ -69,6 +73,7 @@ class CustomResetPasswordForm(ResetPasswordForm):
         )
         self.helper.form_tag = False
         self.helper.form_show_labels = False
+        self.helper.form_show_errors = False  # displayed under navbar instead
 
 
 class CustomResetPasswordKeyForm(ResetPasswordKeyForm):
@@ -82,6 +87,7 @@ class CustomResetPasswordKeyForm(ResetPasswordKeyForm):
         )
         self.helper.form_tag = False
         self.helper.form_show_labels = False
+        self.helper.form_show_errors = False  # displayed under navbar instead
 
 
 class UserUpdateForm(forms.ModelForm):

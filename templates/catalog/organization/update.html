@@ -7,7 +7,7 @@
     <h1>{{ request.user.organization.name }}</h1>
     <p>Editace údajů</p>
     <hr>
-    {% crispy organization_form %}
+    {% crispy form %}
 {% endblock %}
 
 {% block sidebar %}{% include 'dashboard_sidebar.html' %}{% endblock %}

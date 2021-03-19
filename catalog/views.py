@@ -50,10 +50,10 @@ def about_us(request):
 @login_required
 def organization_register(request):
     if request.method == 'POST':
-        organization_form = RegisterOrganizationForm(data=request.POST)
-        if organization_form.is_valid():
-            org_name = organization_form.cleaned_data['name']
-            organization = organization_form.save(commit=False)
+        form = RegisterOrganizationForm(data=request.POST)
+        if form.is_valid():
+            org_name = form.cleaned_data['name']
+            organization = form.save(commit=False)
             organization.slug = slugify(org_name)
             organization.save()
             request.user.organization = organization
@@ -62,30 +62,30 @@ def organization_register(request):
             messages.add_message(request, messages.SUCCESS, f'Organizace "{org_name}" zaregistrována!')
         return redirect(dashboard)
     else:
-        organization_form = RegisterOrganizationForm()
-    return render(request, 'catalog/organization/register.html', {'organization_form': organization_form})
+        form = RegisterOrganizationForm()
+    return render(request, 'catalog/organization/register.html', {'form': form})
 
 
 @login_required
 def organization_update(request):
-    organization_form = UpdateOrganizationForm(instance=request.user.organization)
+    form = UpdateOrganizationForm(instance=request.user.organization)
     if request.method == 'POST':
-        organization_form = UpdateOrganizationForm(data=request.POST, instance=request.user.organization)
-        if organization_form.is_valid():
-            organization_form.save()
+        form = UpdateOrganizationForm(data=request.POST, instance=request.user.organization)
+        if form.is_valid():
+            form.save()
             messages.add_message(request, messages.SUCCESS, 'Údaje organizace upraveny!')
         else:
             messages.add_message(request, messages.SUCCESS, 'Chyba při pokusu upravit údaje organizace')
         return redirect(dashboard)
-    return render(request, 'catalog/organization/update.html', {'organization_form': organization_form})
+    return render(request, 'catalog/organization/update.html', {'form': form})
 
 
 @login_required
 def organization_rename(request):
     if request.method == 'POST':
-        organization_form = RenameOrganizationForm(data=request.POST)
-        if organization_form.is_valid():
-            org_name = organization_form.cleaned_data['name']
+        form = RenameOrganizationForm(data=request.POST)
+        if form.is_valid():
+            org_name = form.cleaned_data['name']
             organization = request.user.organization
             organization.name = org_name
             organization.slug = slugify(org_name)
@@ -93,8 +93,8 @@ def organization_rename(request):
             messages.add_message(request, messages.SUCCESS, f'Organizace přejmenována na {org_name}')
             return redirect(dashboard)
     else:
-        organization_form = RenameOrganizationForm(instance=request.user.organization)
-    return render(request, 'catalog/organization/rename.html', {'organization_form': organization_form})
+        form = RenameOrganizationForm(instance=request.user.organization)
+    return render(request, 'catalog/organization/rename.html', {'form': form})
 
 
 @login_required
@@ -113,37 +113,37 @@ def organization_delete(request):
 @login_required
 def course_create(request):
     if request.method == 'POST':
-        course_form = CourseForm(data=request.POST, files=request.FILES)  # 'files' includes image upload
-        if course_form.is_valid():
-            course = course_form.save(commit=False)
+        form = CourseForm(data=request.POST, files=request.FILES)  # 'files' includes image upload
+        if form.is_valid():
+            course = form.save(commit=False)
             course.organization = request.user.organization
             course.save()
-            course_form.save_m2m()  # save Topic
+            form.save_m2m()  # save Topic
             messages.add_message(request, messages.SUCCESS, 'Kroužek byl úspěšně vytvořen a odeslán ke schválení!')
         else:
             messages.add_message(request, messages.ERROR, 'Chyba při pokusu zaregistrovat kroužek!')
         return redirect(dashboard)
     else:
-        course_form = CourseForm()
-        course_form.fields['teacher'].queryset = User.objects.filter(organization_id=request.user.organization.id)
-    return render(request, 'catalog/course/create.html', {'course_form': course_form})
+        form = CourseForm()
+        form.fields['teacher'].queryset = User.objects.filter(organization_id=request.user.organization.id)
+    return render(request, 'catalog/course/create.html', {'form': form})
 
 
 @login_required
 def course_update(request, slug=None):
     course = get_object_or_404(Course, slug=slug)
-    course_form = CourseForm(instance=course)
-    course_form.fields['teacher'].queryset = User.objects.filter(organization_id=request.user.organization.id)
+    form = CourseForm(instance=course)
+    form.fields['teacher'].queryset = User.objects.filter(organization_id=request.user.organization.id)
     if request.method == 'POST':
         # 'instance' parameter to relate to the existing object!
-        course_form = CourseForm(data=request.POST, files=request.FILES, instance=course)
-        if course_form.is_valid():
-            course_form.save()
+        form = CourseForm(data=request.POST, files=request.FILES, instance=course)
+        if form.is_valid():
+            form.save()
             messages.add_message(request, messages.SUCCESS, 'Kroužek byl úspěšně upraven!')
         else:
             messages.add_message(request, messages.ERROR, 'Chyba při pokusu upravit kroužek!')
         return redirect(dashboard)
-    return render(request, 'catalog/course/update.html', {'course_form': course_form})
+    return render(request, 'catalog/course/update.html', {'form': form})
 
 
 def course_detail(request, slug=None):
