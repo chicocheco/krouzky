@@ -38,12 +38,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(_('celé jméno'), max_length=30, blank=True)
     phone = models.CharField(_('telefonní číslo'), max_length=9, blank=True)
     role = models.CharField(max_length=30, choices=Roles.choices, default=Roles.STUDENT)  # another FK?
-    organization = models.ForeignKey(Organization, null=True, related_name='users', on_delete=models.SET_NULL)
+    organization = models.ForeignKey(Organization, verbose_name='organizace', null=True, related_name='users',
+                                     on_delete=models.SET_NULL)
     photo = models.ImageField(_('fotka'), upload_to='users/%Y/%m/%d/', blank=True)
-    is_staff = models.BooleanField(default=False)
-    is_superuser = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
-    last_login = models.DateTimeField(null=True, blank=True)
+    is_staff = models.BooleanField(_('správce'), default=False)
+    is_superuser = models.BooleanField(_('supersprávce'), default=False)
+    is_active = models.BooleanField(_('aktivní'), default=True)
+    last_login = models.DateTimeField(_('poslední přihlášení'), null=True, blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
 
     USERNAME_FIELD = 'email'
