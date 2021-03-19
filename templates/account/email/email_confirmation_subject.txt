@@ -1,0 +1,4 @@
+{% load i18n %}
+{% autoescape off %}
+{% blocktrans %}Prosím potvrďte vaší emailovou adresu{% endblocktrans %}
+{% endautoescape %}
