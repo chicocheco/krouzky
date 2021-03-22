@@ -1,3 +1,4 @@
+from PIL import Image
 from allauth.account.forms import LoginForm, SignupForm, ChangePasswordForm, ResetPasswordForm, ResetPasswordKeyForm
 from crispy_forms.bootstrap import PrependedText
 from crispy_forms.helper import FormHelper
@@ -90,15 +91,51 @@ class CustomResetPasswordKeyForm(ResetPasswordKeyForm):
         self.helper.form_show_errors = False  # displayed under navbar instead
 
 
-class UserUpdateForm(forms.ModelForm):
+class UserPhotoForm(forms.ModelForm):
+    x = forms.FloatField(widget=forms.HiddenInput(), required=False)
+    y = forms.FloatField(widget=forms.HiddenInput(), required=False)
+    width = forms.FloatField(widget=forms.HiddenInput(), required=False)
+    height = forms.FloatField(widget=forms.HiddenInput(), required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.helper = FormHorizontalHelper()
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_show_errors = False
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-lg-3'
+        self.helper.field_class = 'col-lg-9'
         self.fields['photo'].widget.attrs.update({
             'class': 'form-control'
         })
 
     class Meta:
         model = get_user_model()
-        fields = ('email', 'name', 'phone', 'photo')
+        fields = ('photo', 'x', 'y', 'width', 'height')
+        widgets = {
+            'photo': forms.FileInput,
+        }
+
+    def save(self, *args, **kwargs):
+        user = super().save(*args, **kwargs)
+        if user.photo:
+            photo = Image.open(user.photo)
+            x = self.cleaned_data.get('x')
+            y = self.cleaned_data.get('y')
+            w = self.cleaned_data.get('width')
+            h = self.cleaned_data.get('height')
+            cropped_image = photo.crop((x, y, w + x, h + y))
+            resized_image = cropped_image.resize((200, 200), Image.ANTIALIAS)
+            resized_image.save(user.photo.path)
+        return user
+
+
+class UserUpdateForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHorizontalHelper()
+
+    class Meta:
+        model = get_user_model()
+        fields = ('email', 'name', 'phone')

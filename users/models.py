@@ -1,8 +1,14 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.utils.text import slugify
 
 from catalog.models import Organization
+
+
+def photo_directory_path(instance, filename):
+    email_slug = slugify(instance.email)
+    return f'users/{email_slug}.{filename.split(".")[-1]}'  # pathlib?
 
 
 class UserManager(BaseUserManager):
@@ -36,11 +42,12 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField(_('emailová adresa'), max_length=50, unique=True)
     name = models.CharField(_('celé jméno'), max_length=30, blank=True)
-    phone = models.CharField(_('telefonní číslo'), max_length=9, blank=True)
+    phone = models.CharField(_('telefonní číslo'), help_text='9 místné číslo bez předvolby', max_length=9, blank=True)
     role = models.CharField(max_length=30, choices=Roles.choices, default=Roles.STUDENT)  # another FK?
     organization = models.ForeignKey(Organization, verbose_name='organizace', null=True, related_name='users',
                                      on_delete=models.SET_NULL)
-    photo = models.ImageField(_('fotka'), upload_to='users/%Y/%m/%d/', blank=True)
+    photo = models.ImageField(_('fotografie'), help_text='minimální rozměr 200x200 px', upload_to=photo_directory_path,
+                              blank=True)
     is_staff = models.BooleanField(_('správce'), default=False)
     is_superuser = models.BooleanField(_('supersprávce'), default=False)
     is_active = models.BooleanField(_('aktivní'), default=True)

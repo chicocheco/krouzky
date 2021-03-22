@@ -6,6 +6,8 @@ from . import views as users_views
 # czech urls of allauth
 urlpatterns = [
     path('upravit', users_views.update, name='user_update'),
+    path('fotografie', users_views.photo, name='user_photo'),
+    path('fotografie/odstranit', users_views.photo_delete, name='user_photo_delete'),
 
     path('registrace/', allauth_views.signup, name='account_signup'),
     path('prihlaseni/', allauth_views.login, name='account_login'),
