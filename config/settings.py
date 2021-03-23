@@ -44,6 +44,7 @@ LOGIN_REDIRECT_URL = reverse_lazy('dashboard')
 LOGIN_URL = reverse_lazy('account_login')  # for login_required decorator
 ACCOUNT_SIGNUP_REDIRECT_URL = reverse_lazy('dashboard')
 LOGOUT_REDIRECT_URL = reverse_lazy('home')
+ACCOUNT_LOGOUT_ON_GET = True
 
 ACCOUNT_FORMS = {
     'login': 'users.forms.CustomLoginForm',
