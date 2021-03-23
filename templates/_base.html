@@ -40,7 +40,7 @@
                         <span class="navbar-text text-secondary">
                             <a href="{% url 'dashboard' %}">
                                 {% if user.name %}
-                                    {{ user.name }}
+                                    {{ user.name|title }}
                                 {% else %}
                                     {{ user.email }}
                                 {% endif %}
@@ -80,7 +80,7 @@
         </div>
     </div>
     <!--content-->
-    <div class="row g-5">
+    <div class="row gx-5 gy-4 pb-3">
         <div class="col-lg-8">
             <div class="border p-4 bg-light">
                 {% block content %}{% endblock %}
@@ -94,17 +94,11 @@
     </div>
 </main>
 <!--footer-->
-<footer>
-    <div class="container-fluid bg-light border">
-        <div class="row py-4 justify-content-center">
-            <div class="col-md-3 text-left">
-                Klára Anonymní<br>
-                Hlavní koordinátorka<br>
-                +420 777 888 999<br>
-                email@email.cz
-            </div>
-            <div class="col-md-3 text-left"></div>
-            <div class="col-md-3 text-left"></div>
+<footer class="container-fluid bg-light border">
+    <div class="row py-4 justify-content-center">
+        <div class="col text-center">
+            © 2021 Kroužky Online<br>
+            +420 777 888 999 | kontakt@krouzky.online
         </div>
     </div>
 </footer>

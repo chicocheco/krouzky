@@ -1,5 +1,6 @@
+from crispy_forms.bootstrap import PrependedText
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
+from crispy_forms.layout import Submit, Layout, Field
 from django import forms
 
 from .models import Organization, Course
@@ -62,3 +63,23 @@ class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
         fields = ('name', 'description', 'image', 'price', 'hours', 'capacity', 'teacher', 'age_category', 'topic')
+
+
+class ContactTeacherForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            PrependedText('sender_name', '<i class="bi bi-person-fill"></i>', placeholder='Jméno'),
+            PrependedText('from_email', '<i class="bi bi-envelope-fill"></i>', placeholder='E-mailová adresa'),
+            Field('body', placeholder='Co vás zajímá?', rows=5)
+
+        )
+        self.helper.form_tag = False
+        self.helper.form_show_labels = False
+        self.helper.form_show_errors = False
+
+    sender_name = forms.CharField(max_length=25)
+    from_email = forms.EmailField()
+    body = forms.CharField(widget=forms.Textarea())

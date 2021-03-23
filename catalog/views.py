@@ -1,12 +1,14 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.core.mail import send_mail
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.text import slugify
 
 from users.models import User
-from .forms import UpdateOrganizationForm, RenameOrganizationForm, RegisterOrganizationForm, CourseForm
+from .forms import UpdateOrganizationForm, RenameOrganizationForm, RegisterOrganizationForm, CourseForm, \
+    ContactTeacherForm
 from .models import Course, Organization
 
 
@@ -148,14 +150,34 @@ def course_update(request, slug=None):
 
 def course_detail(request, slug=None):
     course = get_object_or_404(Course, slug=slug)
-    return render(request, 'catalog/course/detail.html', {'course': course})
+    form = ContactTeacherForm()
+    return render(request, 'catalog/course/detail.html', {'course': course, 'form': form})
 
 
+@login_required
 def course_delete(request, slug=None):
     course = get_object_or_404(Course, slug=slug)
     course_name = course.name
     if request.method == 'POST':
         course.delete()
-        messages.add_message(request, messages.SUCCESS, 'Organizace byla odstraněna')
+        messages.add_message(request, messages.SUCCESS, 'Organizace byla odstraněna!')
         return redirect(dashboard)
     return render(request, 'catalog/course/delete.html', {'course_name': course_name})
+
+
+def contact_teacher(request, slug=None):
+    course = get_object_or_404(Course, slug=slug)
+    if request.method == 'POST':
+        form = ContactTeacherForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            course_url = request.build_absolute_uri(course.get_absolute_url())
+            subject = f'{cd["sender_name"]} má dotaz k {course.name}'
+            message = f'Uživatel {cd["sender_name"].upper()} vám zaslal dotaz ke kroužku {course.name.upper()}\n' \
+                      f'(odkaz: {course_url})' \
+                      f'\n\nText dotazu:\n{cd["body"]}'
+            send_mail(subject, message, cd['from_email'], [course.teacher.email, ])
+            messages.add_message(request, messages.SUCCESS, 'Dotaz byl odeslán!')
+        else:
+            messages.add_message(request, messages.ERROR, 'Chyba při odesílání dotazu!')
+    return redirect(course.get_absolute_url())

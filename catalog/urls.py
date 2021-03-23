@@ -14,6 +14,7 @@ urlpatterns = [
     path('krouzky/', catalog_views.course_list, name='course_list'),
     path('krouzek/registrovat', catalog_views.course_create, name='course_create'),
     path('krouzek/<slug:slug>/', catalog_views.course_detail, name='course_detail'),
+    path('krouzek/<slug:slug>/dotaz', catalog_views.contact_teacher, name='course_contact_teacher'),
     # TODO: temporarily deactivated:
     # path('krouzek/<slug:slug>/upravit', catalog_views.course_update, name='course_update'),
     path('krouzek/<slug:slug>/odstranit', catalog_views.course_delete, name='course_delete'),

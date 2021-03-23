@@ -40,7 +40,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         TEACHER = 'TEACHER', 'Teacher'
         COORDINATOR = 'COORDINATOR', 'Coordinator'
 
-    email = models.EmailField(_('emailová adresa'), max_length=50, unique=True)
+    email = models.EmailField(_('emailová adresa'), max_length=40, unique=True)
     name = models.CharField(_('celé jméno'), max_length=30, blank=True)
     phone = models.CharField(_('telefonní číslo'), help_text='9 místné číslo bez předvolby', max_length=9, blank=True)
     role = models.CharField(max_length=30, choices=Roles.choices, default=Roles.STUDENT)  # another FK?
