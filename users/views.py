@@ -1,8 +1,14 @@
+from allauth.account.views import PasswordResetFromKeyView
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
 
 from .forms import UserUpdateForm, UserPhotoForm
+
+
+class CustomPasswordResetFromKeyView(PasswordResetFromKeyView):
+    success_url = reverse_lazy("dashboard")
 
 
 @login_required

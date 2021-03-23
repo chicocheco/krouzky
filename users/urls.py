@@ -26,8 +26,9 @@ urlpatterns = [
     path('heslo/reset/', allauth_views.password_reset, name='account_reset_password'),
     path('heslo/reset/hotovo/', allauth_views.password_reset_done, name='account_reset_password_done'),
 
-    re_path(r'^heslo/reset/klic/(?P<uidb36>[0-9A-Za-z]+)-(?P<key>.+)/$', allauth_views.password_reset_from_key,
+    re_path(r'^heslo/reset/klic/(?P<uidb36>[0-9A-Za-z]+)-(?P<key>.+)/$',
+            users_views.CustomPasswordResetFromKeyView.as_view(),
             name="account_reset_password_from_key"),
-    path('heslo/reset/klic/hotovo/', allauth_views.password_reset_from_key_done,
+    path('heslo/reset/klic/hotovo/', allauth_views.password_reset_from_key_done,  # skip this one
          name='account_reset_password_from_key_done'),
 ]
