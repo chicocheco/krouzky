@@ -24,6 +24,7 @@ class CustomLoginForm(LoginForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.field_class = 'col-lg-8'
         self.helper.layout = Layout(
             PrependedText('login', '<i class="bi bi-person-fill"></i>'),
             PrependedText('password', '<i class="bi bi-key-fill"></i>')
@@ -39,6 +40,7 @@ class CustomSignupForm(SignupForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.field_class = 'col-lg-8'
         self.helper.layout = Layout(
             PrependedText('email', '<i class="bi bi-person-fill"></i>'),
             PrependedText('password1', '<i class="bi bi-key-fill"></i>'),
@@ -54,6 +56,7 @@ class CustomChangePasswordForm(ChangePasswordForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.field_class = 'col-lg-8'
         self.helper.layout = Layout(
             PrependedText('oldpassword', '<i class="bi bi-key"></i>'),
             PrependedText('password1', '<i class="bi bi-key-fill"></i>'),
@@ -69,6 +72,7 @@ class CustomResetPasswordForm(ResetPasswordForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.field_class = 'col-lg-8'
         self.helper.layout = Layout(
             PrependedText('email', '<i class="bi bi-person-fill"></i>'),
         )
@@ -82,6 +86,7 @@ class CustomResetPasswordKeyForm(ResetPasswordKeyForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.field_class = 'col-lg-8'
         self.helper.layout = Layout(
             PrependedText('password1', '<i class="bi bi-key-fill"></i>'),
             PrependedText('password2', '<i class="bi bi-key-fill"></i>')
