@@ -16,16 +16,16 @@
     {% for course in courses %}
         <div class="card mb-3">
             <div class="row g-0">
-                <div class="col-md-4 m-auto">
+                <div class="col col-md-4">
                     <a href="{{ course.get_absolute_url }}">
                         <img class="img-fluid" src="{{ course.image.url }}">
                     </a>
                 </div>
-                <div class="col-md-8">
+                <div class="col col-md-8">
                     <div class="card-body">
-                        <h5 class="card-title"><a href="{{ course.get_absolute_url }}">{{ course.name|capfirst }}</a></h5>
+                        <h5 class="card-title mb-0"><a href="{{ course.get_absolute_url }}">{{ course.name|capfirst }}</a></h5>
                         <p class="card-text"><small class="text-muted">{{ course.organization.name }}</small></p>
-                        <p class="card-text">{{ course.description|truncatewords_html:30 }}</p>
+                        <p class="card-text mt-auto">{{ course.description|truncatewords_html:30 }}</p>
                         {% if course.organization == request.user.organization %}
                             <div class="d-flex">
                                 <div class="me-auto">
@@ -35,7 +35,7 @@
                                         <span class="badge bg-warning">Čeká ke shválení</span>
                                     {% endif %}
                                 </div>
-                                <div class="ms-auto">
+                                <div class="ms-auto mt-auto">
                                     <a href="{% url 'course_delete' course.slug %}">Odstranit</a>
                                 </div>
                             </div>

@@ -29,15 +29,15 @@
 {% endblock %}
 
 {% block sidebar %}
-    <div class="row">
-        <p><b>Kroužek organizuje:</b><br>
-            {{ course.organization.name }}<br>
-            <a href="{{ course.organization.url }}"
-               class="text-break">{{ course.organization.url }}</a>
-        </p>
-    </div>
-    <div class="row d-flex">
-        <div class="col-8">
+    <div class="row align-items-start">
+        <div class="col-12 col-sm-5 col-lg-12">
+            <p><b>Kroužek organizuje:</b><br>
+                {{ course.organization.name }}<br>
+                <a href="{{ course.organization.url }}"
+                   class="text-break">{{ course.organization.url }}</a>
+            </p>
+        </div>
+        <div class="col-8 col-sm-4 col-lg-6">
             <p><b>Vedoucí kroužku:</b><br>
                 {% if course.teacher.name %}
                     {{ course.teacher.name }}<br>
@@ -51,12 +51,12 @@
                 <a href="mailto:{{ course.teacher.email }}" class="text-break">{{ course.teacher.email }}</a>
             </p>
         </div>
-        <div class="col-4">
-            <img src="{{ course.teacher.photo.url }}" alt="" class="rounded-circle img-fluid float-end"
+        <div class="col-4 col-sm-3 col-lg-6 d-flex justify-content-end">
+            <img src="{{ course.teacher.photo.url }}" alt="" class="rounded-circle img-fluid"
                  width="100" height="100">
         </div>
     </div>
-    <div class="row">
+    <div class="row pt-3">
         <p>Kontaktní formulář:<br>
         <form method="post" action="{% url 'course_contact_teacher' course.slug %}">
             {% crispy form %}

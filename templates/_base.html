@@ -15,7 +15,7 @@
 </head>
 
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
     <div class="container-md">
         <a class="navbar-brand" href="{% url 'home' %}">Kroužky v síti</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
@@ -44,7 +44,7 @@
                                 {% else %}
                                     {{ user.email }}
                                 {% endif %}
-                                <i class="bi bi-person-circle i-extra-padding-left" style="font-size:19px;"></i></a>
+                                <i class="bi bi-person-circle i-extra-padding-left" style="font-size:18px;"></i></a>
                         </span>
                     {% else %}
                         <a type="button" href="{% url 'account_login' %}" class="btn btn-outline-secondary">
