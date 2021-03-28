@@ -25,7 +25,7 @@
                     <div class="card-body">
                         <h5 class="card-title mb-0"><a href="{{ course.get_absolute_url }}">{{ course.name|capfirst }}</a></h5>
                         <p class="card-text"><small class="text-muted">{{ course.organization.name }}</small></p>
-                        <p class="card-text mt-auto">{{ course.description|truncatewords_html:30 }}</p>
+                        <p class="card-text mt-auto">{{ course.description|striptags|truncatewords_html:30 }}</p>
                         {% if course.organization == request.user.organization %}
                             <div class="d-flex">
                                 <div class="me-auto">

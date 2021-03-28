@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'django_summernote',
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
@@ -125,6 +126,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static', ]  # for dev
 
 MEDIA_URL = '/media/'
@@ -140,3 +142,23 @@ MESSAGE_TAGS = {
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+X_FRAME_OPTIONS = 'SAMEORIGIN'  # for iframe summernote widget
+# SUMMERNOTE_THEME = 'bs4' # default bs3
+SUMMERNOTE_CONFIG = {
+    'iframe': True,
+    'width': '100%',
+    # 'height': '200px',
+    'summernote': {
+        'airMode': False,
+        'shortcuts': False,
+        'disableDragAndDrop': True,
+        'placeholder': 'Zde se můžete rozepsat ...',
+        'toolbar': [
+            ['font', ['bold', 'italic', 'underline', 'clear', ]],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['misc', ['undo', 'codeview', 'fullscreen']],
+        ],
+    },
+    'disable_attachment': True,
+}

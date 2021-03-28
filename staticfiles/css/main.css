@@ -1,0 +1,30 @@
+body {
+    font-family: 'Signika', sans-serif;
+}
+
+a {
+    text-decoration: none;
+}
+
+i, .badge {
+    bottom: .125em;
+    position: relative;
+}
+
+.i-extra-padding-left {
+    padding-left: 10px;
+}
+
+.i-extra-padding-right {
+    padding-right: 10px;
+
+}
+
+.cropper-crop-box, .cropper-view-box {
+    border-radius: 50%;
+}
+
+.cropper-view-box {
+    box-shadow: 0 0 0 1px #39f;
+    outline: 0;
+}

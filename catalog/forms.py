@@ -1,7 +1,8 @@
-from crispy_forms.bootstrap import PrependedText
+from crispy_forms.bootstrap import PrependedText, InlineCheckboxes
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Field
+from crispy_forms.layout import Submit, Layout, Field, Row, Column
 from django import forms
+from django_summernote.widgets import SummernoteWidget
 
 from .models import Organization, Course
 
@@ -55,14 +56,31 @@ class CourseForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.helper = FormHorizontalHelper()
-        self.fields['image'].widget.attrs.update({
-            'class': 'form-control'
-        })
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            'name',
+            Row(
+                Column('price', css_class='col-md-4 mb-0'),
+                Column('hours', css_class='col-md-4 mb-0'),
+                Column('capacity', css_class='col-md-4 mb-0'),
+            ),
+            Row(
+                Column('age_category', css_class='col-md-6 mb-0'),
+                Column('teacher', css_class='col-md-6 mb-0'),
+            ),
+            Field('image', css_class='form-control'),
+            InlineCheckboxes('topic'),
+            'description',
+            Submit('submit', 'Potvrdit')
+        )
 
     class Meta:
         model = Course
-        fields = ('name', 'description', 'image', 'price', 'hours', 'capacity', 'teacher', 'age_category', 'topic')
+        fields = ('name', 'price', 'hours', 'capacity', 'teacher', 'age_category', 'image', 'topic', 'description')
+        widgets = {
+            'description': SummernoteWidget(),
+            'topic': forms.CheckboxSelectMultiple()
+        }
 
 
 class ContactTeacherForm(forms.Form):

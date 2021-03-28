@@ -151,7 +151,8 @@ def course_update(request, slug=None):
 def course_detail(request, slug=None):
     course = get_object_or_404(Course, slug=slug)
     form = ContactTeacherForm()
-    return render(request, 'catalog/course/detail.html', {'course': course, 'form': form})
+    price_hour = round(course.price / course.hours)
+    return render(request, 'catalog/course/detail.html', {'course': course, 'form': form, 'price_hour': price_hour})
 
 
 @login_required
