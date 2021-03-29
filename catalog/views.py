@@ -18,6 +18,10 @@ def home(request):
     return render(request, 'catalog/home.html', {'form': form})
 
 
+def cooperation(request):
+    return render(request, 'catalog/cooperation.html', {'section': 'cooperation'})
+
+
 @login_required
 def dashboard(request):
     return render(request, 'catalog/dashboard.html')

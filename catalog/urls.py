@@ -18,5 +18,6 @@ urlpatterns = [
     # TODO: temporarily deactivated:
     # path('krouzek/<slug:slug>/upravit', catalog_views.course_update, name='course_update'),
     path('krouzek/<slug:slug>/odstranit', catalog_views.course_delete, name='course_delete'),
-    path('o-nas/', catalog_views.about_us, name='about_us')
+    path('o-nas/', catalog_views.about_us, name='about_us'),
+    path('spoluprace/', catalog_views.cooperation, name='cooperation'),
 ]
