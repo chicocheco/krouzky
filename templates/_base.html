@@ -33,7 +33,7 @@
                        href="{% url 'about_us' %}">O nás</a>
                 </li>
             </ul>
-            <!--right side-->
+            <!--navbar-right side-->
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
                     {% if user.is_authenticated %}
@@ -47,7 +47,7 @@
                                 <i class="bi bi-person-circle i-extra-padding-left" style="font-size:18px;"></i></a>
                         </span>
                     {% else %}
-                        <a type="button" href="{% url 'account_login' %}" class="btn btn-outline-secondary">
+                        <a href="{% url 'account_login' %}">
                             Přihlásit se<i class="bi bi-box-arrow-in-right i-extra-padding-left"></i></a>
                     {% endif %}
                 </li>
@@ -79,6 +79,8 @@
             {% endif %}
         </div>
     </div>
+    {% block top_content %}
+    {% endblock %}
     <!--content-->
     <div class="row g-4 pb-3">
         <div class="col-lg-8">

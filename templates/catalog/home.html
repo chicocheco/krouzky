@@ -1,6 +1,22 @@
 {% extends '_base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
 
 {% block title %}Kroužky bez hranic{% endblock %}
+
+{% block top_content %}
+    <div class="row g-3 align-items-center" style="min-height: 85vh;">
+        <div class="col-12 col-lg-3 px-3 px-lg-0">
+            <form method="get" action="{% url 'course_list' %}">
+                {% crispy form %}
+                <button class="btn btn-primary float-end" type="submit">Hledat</button>
+            </form>
+        </div>
+        <div class="col-12 col-lg-9">
+            <img src="{% static 'img/uvod.png' %}" alt="" class="img img-fluid">
+        </div>
+    </div>
+{% endblock %}
 
 {% block content %}
     <h1>Rozcestník online kroužků</h1>

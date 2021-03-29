@@ -101,3 +101,16 @@ class ContactTeacherForm(forms.Form):
     sender_name = forms.CharField(max_length=25)
     from_email = forms.EmailField()
     body = forms.CharField(widget=forms.Textarea())
+
+
+class SearchForm(forms.Form):
+    query = forms.CharField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.disable_csrf = True
+        self.helper.form_tag = False
+        self.helper.form_show_labels = False
+        self.helper.form_show_errors = False
+        self.helper.layout = Layout(Field('query', placeholder='Zadejte klíčové slovo nebo výraz'), )

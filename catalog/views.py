@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
@@ -7,13 +8,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.text import slugify
 
 from users.models import User
-from .forms import UpdateOrganizationForm, RenameOrganizationForm, RegisterOrganizationForm, CourseForm, \
-    ContactTeacherForm
+from .forms import (UpdateOrganizationForm, RenameOrganizationForm, RegisterOrganizationForm, CourseForm,
+                    ContactTeacherForm, SearchForm)
 from .models import Course, Organization
 
 
 def home(request):
-    return render(request, 'catalog/home.html')
+    form = SearchForm()
+    return render(request, 'catalog/home.html', {'form': form})
 
 
 @login_required
@@ -22,7 +24,24 @@ def dashboard(request):
 
 
 def course_list(request, slug=None):
-    if slug:
+    query = None
+    if 'query' in request.GET:  # e.g. http://0.0.0.0:8000/blog/search/?query=jazz  # todo: create separate view?
+        organization_name = None
+        form = SearchForm(request.GET)
+        if form.is_valid():
+            query = form.cleaned_data['query']
+            # rank A = 1.0, B = 0.4
+            search_vector = SearchVector('name', weight='A') + \
+                            SearchVector('description', weight='B')
+            search_query = SearchQuery(query)
+            # filter the results to display only the ones with a rank higher than 0.3 .
+            object_list = Course.published.annotate(
+                search=search_vector,
+                rank=SearchRank(search_vector, search_query)).filter(rank__gte=0.3).order_by('-rank')
+        else:
+            query = request.GET.get('query')
+            object_list = None
+    elif slug:
         organization = get_object_or_404(Organization, slug=slug)
         if not request.user.is_authenticated:
             return redirect('home')
@@ -42,7 +61,8 @@ def course_list(request, slug=None):
     except EmptyPage:
         courses = paginator.page(paginator.num_pages)
     return render(request, 'catalog/course/list.html',
-                  {'page': page, 'courses': courses, 'organization_name': organization_name, 'section': 'courses'})
+                  {'page': page, 'courses': courses, 'query': query, 'organization_name': organization_name,
+                   'section': 'courses'})
 
 
 def about_us(request):

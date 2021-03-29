@@ -3,12 +3,18 @@
 {% block title %}Katalog{% endblock %}
 
 {% block content %}
-    <h1>{% if organization_name %}
-        {{ organization_name }}
-    {% else %}
-        Katalog
-    {% endif %}
+    <h1>
+        {% if query %}
+            Výsledky hledání
+        {% elif organization_name %}
+            {{ organization_name }}
+        {% else %}
+            Katalog
+        {% endif %}
     </h1>
+    {% if query %}
+        <p><b>Klíčové slovo "{{ query }}"</b></p>
+    {% endif %}
     <hr>
     <p>Kroužky bez hranic. Online kroužek s lektorem z druhé strany republiky? Proč ne. Hledáme možnosti, ne překážky.
         Z domova, od babičky a dědy, spolu nebo po jednom. Vybírejte podle zaměření, nebo dne konání.
@@ -23,7 +29,8 @@
                 </div>
                 <div class="col col-md-8">
                     <div class="card-body">
-                        <h5 class="card-title mb-0"><a href="{{ course.get_absolute_url }}">{{ course.name|capfirst }}</a></h5>
+                        <h5 class="card-title mb-0"><a
+                                href="{{ course.get_absolute_url }}">{{ course.name|capfirst }}</a></h5>
                         <p class="card-text"><small class="text-muted">{{ course.organization.name }}</small></p>
                         <p class="card-text mt-auto">{{ course.description|striptags|truncatewords_html:30 }}</p>
                         {% if course.organization == request.user.organization %}
@@ -44,5 +51,11 @@
                 </div>
             </div>
         </div>
+    {% empty %}
+        <p>Nenalezeno.</p>
     {% endfor %}
+
+{% endblock %}
+
+{% block sidebar %}
 {% endblock %}

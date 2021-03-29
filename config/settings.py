@@ -144,7 +144,6 @@ MESSAGE_TAGS = {
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'  # for iframe summernote widget
-# SUMMERNOTE_THEME = 'bs4' # default bs3
 SUMMERNOTE_CONFIG = {
     'iframe': True,
     'width': '100%',
@@ -160,5 +159,6 @@ SUMMERNOTE_CONFIG = {
             ['misc', ['undo', 'codeview', 'fullscreen']],
         ],
     },
+    # 'js': ('static/js/summernote-rawtext.js', ),
     'disable_attachment': True,
 }
