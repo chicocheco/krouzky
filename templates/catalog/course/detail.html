@@ -4,10 +4,14 @@
 {% block title %}{{ course.name }}{% endblock %}
 
 {% block content %}
-        <h2>{{ course.name|capfirst }}</h2>
-        <hr>
+    <h2>{{ course.name|capfirst }}</h2>
+    <hr>
     <div class="row">
-        <div class="col-12 gx-5 gy-1">{{ course.description|safe }}</div>
+        <div class="col-12">
+            <p>
+                {{ course.description|safe }}
+            </p>
+        </div>
         <div class="row pt-3">
             <div class="col-6">
                 <img src="{{ course.image.url }}" alt="" class="img-fluid">
@@ -25,43 +29,45 @@
                 </p>
             </div>
         </div>
-
     </div>
 {% endblock %}
 
 {% block sidebar %}
-    <div class="row align-items-start">
-        <div class="col-12 col-sm-5 col-lg-12">
-            <p><b>Kroužek organizuje:</b><br>
-                {{ course.organization.name }}<br>
+    <div class="row align-items-start align-items-lg-center">
+        <div class="col-12 col-sm-4 col-lg-12">
+            <p>Organizuje<br>
+                <b>{{ course.organization.name }}</b><br>
                 <a href="{{ course.organization.url }}"
                    class="text-break">{{ course.organization.url }}</a>
             </p>
         </div>
-        <div class="col-8 col-sm-4 col-lg-8">
-            <p><b>Vedoucí kroužku:</b><br>
+        <div class="col-8 col-sm-4 text-center text-lg-start col-lg-7">
+            <p>Vedoucí aktivity<br>
                 {% if course.teacher.name %}
-                    {{ course.teacher.name }}<br>
+                    <b>{{ course.teacher.name }}</b><br>
                 {% endif %}
-                {% if course.teacher.phone %}
-                    Tel.:
-                    {% for i in course.teacher.phone %}{{ i }}{% if forloop.counter == 3 or forloop.counter == 6 %}
-                    {% endif %}{% endfor %}
-                    <br>
-                {% endif %}
-                <a href="mailto:{{ course.teacher.email }}" class="text-break">{{ course.teacher.email }}</a>
+            </p>
+            <p>{% if course.teacher.phone %}
+                Telefonní číslo:<br>
+                +420 {% for i in course.teacher.phone %}{{ i }}{% if forloop.counter == 3 or forloop.counter == 6 %}
+                {% endif %}{% endfor %}
+            {% endif %}
             </p>
         </div>
-        <div class="col-4 col-sm-3 col-lg-4 d-flex justify-content-end">
-            <img src="{{ course.teacher.photo.url }}" alt="" class="rounded-circle img-fluid">
+        <div class="col-4 col-sm-4 col-lg-5">
+            <img src="{{ course.teacher.photo.url }}" alt="" class="rounded-circle float-end"
+                 style="height: 100px;">
+        </div>
+        <div class="col text-center text-lg-start">
+            <p>E-mailová adresa:<br><a href="mailto:{{ course.teacher.email }}"
+                                       class="text-break">{{ course.teacher.email }}</a></p>
         </div>
     </div>
-    <div class="row pt-3">
-        <p>Kontaktní formulář:<br>
+    <div class="row">
+        <p>Dotaz na vedoucího:</p>
         <form method="post" action="{% url 'course_contact_teacher' course.slug %}">
             {% crispy form %}
-            <button class="btn btn-primary" type="submit">Odeslat</button>
+            <input class="btn btn-primary" type="submit" value="Odeslat">
         </form>
-        </p>
     </div>
 {% endblock %}
