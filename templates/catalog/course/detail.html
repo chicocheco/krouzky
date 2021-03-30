@@ -35,28 +35,29 @@
 {% block sidebar %}
     <div class="row align-items-start align-items-lg-center">
         <div class="col-12 col-sm-4 col-lg-12">
-            <p>Organizuje<br>
-                <b>{{ course.organization.name }}</b><br>
+            <p><b>Organizuje:</b><br>
+                {{ course.organization.name }}<br>
                 <a href="{{ course.organization.url }}"
                    class="text-break">{{ course.organization.url }}</a>
             </p>
         </div>
         <div class="col-8 col-sm-4 text-center text-lg-start col-lg-7">
-            <p>Vedoucí aktivity<br>
-                {% if course.teacher.name %}
-                    <b>{{ course.teacher.name }}</b><br>
+            <p>{% if course.teacher.name %}
+                <b>Vedoucí:</b><br>
+                    {{ course.teacher.name }}<br>
                 {% endif %}
-            </p>
-            <p>{% if course.teacher.phone %}
-                Telefonní číslo:<br>
-                +420 {% for i in course.teacher.phone %}{{ i }}{% if forloop.counter == 3 or forloop.counter == 6 %}
+                {% if course.teacher.phone %}
+                    Telefonní číslo:<br>
+                    +420 {% for i in course.teacher.phone %}{{ i }}{% if forloop.counter == 3 or forloop.counter == 6 %}
                 {% endif %}{% endfor %}
-            {% endif %}
+                {% endif %}
             </p>
         </div>
         <div class="col-4 col-sm-4 col-lg-5">
-            <img src="{{ course.teacher.photo.url }}" alt="" class="rounded-circle float-end"
-                 style="height: 100px;">
+            {% if course.teacher.photo %}
+                <img src="{{ course.teacher.photo.url }}" alt="" class="rounded-circle float-end"
+                     style="height: 100px;">
+            {% endif %}
         </div>
         <div class="col text-center text-lg-start">
             <p>E-mailová adresa:<br><a href="mailto:{{ course.teacher.email }}"
