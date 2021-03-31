@@ -60,13 +60,13 @@ class CourseForm(forms.ModelForm):
         self.helper.layout = Layout(
             'name',
             Row(
-                Column('price', css_class='col-md-4 mb-0'),
-                Column('hours', css_class='col-md-4 mb-0'),
-                Column('capacity', css_class='col-md-4 mb-0'),
+                Column('price', css_class='col-md-4'),
+                Column('hours', css_class='col-md-4'),
+                Column('capacity', css_class='col-md-4'),
             ),
             Row(
-                Column('age_category', css_class='col-md-6 mb-0'),
-                Column('teacher', css_class='col-md-6 mb-0'),
+                Column('age_category', css_class='col-md-6'),
+                Column('teacher', css_class='col-md-6'),
             ),
             Field('image', css_class='form-control'),
             InlineCheckboxes('topic'),
@@ -103,7 +103,7 @@ class ContactTeacherForm(forms.Form):
     body = forms.CharField(widget=forms.Textarea())
 
 
-class SearchForm(forms.Form):
+class SimpleSearchForm(forms.Form):
     query = forms.CharField()
 
     def __init__(self, *args, **kwargs):

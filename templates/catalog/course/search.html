@@ -1,0 +1,60 @@
+{% extends '_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Hledat{% endblock %}
+
+{% block content %}
+    <h1>Hledat</h1>
+    <hr>
+    <form method="get" id="search-form">
+        {% crispy filter.form %}
+        <p><input class="btn btn-primary me-2" type="submit" value="Hledat">
+        <input type="button" class="btn btn-danger" value="Vymazat" onclick="resetSearchForm()"></p>
+    </form>
+    {% if query %}
+        <p><b>Výsledky hledání obsahující "{{ query }}"</b></p>
+    {% endif %}
+    {% for result in filter.qs %}
+        <div class="card mb-3">
+            <div class="row g-0">
+                <div class="col col-md-4">
+                    <a href="{{ result.get_absolute_url }}">
+                        <img class="img-fluid" src="{{ result.image.url }}">
+                    </a>
+                </div>
+                <div class="col col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title mb-0"><a
+                                href="{{ result.get_absolute_url }}">{{ result.name|capfirst }}</a></h5>
+                        <p class="card-text"><small class="text-muted">{{ result.organization.name }}</small></p>
+                        <p class="card-text mt-auto">{{ result.description|striptags|truncatewords_html:30 }}</p>
+                        {% if result.organization == request.user.organization %}
+                            <div class="d-flex">
+                                <div class="me-auto">
+                                    {% if result.status == 'published' %}
+                                        <span class="badge bg-success">Publikováno</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Čeká ke shválení</span>
+                                    {% endif %}
+                                </div>
+                                <div class="ms-auto mt-auto">
+                                    <a href="{% url 'course_delete' result.slug %}">Odstranit</a>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+    <script>
+        function resetSearchForm() {
+            document.getElementById("search-form").reset();
+            window.location.href = window.location.origin + window.location.pathname;
+        }
+    </script>
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}

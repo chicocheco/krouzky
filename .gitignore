@@ -1,4 +1,5 @@
-venv
+venv/
+media/
 db.sqlite3
 .env
 *.pyc

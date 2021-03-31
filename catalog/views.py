@@ -9,12 +9,13 @@ from django.utils.text import slugify
 
 from users.models import User
 from .forms import (UpdateOrganizationForm, RenameOrganizationForm, RegisterOrganizationForm, CourseForm,
-                    ContactTeacherForm, SearchForm)
+                    ContactTeacherForm, SimpleSearchForm)
 from .models import Course, Organization
+from .filters import CourseFilter
 
 
 def home(request):
-    form = SearchForm()
+    form = SimpleSearchForm()
     return render(request, 'catalog/home.html', {'form': form})
 
 
@@ -28,24 +29,7 @@ def dashboard(request):
 
 
 def course_list(request, slug=None):
-    query = None
-    if 'query' in request.GET:  # e.g. http://0.0.0.0:8000/blog/search/?query=jazz  # todo: create separate view?
-        organization_name = None
-        form = SearchForm(request.GET)
-        if form.is_valid():
-            query = form.cleaned_data['query']
-            # rank A = 1.0, B = 0.4
-            search_vector = SearchVector('name', weight='A') + \
-                            SearchVector('description', weight='B')
-            search_query = SearchQuery(query)
-            # filter the results to display only the ones with a rank higher than 0.3 .
-            object_list = Course.published.annotate(
-                search=search_vector,
-                rank=SearchRank(search_vector, search_query)).filter(rank__gte=0.3).order_by('-rank')
-        else:
-            query = request.GET.get('query')
-            object_list = None
-    elif slug:
+    if slug:
         organization = get_object_or_404(Organization, slug=slug)
         if not request.user.is_authenticated:
             return redirect('home')
@@ -65,7 +49,7 @@ def course_list(request, slug=None):
     except EmptyPage:
         courses = paginator.page(paginator.num_pages)
     return render(request, 'catalog/course/list.html',
-                  {'page': page, 'courses': courses, 'query': query, 'organization_name': organization_name,
+                  {'page': page, 'courses': courses, 'organization_name': organization_name,
                    'section': 'courses'})
 
 
@@ -206,3 +190,22 @@ def contact_teacher(request, slug=None):
         else:
             messages.add_message(request, messages.ERROR, 'Chyba při odesílání dotazu!')
     return redirect(course.get_absolute_url())
+
+
+def search(request):
+    query = None
+    f = CourseFilter(request.GET, Course.published.all())
+    if 'query' in request.GET:
+        form = SimpleSearchForm(request.GET)
+        if form.is_valid():
+            query = form.cleaned_data['query']
+            search_vector = SearchVector('name', weight='A') + \
+                            SearchVector('description', weight='B')
+            search_query = SearchQuery(query)
+            object_list = Course.published.annotate(
+                search=search_vector,
+                rank=SearchRank(search_vector, search_query)).filter(rank__gte=0.3).order_by('-rank')
+            queryset = request.GET.copy()
+            queryset.pop('query')
+            f = CourseFilter(queryset, object_list)
+    return render(request, 'catalog/course/search.html', {'filter': f, 'query': query, 'section': 'search'})

@@ -4,17 +4,12 @@
 
 {% block content %}
     <h1>
-        {% if query %}
-            Výsledky hledání
-        {% elif organization_name %}
+        {% if organization_name %}
             {{ organization_name }}
         {% else %}
             Katalog
         {% endif %}
     </h1>
-    {% if query %}
-        <p><b>Klíčové slovo "{{ query }}"</b></p>
-    {% endif %}
     <hr>
     <p>Kroužky bez hranic. Online kroužek s lektorem z druhé strany republiky? Proč ne. Hledáme možnosti, ne překážky.
         Z domova, od babičky a dědy, spolu nebo po jednom. Vybírejte podle zaměření, nebo dne konání.
