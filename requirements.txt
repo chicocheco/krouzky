@@ -12,6 +12,7 @@ django-crispy-forms==1.11.1
 django-filter==2.4.0
 django-js-asset==1.2.2
 django-summernote==0.8.11.6
+django-tinymce==3.3.0
 idna==2.10
 importlib-metadata==3.7.3
 Markdown==3.3.4

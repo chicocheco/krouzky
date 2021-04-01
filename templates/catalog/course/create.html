@@ -2,6 +2,7 @@
 {% load crispy_forms_tags %}
 
 {% block title %}Registrace kroužku{% endblock %}
+{% block head_extra %}{{ form.media }}{% endblock %}
 
 {% block content %}
     <h2>Registrace kroužku</h2>

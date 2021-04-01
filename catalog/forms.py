@@ -2,7 +2,7 @@ from crispy_forms.bootstrap import PrependedText, InlineCheckboxes
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field, Row, Column
 from django import forms
-from django_summernote.widgets import SummernoteWidget
+from tinymce.widgets import TinyMCE
 
 from .models import Organization, Course
 
@@ -78,8 +78,8 @@ class CourseForm(forms.ModelForm):
         model = Course
         fields = ('name', 'price', 'hours', 'capacity', 'teacher', 'age_category', 'image', 'topic', 'description')
         widgets = {
-            'description': SummernoteWidget(),
-            'topic': forms.CheckboxSelectMultiple()
+            'description': TinyMCE(),
+            'topic': forms.CheckboxSelectMultiple(),
         }
 
 
@@ -114,3 +114,9 @@ class SimpleSearchForm(forms.Form):
         self.helper.form_show_labels = False
         self.helper.form_show_errors = False
         self.helper.layout = Layout(Field('query', placeholder='Zadejte klíčové slovo nebo výraz'), )
+
+
+class CourseAdminForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['description'].widget = TinyMCE()

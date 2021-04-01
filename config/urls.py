@@ -8,7 +8,7 @@ urlpatterns = [
     path('ucet/', include('users.urls')),  # customized czech urls of allauth
     # path('ucet/', include('allauth.urls')),  # fallback
     path('', include('catalog.urls')),
-    path('summernote/', include('django_summernote.urls')),
+    path('tinymce/', include('tinymce.urls')),
 ]
 
 if settings.DEBUG:  # local development only

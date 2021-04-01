@@ -28,8 +28,8 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'django_summernote',
     'django_filters',
+    'tinymce',
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
@@ -144,22 +144,18 @@ MESSAGE_TAGS = {
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-X_FRAME_OPTIONS = 'SAMEORIGIN'  # for iframe summernote widget
-SUMMERNOTE_CONFIG = {
-    'iframe': True,
-    'width': '100%',
-    # 'height': '200px',
-    'summernote': {
-        'airMode': False,
-        'shortcuts': False,
-        'disableDragAndDrop': True,
-        'placeholder': 'Zde se můžete rozepsat ...',
-        'toolbar': [
-            ['font', ['bold', 'italic', 'underline', 'clear', ]],
-            ['para', ['ul', 'ol', 'paragraph']],
-            ['misc', ['undo', 'codeview', 'fullscreen']],
-        ],
-    },
-    # 'js': ('static/js/summernote-rawtext.js', ),
-    'disable_attachment': True,
+TINYMCE_DEFAULT_CONFIG = {
+    "height": "320px",
+    "width": "100%",
+    "placeholder": "Zde se můžete rozepsat...",
+    "plugins": "autolink lists charmap preview visualblocks "
+               "fullscreen paste help wordcount spellchecker",
+    "menubar": False,
+    "paste_as_text": True,
+    "toolbar": "undo redo | bold italic underline | alignleft "
+               "aligncenter alignright alignjustify | numlist bullist checklist | "
+               "removeformat | charmap | "
+               "fullscreen visualblocks preview",
+    "custom_undo_redo_levels": 10,
+    "entity_encoding": "raw",
 }
