@@ -143,6 +143,12 @@ MESSAGE_TAGS = {
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# in production
+# EMAIL_HOST = environ.get('EMAIL_HOST')
+# EMAIL_PORT = 465
+# EMAIL_USE_SSL = True
+# EMAIL_HOST_USER = environ.get('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD = environ.get('EMAIL_HOST_PASSWORD')
 
 TINYMCE_DEFAULT_CONFIG = {
     "height": "320px",
