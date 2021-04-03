@@ -56,6 +56,7 @@ class CourseForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['teacher'].empty_label = None  # can't create course w/o org
         self.helper = FormHelper()
         self.helper.layout = Layout(
             'name',
