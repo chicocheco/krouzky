@@ -64,6 +64,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name = 'Uživatel'
         verbose_name_plural = 'Uživatelé'
 
+    def __str__(self):
+        return f'{self.name or self.email}'
+
 
 class StudentManager(models.Manager):
     def get_queryset(self, *args, **kwargs):
