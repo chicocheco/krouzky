@@ -135,10 +135,9 @@ def course_create(request):
         return redirect(dashboard)
     else:
         form = CourseForm()
-        teachers = User.objects.filter(organization_id=request.user.organization.id)
         teacher_field = form.fields['teacher']
+        teachers = User.objects.filter(organization_id=request.user.organization.id)
         teacher_field.queryset = teachers
-        teacher_field.initial = teachers  # selects single
         if len(teachers) == 1:
             teacher_field.disabled = True
     return render(request, 'catalog/course/create.html', {'form': form})
