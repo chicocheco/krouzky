@@ -62,9 +62,9 @@ class Course(models.Model):
     slug = AutoSlugField(_('slug'), populate_from='name')  # make unique with organization?
     description = models.TextField(_('popis'), blank=True)
     image = models.ImageField(_('obrázek'), null=True, upload_to='images/%Y/%m/%d')
-    price = models.PositiveIntegerField(_('cena'), null=False, blank=False)
+    price = models.PositiveIntegerField(_('cena za kurz'), null=False, blank=False)
     hours = models.PositiveIntegerField(_('počet hodin'), null=False, blank=False)
-    capacity = models.PositiveIntegerField(_('kapacita'), null=True, blank=True)
+    capacity = models.PositiveIntegerField(_('maximální kapacita'), null=True, blank=True)
     teacher = models.ForeignKey(settings.AUTH_USER_MODEL,
                                 verbose_name='vedoucí', related_name='courses', on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization,
