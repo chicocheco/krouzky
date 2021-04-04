@@ -155,7 +155,7 @@ TINYMCE_DEFAULT_CONFIG = {
     "width": "100%",
     "placeholder": "Zde se můžete rozepsat...",
     "plugins": "autolink lists charmap preview visualblocks "
-               "fullscreen paste help wordcount spellchecker",
+               "fullscreen paste help spellchecker",
     "menubar": False,
     "paste_as_text": True,
     "toolbar": "undo redo | bold italic underline | alignleft "
