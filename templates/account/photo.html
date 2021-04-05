@@ -58,6 +58,12 @@
             </div>
         </div>
     </div>
+
+{% endblock %}
+
+{% block sidebar %}{% include 'dashboard_sidebar.html' %}{% endblock %}
+
+{% block js %}
     <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
     <script src="{% static 'js/cropper.min.js' %}"></script>
     <script>
@@ -106,6 +112,7 @@
 
             /* SCRIPT TO COLLECT THE DATA AND POST TO THE SERVER */
             $(".js-cancel").click(function () {
+                $('#currentPhoto').show()
                 $("#id_x").val('');
                 $("#id_y").val('');
                 $("#id_height").val('');
@@ -123,5 +130,3 @@
         });
     </script>
 {% endblock %}
-
-{% block sidebar %}{% include 'dashboard_sidebar.html' %}{% endblock %}
