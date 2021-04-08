@@ -26,8 +26,8 @@ class CustomLoginForm(LoginForm):
         self.helper = FormHelper()
         self.helper.field_class = 'col-lg-8'
         self.helper.layout = Layout(
-            PrependedText('login', '<i class="bi bi-person-fill"></i>'),
-            PrependedText('password', '<i class="bi bi-key-fill"></i>')
+            PrependedText('login', '<i class="fas fa-user"></i>'),
+            PrependedText('password', '<i class="fas fa-key"></i>')
         )
         self.helper.form_tag = False
         self.helper.form_show_labels = False
@@ -42,9 +42,9 @@ class CustomSignupForm(SignupForm):
         self.helper = FormHelper()
         self.helper.field_class = 'col-lg-8'
         self.helper.layout = Layout(
-            PrependedText('email', '<i class="bi bi-person-fill"></i>'),
-            PrependedText('password1', '<i class="bi bi-key-fill"></i>'),
-            PrependedText('password2', '<i class="bi bi-key-fill"></i>')
+            PrependedText('email', '<i class="fas fa-user"></i>'),
+            PrependedText('password1', '<i class="fas fa-key"></i>'),
+            PrependedText('password2', '<i class="fas fa-key"></i>')
         )
         self.helper.form_tag = False
         self.helper.form_show_labels = False
@@ -58,9 +58,9 @@ class CustomChangePasswordForm(ChangePasswordForm):
         self.helper = FormHelper()
         self.helper.field_class = 'col-lg-8'
         self.helper.layout = Layout(
-            PrependedText('oldpassword', '<i class="bi bi-key"></i>'),
-            PrependedText('password1', '<i class="bi bi-key-fill"></i>'),
-            PrependedText('password2', '<i class="bi bi-key-fill"></i>')
+            PrependedText('oldpassword', '<i class="fas fa-key"></i>'),
+            PrependedText('password1', '<i class="fas fa-key"></i>'),
+            PrependedText('password2', '<i class="fas fa-key"></i>')
         )
         self.helper.form_tag = False
         self.helper.form_show_labels = False
@@ -74,7 +74,7 @@ class CustomResetPasswordForm(ResetPasswordForm):
         self.helper = FormHelper()
         self.helper.field_class = 'col-lg-8'
         self.helper.layout = Layout(
-            PrependedText('email', '<i class="bi bi-person-fill"></i>'),
+            PrependedText('email', '<i class="fas fa-user"></i>'),
         )
         self.helper.form_tag = False
         self.helper.form_show_labels = False
@@ -88,8 +88,8 @@ class CustomResetPasswordKeyForm(ResetPasswordKeyForm):
         self.helper = FormHelper()
         self.helper.field_class = 'col-lg-8'
         self.helper.layout = Layout(
-            PrependedText('password1', '<i class="bi bi-key-fill"></i>'),
-            PrependedText('password2', '<i class="bi bi-key-fill"></i>')
+            PrependedText('password1', '<i class="fas fa-key"></i>'),
+            PrependedText('password2', '<i class="fas fa-key"></i>')
         )
         self.helper.form_tag = False
         self.helper.form_show_labels = False
