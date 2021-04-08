@@ -85,7 +85,7 @@ def organization_update(request):
             form.save()
             messages.add_message(request, messages.SUCCESS, 'Údaje organizace upraveny!')
         else:
-            messages.add_message(request, messages.SUCCESS, 'Chyba při pokusu upravit údaje organizace')
+            messages.add_message(request, messages.ERROR, 'Chyba při pokusu upravit údaje organizace!')
         return redirect(dashboard)
     return render(request, 'catalog/organization/update.html', {'form': form})
 
@@ -100,7 +100,7 @@ def organization_rename(request):
             organization.name = org_name
             organization.slug = slugify(org_name)
             organization.save()
-            messages.add_message(request, messages.SUCCESS, f'Organizace přejmenována na {org_name}')
+            messages.add_message(request, messages.SUCCESS, f'Organizace přejmenována na {org_name}.')
             return redirect(dashboard)
     else:
         form = RenameOrganizationForm(instance=request.user.organization)
@@ -115,7 +115,7 @@ def organization_delete(request):
         # todo: change status of all teachers to 'student' as well
 
         request.user.organization.delete()
-        messages.add_message(request, messages.SUCCESS, 'Organizace byla odstraněna')
+        messages.add_message(request, messages.SUCCESS, 'Organizace byla odstraněna.')
         return redirect(dashboard)
     return render(request, 'catalog/organization/delete.html')
 
@@ -129,9 +129,9 @@ def course_create(request):
             course.organization = request.user.organization
             course.save()
             form.save_m2m()  # save Topic
-            messages.add_message(request, messages.SUCCESS, 'Kroužek byl úspěšně vytvořen a odeslán ke schválení!')
+            messages.add_message(request, messages.SUCCESS, 'Aktivita byla úspěšně vytvořena a odeslána ke schválení!')
         else:
-            messages.add_message(request, messages.ERROR, 'Chyba při pokusu zaregistrovat kroužek!')
+            messages.add_message(request, messages.ERROR, 'Chyba při pokusu zaregistrovat aktivitu!')
         return redirect(dashboard)
     else:
         form = CourseForm()
@@ -152,9 +152,12 @@ def course_create_oneoff(request):
             course.organization = request.user.organization
             course.save()
             form.save_m2m()  # save Topic
-            messages.add_message(request, messages.SUCCESS, 'Kroužek byl úspěšně vytvořen a odeslán ke schválení!')
+            messages.add_message(request, messages.SUCCESS,
+                                 'Jednodenní aktivita byla úspěšně vytvořena a odeslána ke schválení!')
         else:
-            messages.add_message(request, messages.ERROR, 'Chyba při pokusu zaregistrovat kroužek!')
+            print(form.errors)
+            messages.add_message(request, messages.ERROR,
+                                 'Chyba při pokusu zaregistrovat jednodenní aktivitu!')
         return redirect(dashboard)
     else:
         form = OneoffCourseForm()
@@ -176,9 +179,9 @@ def course_update(request, slug=None):
         form = CourseForm(data=request.POST, files=request.FILES, instance=course)
         if form.is_valid():
             form.save()
-            messages.add_message(request, messages.SUCCESS, 'Kroužek byl úspěšně upraven!')
+            messages.add_message(request, messages.SUCCESS, 'Aktivita byla úspěšně upravena!')
         else:
-            messages.add_message(request, messages.ERROR, 'Chyba při pokusu upravit kroužek!')
+            messages.add_message(request, messages.ERROR, 'Chyba při pokusu upravit aktivitu!')
         return redirect(dashboard)
     return render(request, 'catalog/course/update.html', {'form': form})
 
@@ -209,7 +212,7 @@ def contact_teacher(request, slug=None):
             cd = form.cleaned_data
             course_url = request.build_absolute_uri(course.get_absolute_url())
             subject = f'{cd["sender_name"]} má dotaz k {course.name}'
-            message = f'Uživatel {cd["sender_name"].upper()} vám zaslal dotaz ke kroužku {course.name.upper()}\n' \
+            message = f'Uživatel/ka {cd["sender_name"].upper()} vám zaslal/a dotaz k aktivitě {course.name.upper()}\n' \
                       f'(odkaz: {course_url})' \
                       f'\n\nText dotazu:\n{cd["body"]}'
             send_mail(subject, message, cd['from_email'], [course.teacher.email, ])
