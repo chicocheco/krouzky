@@ -148,12 +148,9 @@ class OneoffCourseForm(forms.ModelForm):
 
     def save(self, commit=True):
         course = super().save(commit=False)
-        clean_time_from = self.cleaned_data.get('time_from')
-        clean_time_to = self.cleaned_data.get('time_to')
-        if clean_time_from is not None:
-            course.date_from = datetime.combine(self.cleaned_data.get('date_from'), clean_time_from)
-        if clean_time_to is not None:
-            course.date_to = datetime.combine(self.cleaned_data.get('date_from'), clean_time_to)
+        course.date_from = datetime.combine(self.cleaned_data.get('date_from'), self.cleaned_data.get('time_from'))
+        course.date_to = datetime.combine(self.cleaned_data.get('date_from'), self.cleaned_data.get('time_to'))
+        course.is_oneoff = True
         if commit:  # maintain the default behavior
             course.save()
         return course

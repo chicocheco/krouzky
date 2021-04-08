@@ -21,7 +21,7 @@ class CourseAdmin(admin.ModelAdmin):
     list_filter = ('status', 'teacher', 'organization')
     search_fields = ('name', 'description')
     date_hierarchy = 'date_modified'
-    ordering = ('status', 'date_modified')
+    ordering = ('-date_modified', 'status')
     widgets = {
         'description': TinyMCE(),
     }

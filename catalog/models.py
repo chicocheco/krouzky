@@ -75,6 +75,7 @@ class Course(models.Model):
     status = models.CharField(_('stav'), max_length=10, choices=STATUS_CHOICES, default='draft')
     date_from = models.DateTimeField(_('Od data'))
     date_to = models.DateTimeField(_('Do data'))
+    is_oneoff = models.BooleanField(_('Je jednodenní'), default=False)
     date_modified = models.DateTimeField(_('upraveno'), auto_now=True)
     date_created = models.DateTimeField(_('vytvořeno'), auto_now_add=True)
     objects = models.Manager()  # define implicitly to preserve this manager
