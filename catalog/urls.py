@@ -13,6 +13,7 @@ urlpatterns = [
 
     path('aktivity/', catalog_views.course_list, name='course_list'),
     path('aktivita/registrovat', catalog_views.course_create, name='course_create'),
+    path('aktivita/registrovat-jednodenni', catalog_views.course_create_oneoff, name='course_create_oneoff'),
     path('aktivita/<slug:slug>/', catalog_views.course_detail, name='course_detail'),
     path('aktivita/<slug:slug>/dotaz', catalog_views.contact_teacher, name='course_contact_teacher'),
     # TODO: temporarily deactivated:

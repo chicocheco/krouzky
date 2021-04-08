@@ -9,7 +9,7 @@ from django.utils.text import slugify
 
 from users.models import User
 from .forms import (UpdateOrganizationForm, RenameOrganizationForm, RegisterOrganizationForm, CourseForm,
-                    ContactTeacherForm, SimpleSearchForm)
+                    OneoffCourseForm, ContactTeacherForm, SimpleSearchForm)
 from .models import Course, Organization
 from .filters import CourseFilter
 
@@ -141,6 +141,29 @@ def course_create(request):
         if len(teachers) == 1:
             teacher_field.disabled = True
     return render(request, 'catalog/course/create.html', {'form': form})
+
+
+@login_required
+def course_create_oneoff(request):
+    if request.method == 'POST':
+        form = OneoffCourseForm(data=request.POST, files=request.FILES)  # 'files' includes image upload
+        if form.is_valid():
+            course = form.save(commit=False)
+            course.organization = request.user.organization
+            course.save()
+            form.save_m2m()  # save Topic
+            messages.add_message(request, messages.SUCCESS, 'Kroužek byl úspěšně vytvořen a odeslán ke schválení!')
+        else:
+            messages.add_message(request, messages.ERROR, 'Chyba při pokusu zaregistrovat kroužek!')
+        return redirect(dashboard)
+    else:
+        form = OneoffCourseForm()
+        teacher_field = form.fields['teacher']
+        teachers = User.objects.filter(organization_id=request.user.organization.id)
+        teacher_field.queryset = teachers
+        if len(teachers) == 1:
+            teacher_field.disabled = True
+    return render(request, 'catalog/course/create_oneoff.html', {'form': form})
 
 
 @login_required

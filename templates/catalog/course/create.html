@@ -1,13 +1,33 @@
 {% extends '_base.html' %}
+{% load static %}
 {% load crispy_forms_tags %}
 
-{% block title %}Registrace kroužku{% endblock %}
+{% block title %}Registrace pravidelné aktivity{% endblock %}
 {% block head_extra %}{{ form.media }}{% endblock %}
 
 {% block content %}
-    <h2>Registrace kroužku</h2>
+    <h2>Registrace pravidelné aktivity</h2>
     <hr>
     {% crispy form %}
 {% endblock %}
 
 {% block sidebar %}{% include 'dashboard_sidebar.html' %}{% endblock %}
+
+{% block js %}
+    <script src="{% static 'js/litepicker.js' %}"></script>
+    <script>
+    new Litepicker({
+            lang: 'cs',
+            singleMode: false,
+            tooltipText: {
+                one: 'den',
+                other: 'dní'
+            },
+            format: 'DD.MM.YYYY',
+            startDate: new Date(),
+            endDate: new Date(),
+            element: document.getElementById('id_date_from'),
+            elementEnd: document.getElementById('id_date_to'),
+        });
+    </script>
+{% endblock %}

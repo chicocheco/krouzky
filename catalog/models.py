@@ -73,6 +73,8 @@ class Course(models.Model):
                                      verbose_name='věková kategorie', related_name='courses', on_delete=models.CASCADE)
     topic = models.ManyToManyField(Topic, verbose_name='zaměření')
     status = models.CharField(_('stav'), max_length=10, choices=STATUS_CHOICES, default='draft')
+    date_from = models.DateTimeField(_('Od data'))
+    date_to = models.DateTimeField(_('Do data'))
     date_modified = models.DateTimeField(_('upraveno'), auto_now=True)
     date_created = models.DateTimeField(_('vytvořeno'), auto_now_add=True)
     objects = models.Manager()  # define implicitly to preserve this manager

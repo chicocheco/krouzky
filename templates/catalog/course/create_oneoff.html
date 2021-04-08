@@ -1,0 +1,49 @@
+{% extends '_base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Registrace jednodenní aktivity{% endblock %}
+{% block head_extra %}
+    {{ form.media }}
+{% endblock %}
+
+{% block content %}
+    <h2>Registrace jednodenní aktivity</h2>
+    <hr>
+    {% crispy form %}
+{% endblock %}
+
+{% block sidebar %}{% include 'dashboard_sidebar.html' %}{% endblock %}
+
+{% block js %}
+    <script src="{% static 'js/litepicker.js' %}"></script>
+    <script>
+        new Litepicker({
+            lang: 'cs',
+            singleMode: true,
+            tooltipText: {
+                one: 'den',
+                other: 'dní'
+            },
+            format: 'DD.MM.YYYY',
+            startDate: new Date(),
+            element: document.getElementById('id_date_from'),
+        });
+
+        let startElement = document.getElementById('id_time_from');
+        let endElement = document.getElementById('id_time_to');
+
+        [startElement, endElement].forEach(element => {
+            element.addEventListener('input', ()=>{
+                let startTime = new Date(startElement.valueAsNumber).getHours();
+                let endTime = new Date(endElement.valueAsNumber).getHours();
+                if (endTime < startTime) {
+                    startElement.value = endElement.value;
+                }
+                if ((endTime - startTime) >= 0) {
+                    document.getElementById('id_hours').value = endTime - startTime
+                }
+            })
+        })
+    </script>
+{% endblock %}
