@@ -6,20 +6,13 @@ a {
     text-decoration: none;
 }
 
-i, .badge {
-    bottom: .125em;
-    position: relative;
+.d-flex-nav-link {
+    display: flex;             /* establish flex container */
+    align-items: center;       /* center nav items vertically */
+    justify-content: center;
 }
 
-.i-extra-padding-left {
-    padding-left: 10px;
-}
-
-.i-extra-padding-right {
-    padding-right: 10px;
-
-}
-
+/* cropper.min.js */
 .cropper-crop-box, .cropper-view-box {
     border-radius: 50%;
 }
