@@ -17,11 +17,19 @@
                 <img src="{{ course.image.url }}" alt="" class="img-fluid">
             </div>
             <div class="col-6">
+                <p><b>Doba konání:</b><br>
+                    {% if course.is_oneoff %}
+                        {{ course.date_from }} - {{ course.date_to|time }}
+                    {% else %}
+                        od {{ course.date_from|date }}<br>
+                        do {{ course.date_to|date }}
+                    {% endif %}
+                </p>
                 <p><b>Cena:</b><br>{{ course.price }} Kč ({{ price_hour }} Kč/hod)</p>
-                <p><b>Trvání kroužku:</b><br>{{ course.hours }} hodin</p>
+                <p><b>Trvání aktivity:</b><br>{{ course.hours }} hodin</p>
                 <p><b>Kapacita:</b><br>{{ course.capacity }} osob</p>
                 <p><b>Věková skupina:</b><br>{{ course.age_category }}</p>
-                <p><b>Zaměření kroužku:</b><br>
+                <p><b>Zaměření aktivity:</b><br>
                     {% for topic in course.topic.all %}
                         {{ topic.name }}
                         {% if not forloop.last %}, {% endif %}
@@ -44,8 +52,8 @@
         <div class="col-8 col-sm-4 text-center text-lg-start col-lg-7">
             <p>{% if course.teacher.name %}
                 <b>Vedoucí:</b><br>
-                    {{ course.teacher.name }}<br>
-                {% endif %}
+                {{ course.teacher.name }}<br>
+            {% endif %}
                 {% if course.teacher.phone %}
                     Telefonní číslo:<br>
                     +420 {% for i in course.teacher.phone %}{{ i }}{% if forloop.counter == 3 or forloop.counter == 6 %}
