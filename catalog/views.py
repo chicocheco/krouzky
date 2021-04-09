@@ -8,10 +8,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.text import slugify
 
 from users.models import User
+from .filters import CourseFilter
 from .forms import (UpdateOrganizationForm, RenameOrganizationForm, RegisterOrganizationForm, CourseForm,
                     OneoffCourseForm, ContactTeacherForm, SimpleSearchForm)
 from .models import Course, Organization
-from .filters import CourseFilter
 
 
 def home(request):
@@ -229,8 +229,9 @@ def search(request):
         form = SimpleSearchForm(request.GET)
         if form.is_valid():
             query = form.cleaned_data['query']
-            search_vector = SearchVector('name', weight='A') + \
-                            SearchVector('description', weight='B')
+            # to use __unaccent lookup field, you must CREATE EXTENSION unaccent; in postgres db
+            search_vector = SearchVector('name__unaccent', weight='A') + \
+                            SearchVector('description__unaccent', weight='B')
             search_query = SearchQuery(query)
             object_list = Course.published.annotate(
                 search=search_vector,

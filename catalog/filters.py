@@ -9,11 +9,13 @@ from .models import Course, Topic
 
 class CourseFilter(django_filters.FilterSet):
     query = django_filters.CharFilter(label='Klíčové slovo')
-    price_start = django_filters.NumberFilter(field_name='price', lookup_expr='gte', label='Cena od')
-    price_stop = django_filters.NumberFilter(field_name='price', lookup_expr='lte', label='Cena do')
+    price_min = django_filters.NumberFilter(field_name='price', lookup_expr='gte', label='Cena od')
+    price_max = django_filters.NumberFilter(field_name='price', lookup_expr='lte', label='Cena do')
     topic = django_filters.ModelMultipleChoiceFilter(queryset=Topic.objects.all(),
                                                      widget=forms.CheckboxSelectMultiple,
                                                      label='Omezit výběr zaměření')
+    date_from = django_filters.DateFilter(input_formats=['%d.%m.%Y'], lookup_expr='gte', label='Od data')
+    date_to = django_filters.DateFilter(input_formats=['%d.%m.%Y'], lookup_expr='lte', label='Do data')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -24,16 +26,20 @@ class CourseFilter(django_filters.FilterSet):
         self.form.helper.form_show_errors = False
         self.form.helper.layout = Layout(Field('query', css_class='col-12'),
                                          Row(
-                                             Column(AppendedText('price_start', 'Kč'), css_class='col-4'),
-                                             Column(AppendedText('price_stop', 'Kč'), css_class='col-4'),
-                                             Column(Field('age_category', css_class='col-12'), css_class='col-4')
+                                             Column(AppendedText('price_min', 'Kč')),
+                                             Column(AppendedText('price_max', 'Kč')),
+                                             Column('age_category')
+                                         ),
+                                         Row(
+                                           Column('date_from'),
+                                           Column('date_to')
                                          ),
                                          InlineCheckboxes('topic', css_class='col-12'), )
-        self.form.fields['price_start'].widget.attrs.update({'min': 0, 'step': 100})
-        self.form.fields['price_stop'].widget.attrs.update({'min': 0, 'step': 100})
+        self.form.fields['price_min'].widget.attrs.update({'min': 0, 'max': 99999, 'step': 100})
+        self.form.fields['price_max'].widget.attrs.update({'min': 0, 'max': 99999, 'step': 100})
         self.form.fields['age_category'].empty_label = 'Bez omezení'
 
     class Meta:
         model = Course
-        # query, price, topic, age_category
+        # query, price, topic, age_category, datem_from, date_to
         fields = ['age_category']  # this works only as fallback

@@ -1,4 +1,5 @@
 {% extends '_base.html' %}
+{% load static %}
 {% load crispy_forms_tags %}
 
 {% block title %}Hledat{% endblock %}
@@ -47,14 +48,41 @@
             </div>
         </div>
     {% endfor %}
+{% endblock %}
 
+{% block sidebar %}
+{% endblock %}
+
+{% block js %}
+    <script src="{% static 'js/litepicker.js' %}"></script>
     <script>
         function resetSearchForm() {
             document.getElementById("search-form").reset();
             window.location.href = window.location.origin + window.location.pathname;
         }
-    </script>
-{% endblock %}
 
-{% block sidebar %}
+        new Litepicker({
+            lang: 'cs',
+            singleMode: false,
+            tooltipText: {
+                one: 'den',
+                other: 'dní'
+            },
+            format: 'DD.MM.YYYY',
+            element: document.getElementById('id_date_from'),
+            elementEnd: document.getElementById('id_date_to'),
+        });
+
+        let minPriceElement = document.getElementById('id_price_min');
+        let maxPriceElement = document.getElementById('id_price_max');
+        [minPriceElement, maxPriceElement].forEach(element => {
+            element.addEventListener('blur', ()=>{
+                let minPrice = minPriceElement.valueAsNumber;
+                let maxPrice = maxPriceElement.valueAsNumber;
+                if (maxPrice < minPrice) {
+                    minPriceElement.value = maxPriceElement.value;
+                }
+            })
+        })
+    </script>
 {% endblock %}
