@@ -9,12 +9,14 @@ from .models import Course, Topic
 
 class CourseFilter(django_filters.FilterSet):
     query = django_filters.CharFilter(label='Klíčové slovo')
-    price_min = django_filters.NumberFilter(field_name='price', lookup_expr='gte', label='Cena od')
-    price_max = django_filters.NumberFilter(field_name='price', lookup_expr='lte', label='Cena do')
+    price_min = django_filters.NumberFilter(field_name='price', lookup_expr='gte', label='Minimální cena aktivity',
+                                            help_text='Zvolte násobky 100')
+    price_max = django_filters.NumberFilter(field_name='price', lookup_expr='lte', label='Maximální cena aktivity')
     topic = django_filters.ModelMultipleChoiceFilter(queryset=Topic.objects.all(),
                                                      widget=forms.CheckboxSelectMultiple,
                                                      label='Omezit výběr zaměření')
-    date_from = django_filters.DateFilter(input_formats=['%d.%m.%Y'], lookup_expr='gte', label='Od data')
+    date_from = django_filters.DateFilter(input_formats=['%d.%m.%Y'], lookup_expr='gte', label='Od data',
+                                          help_text='Kliknutím se otevře kalendář')
     date_to = django_filters.DateFilter(input_formats=['%d.%m.%Y'], lookup_expr='lte', label='Do data')
 
     def __init__(self, *args, **kwargs):
@@ -31,8 +33,8 @@ class CourseFilter(django_filters.FilterSet):
                                              Column('age_category')
                                          ),
                                          Row(
-                                           Column('date_from'),
-                                           Column('date_to')
+                                             Column('date_from'),
+                                             Column('date_to')
                                          ),
                                          InlineCheckboxes('topic', css_class='col-12'), )
         self.form.fields['price_min'].widget.attrs.update({'min': 0, 'max': 99999, 'step': 100})

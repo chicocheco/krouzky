@@ -258,7 +258,7 @@ def search(request):
         custom_page_range = paginator.get_elided_page_range(paginator.num_pages, on_each_side=2, on_ends=1)
     return render(request, 'catalog/course/search.html', {'paginated_results': paginated_results,
                                                           'form': form,
-                                                          'page': page,
+                                                          'page': page,  # what for?
                                                           'query': query,
                                                           'custom_page_range': custom_page_range,
                                                           'section': 'search'})
