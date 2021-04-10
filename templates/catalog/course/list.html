@@ -19,7 +19,7 @@
             <div class="row g-0">
                 <div class="col col-md-4">
                     <a href="{{ course.get_absolute_url }}">
-                        <img class="img-fluid" src="{{ course.image.url }}">
+                        <img class="img-fluid" src="{{ course.image.url }}" alt="">
                     </a>
                 </div>
                 <div class="col col-md-8">
@@ -49,7 +49,7 @@
     {% empty %}
         <p>Nenalezeno.</p>
     {% endfor %}
-
+    {% include 'pagination.html' with page=courses custom_range=custom_range %}
 {% endblock %}
 
 {% block sidebar %}

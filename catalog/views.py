@@ -44,12 +44,16 @@ def course_list(request, slug=None):
     page = request.GET.get('page')
     try:
         courses = paginator.page(page)
+        custom_range = paginator.get_elided_page_range(page, on_each_side=2, on_ends=1)
     except PageNotAnInteger:
         courses = paginator.page(1)
+        custom_range = paginator.get_elided_page_range(1, on_each_side=2, on_ends=1)
     except EmptyPage:
         courses = paginator.page(paginator.num_pages)
+        custom_range = paginator.get_elided_page_range(paginator.num_pages, on_each_side=2, on_ends=1)
     return render(request, 'catalog/course/list.html',
-                  {'page': page, 'courses': courses, 'organization_name': organization_name,
+                  {'page': page, 'custom_range': custom_range, 'courses': courses,
+                   'organization_name': organization_name,
                    'section': 'courses'})
 
 
