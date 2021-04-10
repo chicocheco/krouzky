@@ -44,15 +44,15 @@ def course_list(request, slug=None):
     page = request.GET.get('page')
     try:
         courses = paginator.page(page)
-        custom_range = paginator.get_elided_page_range(page, on_each_side=2, on_ends=1)
+        custom_page_range = paginator.get_elided_page_range(page, on_each_side=2, on_ends=1)
     except PageNotAnInteger:
         courses = paginator.page(1)
-        custom_range = paginator.get_elided_page_range(1, on_each_side=2, on_ends=1)
+        custom_page_range = paginator.get_elided_page_range(1, on_each_side=2, on_ends=1)
     except EmptyPage:
         courses = paginator.page(paginator.num_pages)
-        custom_range = paginator.get_elided_page_range(paginator.num_pages, on_each_side=2, on_ends=1)
+        custom_page_range = paginator.get_elided_page_range(paginator.num_pages, on_each_side=2, on_ends=1)
     return render(request, 'catalog/course/list.html',
-                  {'page': page, 'custom_range': custom_range, 'courses': courses,
+                  {'page': page, 'custom_page_range': custom_page_range, 'courses': courses,
                    'organization_name': organization_name,
                    'section': 'courses'})
 
@@ -228,7 +228,7 @@ def contact_teacher(request, slug=None):
 
 def search(request):
     query = None
-    f = CourseFilter(request.GET, Course.published.all())
+    course_filter = CourseFilter(request.GET, Course.published.all())
     if 'query' in request.GET:
         form = SimpleSearchForm(request.GET)
         if form.is_valid():
@@ -242,5 +242,23 @@ def search(request):
                 rank=SearchRank(search_vector, search_query)).filter(rank__gte=0.3).order_by('-rank')
             queryset = request.GET.copy()
             queryset.pop('query')
-            f = CourseFilter(queryset, object_list)
-    return render(request, 'catalog/course/search.html', {'filter': f, 'query': query, 'section': 'search'})
+            course_filter = CourseFilter(queryset, object_list)
+    # extract attached form from CourseFilter, fixes "Failed lookup for key [form] in <Page 1 of 2>":
+    form = course_filter.form
+    paginator = Paginator(course_filter.qs, 10)
+    page = request.GET.get('page')
+    try:
+        paginated_results = paginator.page(page)
+        custom_page_range = paginator.get_elided_page_range(page, on_each_side=2, on_ends=1)
+    except PageNotAnInteger:
+        paginated_results = paginator.page(1)
+        custom_page_range = paginator.get_elided_page_range(1, on_each_side=2, on_ends=1)
+    except EmptyPage:
+        paginated_results = paginator.page(paginator.num_pages)
+        custom_page_range = paginator.get_elided_page_range(paginator.num_pages, on_each_side=2, on_ends=1)
+    return render(request, 'catalog/course/search.html', {'paginated_results': paginated_results,
+                                                          'form': form,
+                                                          'page': page,
+                                                          'query': query,
+                                                          'custom_page_range': custom_page_range,
+                                                          'section': 'search'})

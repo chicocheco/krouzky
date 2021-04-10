@@ -8,14 +8,14 @@
     <h1>Hledat</h1>
     <hr>
     <form method="get" id="search-form">
-        {% crispy filter.form %}
+        {% crispy form %}
         <p><input class="btn btn-primary me-2" type="submit" value="Hledat">
         <input type="button" class="btn btn-danger" value="Vymazat" onclick="resetSearchForm()"></p>
     </form>
     {% if query %}
         <p><b>Výsledky hledání obsahující "{{ query }}"</b></p>
     {% endif %}
-    {% for result in filter.qs %}
+    {% for result in paginated_results %}
         <div class="card mb-3">
             <div class="row g-0">
                 <div class="col col-md-4">
@@ -48,6 +48,8 @@
             </div>
         </div>
     {% endfor %}
+    {% include 'pagination.html' with page=paginated_results custom_page_range=custom_page_range %}
+
 {% endblock %}
 
 {% block sidebar %}
