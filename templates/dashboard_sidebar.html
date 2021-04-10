@@ -31,7 +31,7 @@
             Aktivity
         </h5>
         <hr>
-        {% with request.user.organization.courses.count as total_courses %}
+        {% with total_courses=request.user.organization.courses.count %}
             {% if not request.user.organization %}
                 <p>Prosím zaregistrujte nejdříve vaší organizaci viz výše.</p>
             {% else %}
