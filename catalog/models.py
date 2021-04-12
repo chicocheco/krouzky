@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.validators import MaxValueValidator
 from django.db import models
 from django.urls import reverse
 from autoslug import AutoSlugField
@@ -48,6 +49,20 @@ class Topic(models.Model):
         return self.name
 
 
+# class WeekSchedule(models.Model):
+#     class DayOfWeek(models.TextChoices):
+#         MONDAY = 'MON', _('pondělí')
+#         TUESDAY = 'TUE', _('úterý')
+#         WEDNESDAY = 'WED', _('středa')
+#         THURSDAY = 'THU', _('čtvrtek')
+#         FRIDAY = 'FRI', _('pátek')
+#         SATURDAY = 'SAT', _('sobota')
+#         SUNDAY = 'SUN', _('neděle')
+#
+#     day_of_week = models.CharField(max_length=3, choices=DayOfWeek.choices, default=DayOfWeek.MONDAY)
+#     hour = models.PositiveSmallIntegerField(validators=[MaxValueValidator(24)])
+
+
 class PublishedManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(status='published')
@@ -75,6 +90,7 @@ class Course(models.Model):
     status = models.CharField(_('stav'), max_length=9, choices=Status.choices, default=Status.DRAFT)
     date_from = models.DateTimeField(_('Od data'))
     date_to = models.DateTimeField(_('Do data'))
+    # week_schedule = models.ManyToManyField(WeekSchedule, verbose_name='týdenní rozvrh')
     is_oneoff = models.BooleanField(_('Je jednodenní'), default=False)
     date_modified = models.DateTimeField(_('upraveno'), auto_now=True)
     date_created = models.DateTimeField(_('vytvořeno'), auto_now_add=True)
@@ -82,8 +98,8 @@ class Course(models.Model):
     published = PublishedManager()
 
     class Meta:
-        verbose_name = 'Kroužek'
-        verbose_name_plural = 'Kroužky'
+        verbose_name = 'Aktivita'
+        verbose_name_plural = 'Aktivity'
 
     def __str__(self):
         return f'{self.name} [{self.organization.name}]'
