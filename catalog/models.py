@@ -54,10 +54,10 @@ class PublishedManager(models.Manager):
 
 
 class Course(models.Model):
-    STATUS_CHOICES = (
-        ('draft', 'Ke schválení'),
-        ('published', 'Publikováno'),
-    )
+    class Status(models.TextChoices):
+        DRAFT = 'DRAFT', _('Ke schválení')
+        PUBLISHED = 'PUBLISHED', _('Publikováno')
+
     name = models.CharField(_('název'), max_length=50, blank=False)
     slug = AutoSlugField(_('slug'), populate_from='name')  # make unique with organization?
     description = models.TextField(_('popis'), blank=True)
@@ -72,7 +72,7 @@ class Course(models.Model):
     age_category = models.ForeignKey(AgeCategory,
                                      verbose_name='věková kategorie', related_name='courses', on_delete=models.CASCADE)
     topic = models.ManyToManyField(Topic, verbose_name='zaměření')
-    status = models.CharField(_('stav'), max_length=10, choices=STATUS_CHOICES, default='draft')
+    status = models.CharField(_('stav'), max_length=9, choices=Status.choices, default=Status.DRAFT)
     date_from = models.DateTimeField(_('Od data'))
     date_to = models.DateTimeField(_('Do data'))
     is_oneoff = models.BooleanField(_('Je jednodenní'), default=False)

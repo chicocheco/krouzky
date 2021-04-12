@@ -36,9 +36,9 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     class Roles(models.TextChoices):
-        STUDENT = 'STUDENT', 'Student'
-        TEACHER = 'TEACHER', 'Teacher'
-        COORDINATOR = 'COORDINATOR', 'Coordinator'
+        STUDENT = 'STUDENT', _('student')
+        TEACHER = 'TEACHER', _('Vedoucí')
+        COORDINATOR = 'COORDINATOR', _('Koordinátor')
 
     email = models.EmailField(_('emailová adresa'), max_length=40, unique=True)
     name = models.CharField(_('celé jméno'), max_length=30, blank=True)
