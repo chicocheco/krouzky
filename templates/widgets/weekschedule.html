@@ -1,0 +1,61 @@
+{% if field.is_hidden %}
+    {{ field }}
+{% else %}
+    <a class="btn btn-primary mb-3" data-bs-toggle="collapse" href="#div_{{ field.auto_id }}" role="button"
+       aria-expanded="false" aria-controls="collapseExample">
+        Nastavit týdenní rozvrh
+    </a>
+    <div id="div_{{ field.auto_id }}"
+         class="collapse mb-3{% if 'form-horizontal' in form_class %} row{% endif %}{% if wrapper_class %} {{ wrapper_class }}{% endif %}{% if field.css_classes %} {{ field.css_classes }}{% endif %}">
+        <p><b>Pozor: Slouží pouze pro přibližnou orientaci a filtrování. Přesnější informace o začátku a konci každé aktivity uveďte do popisu.</b></p>
+        {% if field.label %}
+            <label for="{{ field.id_for_label }}"
+                   class="{{ label_class }}{% if not inline_class %} col-form-label{% else %} form-label{% endif %}{% if field.field.required %} requiredField{% endif %}">
+                {{ field.label|safe }}{% if field.field.required %}<span class="asteriskField">*</span>{% endif %}
+            </label>
+        {% endif %}
+        {% load catalog_tags %}
+        {% load crispy_forms_filters %}
+        {% load l10n %}
+        <div {% if field_class %}class="{{ field_class }}"{% endif %}{% if flat_attrs %}
+            {{ flat_attrs|safe }}{% endif %}>
+            <div class="table-responsive">
+                <table class="table table-sm table-borderless text-center">
+                    <tbody>
+                    {% for choice in field.field.choices %}
+                        {% set_row forloop.counter0 %}
+                        {# 100/7 = 14.3 #}
+                        <td style="width: 14.3%;">
+                            <div class="btn-group"
+                                 style="display: flex; align-items: center; justify-content: center;">
+                                <input type="checkbox"
+                                       class="btn-check{% if field.errors %} is-invalid{% endif %}"
+                                        {% if choice.0 in field.value or choice.0|stringformat:"s" in field.value or choice.0|stringformat:"s" == field.value|default_if_none:""|stringformat:"s" %}
+                                       checked="checked"{% endif %} name="{{ field.html_name }}"
+                                       id="id_{{ field.html_name }}_{{ forloop.counter }}"
+                                       value="{{ choice.0|unlocalize }}" {{ field.field.widget.attrs|flatatt }}>
+                                <label class="btn btn-outline-primary"
+                                       for="id_{{ field.html_name }}_{{ forloop.counter }}">
+                                    {{ choice.1|unlocalize }}
+                                </label>
+                                {% if field.errors and forloop.last and not inline_class %}
+                                    {% include 'bootstrap5/layout/field_errors_block.html' %}
+                                {% endif %}
+                            </div>
+                        </td>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if field.errors and inline_class %}
+                {% for error in field.errors %}
+                    <p id="error_{{ forloop.counter }}_{{ field.auto_id }}" class="text-danger mb-0">
+                        <small><strong>{{ error }}</strong></small></p>
+                {% endfor %}
+            {% endif %}
+
+            {% include 'bootstrap5/layout/help_text.html' %}
+        </div>
+
+    </div>
+{% endif %}

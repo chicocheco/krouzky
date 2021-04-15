@@ -1,8 +1,8 @@
+from autoslug import AutoSlugField
 from django.conf import settings
 from django.core.validators import MaxValueValidator
 from django.db import models
 from django.urls import reverse
-from autoslug import AutoSlugField
 from django.utils.translation import gettext_lazy as _
 
 
@@ -49,18 +49,33 @@ class Topic(models.Model):
         return self.name
 
 
-# class WeekSchedule(models.Model):
-#     class DayOfWeek(models.TextChoices):
-#         MONDAY = 'MON', _('pondělí')
-#         TUESDAY = 'TUE', _('úterý')
-#         WEDNESDAY = 'WED', _('středa')
-#         THURSDAY = 'THU', _('čtvrtek')
-#         FRIDAY = 'FRI', _('pátek')
-#         SATURDAY = 'SAT', _('sobota')
-#         SUNDAY = 'SUN', _('neděle')
-#
-#     day_of_week = models.CharField(max_length=3, choices=DayOfWeek.choices, default=DayOfWeek.MONDAY)
-#     hour = models.PositiveSmallIntegerField(validators=[MaxValueValidator(24)])
+class WeekSchedule(models.Model):
+    WEEKDAYS = {
+        0: 'Pondělí',
+        1: 'Úterý',
+        2: 'Středa',
+        3: 'Čtvrtek',
+        4: 'Pátek',
+        5: 'Sobota',
+        6: 'Neděle',
+    }
+    day_of_week = models.PositiveSmallIntegerField(validators=[MaxValueValidator(6)])  # 0-6
+    hour = models.PositiveSmallIntegerField(validators=[MaxValueValidator(23)])  # 7-23
+
+    class Meta:
+        ordering = ['hour', 'day_of_week']
+        verbose_name = 'Týdenní rozvrh'
+        verbose_name_plural = 'Týdenní rozvrh'
+        unique_together = [['day_of_week', 'hour']]
+
+    def __str__(self):
+        return f'{self.WEEKDAYS[self.day_of_week]} {str(self.hour).zfill(2)}:00'
+
+    # helper function
+    def fill_table(self):
+        for i in range(7, 23):
+            for j in range(7):
+                self.objects.create(day_of_week=j, hour=i)
 
 
 class PublishedManager(models.Manager):
@@ -88,9 +103,9 @@ class Course(models.Model):
                                      verbose_name='věková kategorie', related_name='courses', on_delete=models.CASCADE)
     topic = models.ManyToManyField(Topic, verbose_name='zaměření')
     status = models.CharField(_('stav'), max_length=9, choices=Status.choices, default=Status.DRAFT)
-    date_from = models.DateTimeField(_('Od data'))
-    date_to = models.DateTimeField(_('Do data'))
-    # week_schedule = models.ManyToManyField(WeekSchedule, verbose_name='týdenní rozvrh')
+    date_from = models.DateTimeField(_('Datum začátku'), help_text='Kliknutím se otevře kalendář')
+    date_to = models.DateTimeField(_('Datum konce'))
+    week_schedule = models.ManyToManyField(WeekSchedule, verbose_name='týdenní rozvrh', blank=True)
     is_oneoff = models.BooleanField(_('Je jednodenní'), default=False)
     date_modified = models.DateTimeField(_('upraveno'), auto_now=True)
     date_created = models.DateTimeField(_('vytvořeno'), auto_now_add=True)

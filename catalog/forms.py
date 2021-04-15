@@ -1,5 +1,6 @@
-from crispy_forms.bootstrap import PrependedText, InlineCheckboxes
 from datetime import datetime
+
+from crispy_forms.bootstrap import PrependedText, InlineCheckboxes
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field, Row, Column
 from django import forms
@@ -65,6 +66,10 @@ class RenameOrganizationForm(forms.ModelForm):
         fields = ('name',)
 
 
+class WeekScheduleInlineCheckboxes(InlineCheckboxes):
+    template = 'widgets/weekschedule.html'
+
+
 class CourseForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
@@ -83,6 +88,7 @@ class CourseForm(forms.ModelForm):
                 Column('date_from'),
                 Column('date_to'),
             ),
+            WeekScheduleInlineCheckboxes('week_schedule'),
             Row(
                 Column('age_category'),
                 Column('teacher')
@@ -90,16 +96,18 @@ class CourseForm(forms.ModelForm):
             Field('image', css_class='form-control'),
             InlineCheckboxes('topic'),
             'description',
-            Submit('submit', 'Potvrdit')
+            Submit('submit', 'Odeslat')
         )
 
     class Meta:
         model = Course
-        fields = ('name', 'price', 'hours', 'capacity', 'date_from', 'date_to', 'teacher', 'age_category',
-                  'image', 'topic', 'description')
+        fields = (
+            'name', 'price', 'hours', 'capacity', 'date_from', 'date_to', 'week_schedule', 'teacher', 'age_category',
+            'image', 'topic', 'description')
         widgets = {
             'description': TinyMCE(),
             'topic': forms.CheckboxSelectMultiple(),
+            'week_schedule': forms.CheckboxSelectMultiple(),
         }
 
 

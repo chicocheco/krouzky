@@ -1,8 +1,10 @@
 from django import template
+from django.utils.safestring import mark_safe
 
 register = template.Library()
 
 
+# pagination
 @register.simple_tag(takes_context=True)
 def param_replace(context, **kwargs):
     """
@@ -13,3 +15,15 @@ def param_replace(context, **kwargs):
     for k, v in kwargs.items():
         d[k] = v
     return d.urlencode()
+
+
+# week schedule widget
+@register.simple_tag
+def set_row(counter):
+    """
+    Break a row after every 8th column within the table and mark it.
+    Choices MUST be ordered by hour (0-23) and then week days (0-6).
+    """
+    if counter % 7 == 0:
+        return mark_safe('<tr>')
+    return ''

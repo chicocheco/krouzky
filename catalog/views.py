@@ -90,7 +90,6 @@ def organization_update(request):
             messages.add_message(request, messages.SUCCESS, 'Údaje organizace upraveny!')
         else:
             messages.add_message(request, messages.ERROR, 'Chyba při pokusu upravit údaje organizace!')
-        return redirect(dashboard)
     return render(request, 'catalog/organization/update.html', {'form': form})
 
 
@@ -134,13 +133,14 @@ def course_create(request):
             course.save()
             form.save_m2m()  # save Topic
             messages.add_message(request, messages.SUCCESS, 'Aktivita byla úspěšně vytvořena a odeslána ke schválení!')
+            return redirect(dashboard)
         else:
+            # do not redirect anywhere here, else you can't see field specific errors
             messages.add_message(request, messages.ERROR, 'Chyba při pokusu zaregistrovat aktivitu!')
-        return redirect(dashboard)
     else:
         form = CourseForm()
         teacher_field = form.fields['teacher']
-        teachers = User.objects.filter(organization_id=request.user.organization.id)
+        teachers = User.objects.filter(organization_id=request.user.organization.id).order_by('date_created')
         teacher_field.queryset = teachers
         if len(teachers) == 1:
             teacher_field.disabled = True
@@ -159,10 +159,8 @@ def course_create_oneoff(request):
             messages.add_message(request, messages.SUCCESS,
                                  'Jednodenní aktivita byla úspěšně vytvořena a odeslána ke schválení!')
         else:
-            print(form.errors)
             messages.add_message(request, messages.ERROR,
                                  'Chyba při pokusu zaregistrovat jednodenní aktivitu!')
-        return redirect(dashboard)
     else:
         form = OneoffCourseForm()
         teacher_field = form.fields['teacher']
@@ -186,7 +184,6 @@ def course_update(request, slug=None):
             messages.add_message(request, messages.SUCCESS, 'Aktivita byla úspěšně upravena!')
         else:
             messages.add_message(request, messages.ERROR, 'Chyba při pokusu upravit aktivitu!')
-        return redirect(dashboard)
     return render(request, 'catalog/course/update.html', {'form': form})
 
 
