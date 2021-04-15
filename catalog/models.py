@@ -80,7 +80,7 @@ class WeekSchedule(models.Model):
 
 class PublishedManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(status='published')
+        return super().get_queryset().filter(status=Course.Status.PUBLISHED)
 
 
 class Course(models.Model):
