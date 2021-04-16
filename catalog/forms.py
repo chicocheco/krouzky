@@ -99,6 +99,12 @@ class CourseForm(forms.ModelForm):
             Submit('submit', 'Odeslat')
         )
 
+    def clean_date_to(self):  # clean_<fieldname>()
+        cd = self.cleaned_data
+        if cd['date_from'] == cd['date_to']:
+            raise forms.ValidationError('Shoduje se s datem začátku.')
+        return cd['date_to']
+
     class Meta:
         model = Course
         fields = (
@@ -170,8 +176,8 @@ class ContactTeacherForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
-            PrependedText('sender_name', '<i class="bi bi-person-fill"></i>', placeholder='Jméno'),
-            PrependedText('from_email', '<i class="bi bi-envelope-fill"></i>', placeholder='E-mailová adresa'),
+            PrependedText('sender_name', '<i class="fas fa-user"></i>', placeholder='Jméno'),
+            PrependedText('from_email', '<i class="fas fa-envelope"></i>', placeholder='E-mailová adresa'),
             Field('body', placeholder='Co vás zajímá?', rows=5)
 
         )

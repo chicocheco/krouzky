@@ -16,6 +16,10 @@
 {% block js %}
     <script src="{% static 'js/litepicker.js' %}"></script>
     <script>
+    let today = new Date();
+    let tomorrow = new Date().setDate(today.getDate() + 1)
+    let day_after = new Date().setDate(today.getDate() + 2)
+
     new Litepicker({
             lang: 'cs',
             singleMode: false,
@@ -24,8 +28,9 @@
                 other: 'dní'
             },
             format: 'DD.MM.YYYY',
-            startDate: new Date(),
-            endDate: new Date(),
+            minDays: 2,
+            startDate: tomorrow,
+            endDate: day_after,
             element: document.getElementById('id_date_from'),
             elementEnd: document.getElementById('id_date_to'),
         });
