@@ -1,13 +1,15 @@
 {% extends '_base.html' %}
+{% load catalog_tags %}
 {% load crispy_forms_tags %}
 
 {% block title %}{{ course.name }}{% endblock %}
 
 {% block content %}
-    <h2>{{ course.name|capfirst }}</h2>
-    <hr>
-    <div class="row">
+
+    <div class="row justify-content-center px-3 pt-2">
         <div class="col-12">
+            <h2>{{ course.name|capfirst }}</h2>
+            <hr>
             <p>
                 {{ course.description|safe }}
             </p>
@@ -37,6 +39,51 @@
                 </p>
             </div>
         </div>
+        {% if not course.is_oneoff %}
+            <div class="row pt-3 g-2">
+                <div class="col-12">
+                    <table class="table table-sm table-bordered text-center">
+                        <thead style="height: 80px;">
+                        <tr>
+                            <th scope="col" style="vertical-align: middle;">Týdenní rozvrh</th>
+                            <th scope="col" style="width: 12%; transform: rotate(-45deg); vertical-align: middle;">
+                                Pondělí
+                            </th>
+                            <th scope="col" style="width: 12%; transform: rotate(-45deg); vertical-align: middle;">
+                                Úterý
+                            </th>
+                            <th scope="col" style="width: 12%; transform: rotate(-45deg); vertical-align: middle;">
+                                Středa
+                            </th>
+                            <th scope="col" style="width: 12%; transform: rotate(-45deg); vertical-align: middle;">
+                                Čtvrtek
+                            </th>
+                            <th scope="col" style="width: 12%; transform: rotate(-45deg); vertical-align: middle;">
+                                Pátek
+                            </th>
+                            <th scope="col" style="width: 12%; transform: rotate(-45deg); vertical-align: middle;">
+                                Sobota
+                            </th>
+                            <th scope="col" style="width: 12%; transform: rotate(-45deg); vertical-align: middle;">
+                                Neděle
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for hour, day in schedule.items %}
+                            <tr>
+                                <th scope="row">{% convert_hour_block hour %}</th>
+                                {% for i in day %}
+                                    <td class="{% if i == 'X' %}bg-success{% else %}bg-white{% endif %}"></td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+
     </div>
 {% endblock %}
 
