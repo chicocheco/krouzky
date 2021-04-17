@@ -1,6 +1,7 @@
 venv/
 media/
 staticfiles/
+static/bootstrap/
 db.sqlite3
 .env
 *.pyc
