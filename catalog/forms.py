@@ -13,14 +13,6 @@ class CustomTimeInput(forms.TimeInput):
     input_type = 'time'
 
 
-class CustomDateInput(forms.DateTimeInput):
-    input_type = 'date'
-
-    def __init__(self, **kwargs):
-        kwargs['format'] = '%Y-%m-%d'
-        super().__init__(**kwargs)
-
-
 class FormHorizontalHelper(FormHelper):
 
     def __init__(self, *args, **kwargs):
