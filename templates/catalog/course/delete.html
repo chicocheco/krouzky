@@ -1,11 +1,11 @@
 {% extends '_base.html' %}
 
-{% block title %}Odstranění kroužku{% endblock %}
+{% block title %}Odstranění aktivity{% endblock %}
 
 {% block content %}
-    <h2>Odstranění kroužku</h2>
+    <h2>Odstranění aktivity</h2>
     <hr>
-    <p>Jste si jisti, že chcete odstranit kroužek <b>{{ course_name }}</b>?</p>
+    <p>Jste si jisti, že chcete odstranit aktivitu "<b>{{ course_name }}</b>"?</p>
 
     <form method="post">
         {% csrf_token %}
