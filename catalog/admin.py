@@ -9,7 +9,9 @@ from .models import Organization, Course, Topic, AgeCategory, WeekSchedule
 admin.site.register(Organization)
 admin.site.register(Topic)
 admin.site.register(AgeCategory)
-admin.site.register(WeekSchedule)
+
+
+# admin.site.register(WeekSchedule)
 
 
 @admin.register(Course)
@@ -26,3 +28,7 @@ class CourseAdmin(admin.ModelAdmin):
     widgets = {
         'description': TinyMCE(),
     }
+    fields = (
+        'status', 'name', 'description', 'price', 'hours', 'capacity', 'date_from', 'date_to', 'teacher',
+        'age_category', 'image', 'topic', 'week_schedule'
+    )
