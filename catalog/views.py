@@ -6,7 +6,7 @@ from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.utils.text import slugify
 
 from users.models import User
@@ -150,7 +150,7 @@ def course_create(request):
 
 
 @login_required
-def course_create_oneoff(request):
+def oneoff_course_create(request):
     if request.method == 'POST':
         form = OneoffCourseForm(data=request.POST, files=request.FILES)  # 'files' includes image upload
         if form.is_valid():
@@ -160,13 +160,14 @@ def course_create_oneoff(request):
             form.save_m2m()  # save Topic
             messages.add_message(request, messages.SUCCESS,
                                  'Jednodenní aktivita byla úspěšně vytvořena a odeslána ke schválení!')
+            return redirect(dashboard)
         else:
             messages.add_message(request, messages.ERROR,
                                  'Chyba při pokusu zaregistrovat jednodenní aktivitu!')
     else:
         form = OneoffCourseForm()
         teacher_field = form.fields['teacher']
-        teachers = User.objects.filter(organization_id=request.user.organization.id)
+        teachers = User.objects.filter(organization_id=request.user.organization.id).order_by('date_created')
         teacher_field.queryset = teachers
         if len(teachers) == 1:
             teacher_field.disabled = True
@@ -176,17 +177,61 @@ def course_create_oneoff(request):
 @login_required
 def course_update(request, slug=None):
     course = get_object_or_404(Course, slug=slug)
+    original_name, original_desc = course.name, course.description
     form = CourseForm(instance=course)
     form.fields['teacher'].queryset = User.objects.filter(organization_id=request.user.organization.id)
     if request.method == 'POST':
         # 'instance' parameter to relate to the existing object!
         form = CourseForm(data=request.POST, files=request.FILES, instance=course)
         if form.is_valid():
-            form.save()
-            messages.add_message(request, messages.SUCCESS, 'Aktivita byla úspěšně upravena!')
+            course = form.save(commit=False)
+            approval_req = False
+            if original_name != course.name or original_desc != course.description:
+                course.status = Course.Status.DRAFT
+                approval_req = True
+            course.save()
+            form.save_m2m()
+            if approval_req:
+                messages.add_message(request, messages.SUCCESS,
+                                     'Aktivita byla úspěšně upravena a odeslána ke schválení!')
+                return redirect(reverse('course_list_by_organization', args=[request.user.organization.slug]))
+            else:
+                messages.add_message(request, messages.SUCCESS, 'Aktivita byla úspěšně upravena!')
+                return redirect(course.get_absolute_url())
         else:
             messages.add_message(request, messages.ERROR, 'Chyba při pokusu upravit aktivitu!')
     return render(request, 'catalog/course/update.html', {'form': form})
+
+
+@login_required
+def oneoff_course_update(request, slug=None):
+    course = get_object_or_404(Course, slug=slug)
+    original_name, original_desc = course.name, course.description
+    form = OneoffCourseForm(instance=course)
+    form.fields['time_from'].initial = course.date_from.strftime('%H:%M')
+    form.fields['time_to'].initial = course.date_to.strftime('%H:%M')
+    form.fields['teacher'].queryset = User.objects.filter(organization_id=request.user.organization.id)
+    if request.method == 'POST':
+        # 'instance' parameter to relate to the existing object!
+        form = OneoffCourseForm(data=request.POST, files=request.FILES, instance=course)
+        if form.is_valid():
+            course = form.save(commit=False)
+            approval_req = False
+            if original_name != course.name or original_desc != course.description:
+                course.status = Course.Status.DRAFT
+                approval_req = True
+            course.save()
+            form.save_m2m()
+            if approval_req:
+                messages.add_message(request, messages.SUCCESS,
+                                     'Jednodenní aktivita byla úspěšně upravena a odeslána ke schválení!')
+                return redirect(reverse('course_list_by_organization', args=[request.user.organization.slug]))
+            else:
+                messages.add_message(request, messages.SUCCESS, 'Jednodenní aktivita byla úspěšně upravena!')
+                return redirect(course.get_absolute_url())
+        else:
+            messages.add_message(request, messages.ERROR, 'Chyba při pokusu upravit aktivitu!')
+    return render(request, 'catalog/course/update_oneoff.html', {'form': form})
 
 
 def course_detail(request, slug=None):

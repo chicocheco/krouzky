@@ -31,13 +31,18 @@
                         {% if course.organization == request.user.organization %}
                             <div class="d-flex">
                                 <div class="me-auto">
-                                    {% if course.status == 'published' %}
+                                    {% if course.status == 'PUBLISHED' %}
                                         <span class="badge bg-success">Publikováno</span>
                                     {% else %}
                                         <span class="badge bg-warning">Čeká ke shválení</span>
                                     {% endif %}
                                 </div>
                                 <div class="ms-auto mt-auto">
+                                    {% if course.is_oneoff %}
+                                        <a href="{% url 'oneoff_course_update' course.slug %}">Upravit</a> |
+                                    {% else %}
+                                        <a href="{% url 'course_update' course.slug %}">Upravit</a> |
+                                    {% endif %}
                                     <a href="{% url 'course_delete' course.slug %}">Odstranit</a>
                                 </div>
                             </div>
