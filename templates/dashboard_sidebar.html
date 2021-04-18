@@ -1,54 +1,58 @@
 {% load static %}
-<div class="row px-2">
-    <div class="col col-lg-12">
-        <h5 class="d-flex align-items-center">
-            <i class="fas fa-user-cog fa-md ms-1 me-3"></i>
-            Účet
-        </h5>
-        <hr>
-        <p><a href="{% url 'user_photo' %}">Profilová fotografie</a></p>
-        <p><a href="{% url 'user_update' %}">Úprava údajů</a></p>
-        <p><a href="{% url 'account_change_password' %}">Změna hesla</a></p>
-    </div>
-    <div class="col col-lg-12">
-        <h5 class="d-flex align-items-center">
-            <i class="fas fa-sitemap fa-md ms-1 me-3"></i>
-            Organizace
-        </h5>
-        <hr>
-        {% if request.user.organization %}
-            <p><a href="{% url 'organization_rename' %}">Úprava názvu</a></p>
-            <p><a href="{% url 'organization_update' %}">Úprava údajů</a></p>
-            <p><a href="{% url 'organization_delete' %}">Odstranit organizaci</a></p>
-        {% else %}
-            <p>Staňte se koordinátorem - <a href="{% url 'organization_register' %}">zaregistrujte svou organizaci.</a>
-            </p>
-        {% endif %}
-    </div>
-    <div class="col col-lg-12">
-        <h5 class="d-flex align-items-center">
-            <i class="fas fa-folder-open fa-md ms-1 me-3"></i>
-            Aktivity
-        </h5>
-        <hr>
-        {% with total_courses=request.user.organization.courses.count %}
-            {% if not request.user.organization %}
-                <p>Prosím zaregistrujte nejdříve vaší organizaci viz výše.</p>
+<div class="border p-4 bg-light">
+    <div class="row px-2">
+        <div class="col col-lg-12">
+            <h5 class="d-flex align-items-center">
+                <i class="fas fa-user-cog fa-md ms-1 me-3"></i>
+                Účet
+            </h5>
+            <hr>
+            <p><a href="{% url 'user_photo' %}">Profilová fotografie</a></p>
+            <p><a href="{% url 'user_update' %}">Úprava údajů</a></p>
+            <p><a href="{% url 'account_change_password' %}">Změna hesla</a></p>
+        </div>
+        <div class="col col-lg-12">
+            <h5 class="d-flex align-items-center">
+                <i class="fas fa-sitemap fa-md ms-1 me-3"></i>
+                Organizace
+            </h5>
+            <hr>
+            {% if request.user.organization %}
+                <p><a href="{% url 'organization_rename' %}">Úprava názvu</a></p>
+                <p><a href="{% url 'organization_update' %}">Úprava údajů</a></p>
+                <p><a href="{% url 'organization_delete' %}">Odstranit organizaci</a></p>
             {% else %}
-                {% if not total_courses %}
-                    <p>Nemáte vytvořené žádné aktivity.</p>
-                {% else %}
-                    <p>
-                        <a href="{% url 'course_list_by_organization' request.user.organization.slug %}" class="d-flex align-items-center">
-                            Moje aktivity
-                            <span class="badge rounded-pill bg-primary ms-2">{{ total_courses }}</span>
-                        </a>
-                    </p>
-                {% endif %}
-                <p><a href="{% url 'course_create' %}">Registrovat pravidelnou aktivitu</a></p>
-                <p><a href="{% url 'oneoff_course_create' %}">Registrovat jednodenní aktivitu</a></p>
+                <p>Staňte se koordinátorem - <a href="{% url 'organization_register' %}">zaregistrujte svou
+                    organizaci.</a>
+                </p>
             {% endif %}
-        {% endwith %}
-    </div>
+        </div>
+        <div class="col col-lg-12">
+            <h5 class="d-flex align-items-center">
+                <i class="fas fa-folder-open fa-md ms-1 me-3"></i>
+                Aktivity
+            </h5>
+            <hr>
+            {% with total_courses=request.user.organization.courses.count %}
+                {% if not request.user.organization %}
+                    <p>Prosím zaregistrujte nejdříve vaší organizaci viz výše.</p>
+                {% else %}
+                    {% if not total_courses %}
+                        <p>Nemáte vytvořené žádné aktivity.</p>
+                    {% else %}
+                        <p>
+                            <a href="{% url 'course_list_by_organization' request.user.organization.slug %}"
+                               class="d-flex align-items-center">
+                                Moje aktivity
+                                <span class="badge rounded-pill bg-primary ms-2">{{ total_courses }}</span>
+                            </a>
+                        </p>
+                    {% endif %}
+                    <p><a href="{% url 'course_create' %}">Registrovat pravidelnou aktivitu</a></p>
+                    <p><a href="{% url 'oneoff_course_create' %}">Registrovat jednodenní aktivitu</a></p>
+                {% endif %}
+            {% endwith %}
+        </div>
 
+    </div>
 </div>

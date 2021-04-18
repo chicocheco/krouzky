@@ -85,7 +85,8 @@
                     {% for error in field.errors %}
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
                             {{ field.label }}: {{ error|escape }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zavřít"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                    aria-label="Zavřít"></button>
                         </div>
                     {% endfor %}
                 {% endfor %}
@@ -110,9 +111,11 @@
             </div>
         </div>
         <div class="col-lg-4">
-            <div class="border p-4 bg-light">
-                {% block sidebar %}Sidebar{% endblock %}
-            </div>
+            {% block sidebar %}
+                <div class="border p-4 bg-light">
+                    Sidebar
+                </div>
+            {% endblock %}
         </div>
     </div>
 </main>
