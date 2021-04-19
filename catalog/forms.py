@@ -9,6 +9,17 @@ from tinymce.widgets import TinyMCE
 from .models import Organization, Course
 
 
+class WeekScheduleInlineCheckboxes(InlineCheckboxes):
+    template = 'widgets/weekschedule.html'
+
+
+class CustomClearableInput(forms.ClearableFileInput):
+    """
+    https://stackoverflow.com/a/52184422/5258626
+    """
+    template_name = 'widgets/image_input.html'
+
+
 class CustomTimeInput(forms.TimeInput):
     input_type = 'time'
 
@@ -58,10 +69,6 @@ class RenameOrganizationForm(forms.ModelForm):
         fields = ('name',)
 
 
-class WeekScheduleInlineCheckboxes(InlineCheckboxes):
-    template = 'widgets/weekschedule.html'
-
-
 class CourseForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
@@ -106,6 +113,7 @@ class CourseForm(forms.ModelForm):
             'description': TinyMCE(),
             'topic': forms.CheckboxSelectMultiple(),
             'week_schedule': forms.CheckboxSelectMultiple(),
+            'image': CustomClearableInput(),
         }
 
 
@@ -150,6 +158,7 @@ class OneoffCourseForm(forms.ModelForm):
         widgets = {
             'description': TinyMCE(),
             'topic': forms.CheckboxSelectMultiple(),
+            'image': CustomClearableInput(),
         }
 
     def save(self, commit=True):

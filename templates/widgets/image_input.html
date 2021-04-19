@@ -1,0 +1,23 @@
+{% if widget.is_initial %}
+    <div class="row">
+        <div class="col-6">
+            <label for="id_{{ widget.name }}">
+                <img src="{{ widget.value.url }}" alt="" class="img-fluid">
+            </label>
+        </div>
+        <div class="col-6">
+            <label for="id_{{ widget.name }}" class="form-label">{{ widget.input_text }}:</label>
+            <input type="{{ widget.type }}" name="{{ widget.name }}"{% include "django/forms/widgets/attrs.html" %}>
+            {% if not widget.required %}
+                <div class="form-check mt-3">
+                    <input type="checkbox" class="form-check-input" name="{{ widget.checkbox_name }}"
+                           id="{{ widget.checkbox_id }}"
+                            {% if widget.attrs.disabled %} disabled{% endif %}>
+                    <label for="{{ widget.checkbox_id }}"
+                           class="form-check-label">{{ widget.clear_checkbox_label }}</label>
+                </div>{% endif %}
+        </div>
+    </div>
+{% else %}
+    <input type="{{ widget.type }}" name="{{ widget.name }}"{% include "django/forms/widgets/attrs.html" %}>
+{% endif %}

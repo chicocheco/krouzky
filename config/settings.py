@@ -11,6 +11,8 @@ DEBUG = int(environ.get('DEBUG', default=0))
 
 ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost']
 
+FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'  # allows forms widget customization
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -20,6 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.postgres',
+    'django.forms',  # allows forms widget customization
 
     'users.apps.UsersConfig',
     'catalog.apps.CatalogConfig',
