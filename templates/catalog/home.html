@@ -2,33 +2,32 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
-{% block title %}Kroužky bez hranic{% endblock %}
+{% block title %}Vyber aktivitu online{% endblock %}
 
 {% block top_content %}
-    <div class="row align-items-center">
-        <div class="col-12 col-lg-3 px-3 px-lg-0">
-            <form method="get" action="{% url 'search' %}">
-                {% crispy form %}
-                <button class="btn btn-primary float-end" type="submit">Hledat</button>
-            </form>
-        </div>
-        <div class="col-12 col-lg-9 mt-0 mb-5">
+    <div class="row align-items-center g-5 p-3">
+        <div class="col-12 col-lg-6">
             <img src="{% static 'img/komplet.svg' %}" alt="" class="img img-fluid">
+        </div>
+        <div class="col-12 col-lg-6 text-center text-lg-start">
+            <h1 class="display-1">Vyhledávač online aktivit</h1>
+            <a class="btn btn-lg btn-primary mt-3" href="{% url 'search' %}">Hledat</a>
+
+        </div>
+        <div class="col-12 col-lg-6 text-center">
+            <h1 class="display-6">Vybírám aktivitu online</h1>
+            <ul>
+                <li>Vybírejte dle ceny, zaměření nebo přibližného času konání</li>
+                <li>Pravidelné či jednodenní aktivity</li>
+            </ul>
+        </div>
+        <div class="col-12 col-lg-6 text-center">
+            <h1 class="display-6">Nabízím aktivitu online</h1>
+            <ul>
+                <li>Registrace do databáze je zdarma</li>
+            </ul>
         </div>
     </div>
 {% endblock %}
 
-{% block content %}
-    <h1>Rozcestník online kroužků</h1>
-    <hr>
-    <p>Kroužky bez hranic. Online kroužek s lektorem z druhé strany republiky? Proč ne. Hledáme možnosti, ne překážky.
-        Z domova, od babičky a dědy, spolu nebo po jednom. Vybírejte podle zaměření, nebo dne konání.
-    </p>
-    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias autem culpa cumque dolores error itaque
-        laudantium neque nisi, obcaecati omnis perspiciatis placeat quidem quis rerum, sint totam ullam? At autem
-        consequuntur ducimus eaque id illum laboriosam minus nulla officia perferendis praesentium quidem, tempora
-        tempore, veniam vero! Harum in odit soluta!
-    </p>
-{% endblock %}
-
-{% block sidebar %}{% endblock %}
+{% block low_content %}{% endblock %}

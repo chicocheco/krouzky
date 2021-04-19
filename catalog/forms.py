@@ -191,19 +191,6 @@ class ContactTeacherForm(forms.Form):
     body = forms.CharField(widget=forms.Textarea())
 
 
-class SimpleSearchForm(forms.Form):
-    query = forms.CharField()
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.disable_csrf = True
-        self.helper.form_tag = False
-        self.helper.form_show_labels = False
-        self.helper.form_show_errors = False
-        self.helper.layout = Layout(Field('query', placeholder='Zadejte klíčové slovo nebo výraz'), )
-
-
 class CourseAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

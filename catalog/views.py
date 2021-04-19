@@ -12,13 +12,12 @@ from django.utils.text import slugify
 from users.models import User
 from .filters import CourseFilter
 from .forms import (UpdateOrganizationForm, RenameOrganizationForm, RegisterOrganizationForm, CourseForm,
-                    OneoffCourseForm, ContactTeacherForm, SimpleSearchForm)
+                    OneoffCourseForm, ContactTeacherForm)
 from .models import Course, Organization
 
 
 def home(request):
-    form = SimpleSearchForm()
-    return render(request, 'catalog/home.html', {'form': form})
+    return render(request, 'catalog/home.html')
 
 
 def cooperation(request):
@@ -284,22 +283,21 @@ def contact_teacher(request, slug=None):
 def search(request):
     query = None
     course_filter = CourseFilter(request.GET, Course.published.all())
-    if 'query' in request.GET:
-        form = SimpleSearchForm(request.GET)
-        if form.is_valid():
-            query = form.cleaned_data['query']
-            # to use __unaccent lookup field, you must CREATE EXTENSION unaccent; in postgres db
-            search_vector = SearchVector('name__unaccent', weight='A') + \
-                            SearchVector('description__unaccent', weight='B')
-            search_query = SearchQuery(query)
-            object_list = Course.published.annotate(
-                search=search_vector,
-                rank=SearchRank(search_vector, search_query)).filter(rank__gte=0.3).order_by('-rank')
-            queryset = request.GET.copy()
-            queryset.pop('query')
-            course_filter = CourseFilter(queryset, object_list)
-    # extract attached form from CourseFilter, fixes "Failed lookup for key [form] in <Page 1 of 2>":
     form = course_filter.form
+    if 'query' in request.GET:
+        query = request.GET.get('query')
+        form.fields['query'].initial = query
+        # to use __unaccent lookup field, you must CREATE EXTENSION unaccent; in postgres db
+        search_vector = SearchVector('name__unaccent', weight='A') + \
+                        SearchVector('description__unaccent', weight='B')
+        search_query = SearchQuery(query)
+        object_list = Course.published.annotate(
+            search=search_vector,
+            rank=SearchRank(search_vector, search_query)).filter(rank__gte=0.3).order_by('-rank')
+        queryset = request.GET.copy()
+        queryset.pop('query')
+        course_filter = CourseFilter(queryset, object_list)
+    # extract attached form from CourseFilter, fixes "Failed lookup for key [form] in <Page 1 of 2>":
     paginator = Paginator(course_filter.qs, 10)
     page = request.GET.get('page')
     try:

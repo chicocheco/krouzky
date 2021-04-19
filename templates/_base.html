@@ -4,8 +4,9 @@
 <html lang="cs">
 <head>
     <meta charset="utf-8">
-    <title>{% block title %}Kroužky v síti{% endblock %}</title>
-    <meta name="keywords" content="online kroužky, databáze kroužků">
+    <title>{% block title %}Vyber aktivitu online{% endblock %}</title>
+    <link rel="icon" href="{% static 'img/art.svg' %}"/>
+    <meta name="keywords" content="online aktivity, kroužky, databáze">
     <link rel="stylesheet" href="{% static 'css/custom_bootstrap.min.css' %}">
     <script src="https://kit.fontawesome.com/1e9ff6302a.js" crossorigin="anonymous"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -15,7 +16,7 @@
 </head>
 
 <body>
-<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark">
     <div class="container-md">
         <a class="navbar-brand" href="{% url 'home' %}">
             <img src="{% static 'img/logo.svg' %}" class="ms-3 ms-md-0" alt="logo" style="height: 50px">
@@ -39,7 +40,7 @@
                        href="{% url 'cooperation' %}">Spolupráce</a>
                 </li>
                 <li class="nav-item" aria-current="page">
-                    <a class="nav-link {% if section == 'about_us' %}active{% endif %}"
+                    <a class="nav-link text-nowrap {% if section == 'about_us' %}active{% endif %}"
                        href="{% url 'about_us' %}">O nás</a>
                 </li>
             </ul>
@@ -48,12 +49,15 @@
                 <li class="nav-item" aria-current="page">
                     {% if user.is_authenticated %}
                         <a href="{% url 'dashboard' %}" class="nav-link d-flex-nav-link">
-                            {% if user.name %}
-                                {{ user.name|title }}
-                            {% else %}
-                                {{ user.email }}
-                            {% endif %}
-                            <i class="fas fa-user-circle fa-lg ms-3"></i>
+                            <p class="lh-1 m-0 text-nowrap me-3 d-none d-lg-block">
+                                <small>Přihlášen jako:</small><br>
+                                {% if user.name %}
+                                    {{ user.name|title }}
+                                {% else %}
+                                    {{ user.email }}
+                                {% endif %}
+                            </p>
+                            <i class="fas fa-user-circle fa-lg mb-3 mb-md-0"></i>
                         </a>
                     {% else %}
                         <a href="{% url 'account_login' %}" class="nav-link d-flex-nav-link">
@@ -63,11 +67,15 @@
                     {% endif %}
                 </li>
             </ul>
+            <form method="get" class="d-flex ms-0 ms-md-3" action="{% url 'search' %}">
+                <label for="id_query"></label>
+                <input class="form-control" type="text" name="query" placeholder="Zadejte klíčové slovo" required=""
+                       id="id_query">
+                <button class="btn btn-primary ms-3" type="submit">Hledat</button>
+            </form>
         </div>
     </div>
 </nav>
-
-
 <main class="container-md px-1 pb-3 min-vh-100">
     <!--errors-->
     <div class="row py-3">
@@ -101,23 +109,25 @@
             {% endif %}
         </div>
     </div>
-    {% block top_content %}
-    {% endblock %}
-    <!--content-->
-    <div class="row g-4 pb-3">
-        <div class="col-lg-8">
-            <div class="border p-4 bg-light">
-                {% block content %}{% endblock %}
+    <!--top-content-->
+    {% block top_content %}{% endblock top_content %}
+    <!--low-content-->
+    {% block low_content %}
+        <div class="row g-4 pb-3">
+            <div class="col-lg-8">
+                <div class="border p-4 bg-light">
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+            <div class="col-lg-4">
+                {% block sidebar %}
+                    <div class="border p-4 bg-light">
+                        Sidebar
+                    </div>
+                {% endblock %}
             </div>
         </div>
-        <div class="col-lg-4">
-            {% block sidebar %}
-                <div class="border p-4 bg-light">
-                    Sidebar
-                </div>
-            {% endblock %}
-        </div>
-    </div>
+    {% endblock low_content %}
 </main>
 <!--footer-->
 <footer class="container-fluid bg-light border">
