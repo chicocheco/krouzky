@@ -26,3 +26,17 @@ a {
 .tox {
     border-radius: .25rem !important;
 }
+
+/* litepicker */
+.day-item.is-start-date, .day-item.is-end-date {
+    background-color: #a52041 !important;
+}
+
+.day-item.is-in-range {
+    background-color: #ffaabd !important;
+}
+
+.day-item:hover {
+    color: #ffaabd !important;
+    box-shadow: inset 0 0 0 1px #ffaabd !important;
+}
