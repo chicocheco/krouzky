@@ -1,6 +1,6 @@
 from autoslug import AutoSlugField
 from django.conf import settings
-from django.core.validators import MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -83,6 +83,10 @@ class PublishedManager(models.Manager):
         return super().get_queryset().filter(status=Course.Status.PUBLISHED)
 
 
+def image_directory_path(instance, filename):
+    return f'images/{instance.slug}.{filename.split(".")[-1]}'  # pathlib?
+
+
 class Course(models.Model):
     class Status(models.TextChoices):
         DRAFT = 'DRAFT', _('Ke schválení')
@@ -91,9 +95,9 @@ class Course(models.Model):
     name = models.CharField(_('název'), max_length=50, blank=False)
     slug = AutoSlugField(_('slug'), populate_from='name')  # make unique with organization?
     description = models.TextField(_('popis'), blank=True)
-    image = models.ImageField(_('obrázek'), null=True, upload_to='images/%Y/%m/%d')  # TODO: no need to be NULL?
+    image = models.ImageField(_('obrázek'), upload_to=image_directory_path)
     price = models.PositiveIntegerField(_('cena za kurz'), null=False, blank=False)
-    hours = models.PositiveIntegerField(_('počet hodin'), null=False, blank=False)
+    hours = models.PositiveIntegerField(_('počet hodin'), null=False, blank=False, validators=[MinValueValidator(1)])
     capacity = models.PositiveIntegerField(_('maximální kapacita'), null=True, blank=True)
     teacher = models.ForeignKey(settings.AUTH_USER_MODEL,
                                 verbose_name='vedoucí', related_name='courses', on_delete=models.CASCADE)
