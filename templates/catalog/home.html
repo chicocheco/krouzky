@@ -1,27 +1,25 @@
 {% extends '_base.html' %}
 {% load static %}
-{% load crispy_forms_tags %}
 
 {% block title %}Vyber aktivitu online{% endblock %}
 
 {% block top_content %}
-    <div class="row align-items-center g-5 p-3">
-        <div class="col-12 col-lg-6">
+    <div class="row g-5 p-3">
+        <div class="col-12 col-lg-6 align-self-center">
             <img src="{% static 'img/komplet.svg' %}" alt="" class="img img-fluid">
         </div>
-        <div class="col-12 col-lg-6 text-center text-lg-start">
+        <div class="col-12 col-lg-6 align-self-center text-center text-lg-start">
             <h1 class="display-1">Vyhledávač online aktivit</h1>
             <a class="btn btn-lg btn-primary mt-3" href="{% url 'search' %}">Hledat</a>
-
         </div>
-        <div class="col-12 col-lg-6 text-center">
+        <div class="col-12 col-lg-6 align-self-start text-center">
             <h1 class="display-6">Vybírám aktivitu online</h1>
             <ul>
                 <li>Vybírejte dle ceny, zaměření nebo přibližného času konání</li>
                 <li>Pravidelné či jednodenní aktivity</li>
             </ul>
         </div>
-        <div class="col-12 col-lg-6 text-center">
+        <div class="col-12 col-lg-6 align-self-start text-center">
             <h1 class="display-6">Nabízím aktivitu online</h1>
             <ul>
                 <li>Registrace do databáze je zdarma</li>
