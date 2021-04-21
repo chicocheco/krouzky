@@ -1,11 +1,12 @@
 {% if widget.is_initial %}
     <div class="row">
-        <div class="col-6">
+        <div class="col" id="id_preview_{{ widget.name }}">
             <label for="id_{{ widget.name }}">
-                <img src="{{ widget.value.url }}" alt="" class="img-fluid">
+                <label class="form-label">{{ widget.initial_text }}:</label>
+                <img src="{{ widget.value.url }}" alt="" class="img-fluid rounded-3 border">
             </label>
         </div>
-        <div class="col-6">
+        <div class="col">
             <label for="id_{{ widget.name }}" class="form-label">{{ widget.input_text }}:</label>
             <input type="{{ widget.type }}" name="{{ widget.name }}"{% include "django/forms/widgets/attrs.html" %}>
             {% if not widget.required %}

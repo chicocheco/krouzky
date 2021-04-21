@@ -206,6 +206,7 @@ def course_update(request, slug=None):
                 approval_req = True
             course.save()
             form.save_m2m()
+            post_process_image(form.cleaned_data, course)
             if approval_req:
                 messages.add_message(request, messages.SUCCESS,
                                      'Aktivita byla úspěšně upravena a odeslána ke schválení!')
@@ -237,6 +238,7 @@ def oneoff_course_update(request, slug=None):
                 approval_req = True
             course.save()
             form.save_m2m()
+            post_process_image(form.cleaned_data, course)
             if approval_req:
                 messages.add_message(request, messages.SUCCESS,
                                      'Jednodenní aktivita byla úspěšně upravena a odeslána ke schválení!')
