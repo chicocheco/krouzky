@@ -4,13 +4,11 @@ from django.forms import CheckboxSelectMultiple
 from tinymce.widgets import TinyMCE
 
 from .forms import CourseAdminForm
-from .models import Organization, Course, Topic, AgeCategory, WeekSchedule
+from .models import Organization, Course, Topic, AgeCategory
 
 admin.site.register(Organization)
 admin.site.register(Topic)
 admin.site.register(AgeCategory)
-
-
 # admin.site.register(WeekSchedule)
 
 
@@ -30,5 +28,6 @@ class CourseAdmin(admin.ModelAdmin):
     }
     fields = (
         'status', 'name', 'description', 'price', 'hours', 'capacity', 'date_from', 'date_to', 'teacher',
+        'organization',
         'age_category', 'image', 'topic', 'week_schedule'
     )
