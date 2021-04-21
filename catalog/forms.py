@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from crispy_forms.bootstrap import PrependedText, InlineCheckboxes
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field, Row, Column
@@ -70,6 +68,10 @@ class RenameOrganizationForm(forms.ModelForm):
 
 
 class CourseForm(forms.ModelForm):
+    x = forms.FloatField(widget=forms.HiddenInput(), required=False)
+    y = forms.FloatField(widget=forms.HiddenInput(), required=False)
+    width = forms.FloatField(widget=forms.HiddenInput(), required=False)
+    height = forms.FloatField(widget=forms.HiddenInput(), required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -93,6 +95,7 @@ class CourseForm(forms.ModelForm):
                 Column('teacher')
             ),
             Field('image', css_class='form-control'),
+            'x', 'y', 'width', 'height',  # hidden
             InlineCheckboxes('topic'),
             'description',
             Submit('submit', 'Odeslat')
@@ -108,7 +111,7 @@ class CourseForm(forms.ModelForm):
         model = Course
         fields = (
             'name', 'price', 'hours', 'capacity', 'date_from', 'date_to', 'week_schedule', 'teacher', 'age_category',
-            'image', 'topic', 'description')
+            'image', 'topic', 'description', 'x', 'y', 'width', 'height')
         widgets = {
             'description': TinyMCE(),
             'topic': forms.CheckboxSelectMultiple(),
@@ -118,6 +121,10 @@ class CourseForm(forms.ModelForm):
 
 
 class OneoffCourseForm(forms.ModelForm):
+    x = forms.FloatField(widget=forms.HiddenInput(), required=False)
+    y = forms.FloatField(widget=forms.HiddenInput(), required=False)
+    width = forms.FloatField(widget=forms.HiddenInput(), required=False)
+    height = forms.FloatField(widget=forms.HiddenInput(), required=False)
     time_from = forms.TimeField(label='Od hodin', required=True, widget=CustomTimeInput)
     time_to = forms.TimeField(label='Do hodin', required=True, widget=CustomTimeInput)
 
@@ -146,6 +153,7 @@ class OneoffCourseForm(forms.ModelForm):
                 Column('teacher')
             ),
             Field('image', css_class='form-control'),
+            'x', 'y', 'width', 'height',  # hidden
             InlineCheckboxes('topic'),
             'description',
             Submit('submit', 'Potvrdit')
@@ -154,21 +162,12 @@ class OneoffCourseForm(forms.ModelForm):
     class Meta:
         model = Course
         fields = ('name', 'price', 'capacity', 'hours', 'date_from', 'teacher', 'age_category',
-                  'image', 'topic', 'description')
+                  'image', 'topic', 'description', 'x', 'y', 'width', 'height')
         widgets = {
             'description': TinyMCE(),
             'topic': forms.CheckboxSelectMultiple(),
             'image': CustomClearableInput(),
         }
-
-    def save(self, commit=True):
-        course = super().save(commit=False)
-        course.date_from = datetime.combine(self.cleaned_data.get('date_from'), self.cleaned_data.get('time_from'))
-        course.date_to = datetime.combine(self.cleaned_data.get('date_from'), self.cleaned_data.get('time_to'))
-        course.is_oneoff = True
-        if commit:  # maintain the default behavior
-            course.save()
-        return course
 
 
 class ContactTeacherForm(forms.Form):

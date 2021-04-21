@@ -3,25 +3,120 @@
 {% load crispy_forms_tags %}
 
 {% block title %}Registrace pravidelné aktivity{% endblock %}
-{% block head_extra %}{{ form.media }}{% endblock %}
+{% block head_extra %}
+    <link href="{% static 'css/cropper.min.css' %}" rel="stylesheet">
+    {{ form.media }}
+{% endblock %}
 
 {% block content %}
     <h2>Registrace pravidelné aktivity</h2>
     <hr>
-    <p><b>Pozor: Z názvu bude odvozena URL adresa této aktivity. Název lze později kdykoliv upravit, nikoliv však URL adresa.</b></p>
+    <p><b>Pozor: Z názvu bude odvozena URL adresa této aktivity. Název lze později kdykoliv upravit, nikoliv však URL
+        adresa.</b></p>
     {% crispy form %}
+    <!-- MODAL TO CROP THE IMAGE -->
+    <div class="modal fade" id="modalCrop" data-bs-keyboard="false" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ořezat fotografii</h5>
+                    <button type="button" class="btn-close js-cancel" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div style="display: inline-block;">
+                        <img src="" id="image_to_crop" style="max-width: 100%;" alt="">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="btn-group me-auto" role="group">
+                        <button type="button" class="btn btn-outline-primary js-zoom-in">
+                            <i class="fas fa-search-plus"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-primary js-zoom-out">
+                            <i class="fas fa-search-minus"></i>
+                        </button>
+                    </div>
+                    <button type="button" class="btn btn-danger js-cancel" data-bs-dismiss="modal">Zrušit</button>
+                    <button type="button" class="btn btn-primary js-crop" data-bs-dismiss="modal">Ořezat
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block sidebar %}{% include 'dashboard_sidebar.html' %}{% endblock %}
 
 {% block js %}
+    <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'js/cropper.min.js' %}"></script>
+    <script>
+        $(function () {
+            /* SCRIPT TO OPEN THE MODAL WITH THE PREVIEW */
+            $("#id_image").change(function () {
+                {#$('#currentPhoto').hide()#}
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        $("#image_to_crop").attr("src", e.target.result);
+                        $("#modalCrop").modal("show");
+                    }
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+            /* SCRIPTS TO HANDLE THE CROPPER BOX */
+            const $image = $("#image_to_crop");
+            let cropBoxData;
+            let canvasData;
+            $("#modalCrop").on("shown.bs.modal", function () {
+                $image.cropper({
+                    viewMode: 1,
+                    aspectRatio: 1,
+                    minCropBoxWidth: 500,
+                    minCropBoxHeight: 500,
+                    ready: function () {
+                        $image.cropper("setCanvasData", canvasData);
+                        $image.cropper("setCropBoxData", cropBoxData);
+                    }
+                });
+            }).on("hidden.bs.modal", function () {
+                cropBoxData = $image.cropper("getCropBoxData");
+                canvasData = $image.cropper("getCanvasData");
+                $image.cropper("destroy");
+            });
+            // Enable zoom in button
+            $(".js-zoom-in").click(function () {
+                $image.cropper("zoom", 0.1);
+            });
+            // Enable zoom out button
+            $(".js-zoom-out").click(function () {
+                $image.cropper("zoom", -0.1);
+            });
+            /* SCRIPT TO COLLECT THE DATA AND POST TO THE SERVER */
+            $(".js-cancel").click(function () {
+                {#$('#currentPhoto').show()#}
+                $("#id_x").val('');
+                $("#id_y").val('');
+                $("#id_height").val('');
+                $("#id_width").val('');
+                $("#id_image").val('');
+            });
+            $(".js-crop").click(function () {
+                let cropData = $image.cropper("getData");
+                $("#id_x").val(cropData["x"]);
+                $("#id_y").val(cropData["y"]);
+                $("#id_height").val(cropData["height"]);
+                $("#id_width").val(cropData["width"]);
+            });
+        });
+    </script>
     <script src="{% static 'js/litepicker.js' %}"></script>
     <script>
-    let today = new Date();
-    let tomorrow = new Date().setDate(today.getDate() + 1)
-    let day_after = new Date().setDate(today.getDate() + 2)
-
-    new Litepicker({
+        let today = new Date();
+        let tomorrow = new Date().setDate(today.getDate() + 1)
+        let day_after = new Date().setDate(today.getDate() + 2)
+        new Litepicker({
             lang: 'cs',
             singleMode: false,
             tooltipText: {

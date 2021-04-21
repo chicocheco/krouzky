@@ -1,5 +1,7 @@
 from collections import defaultdict
+from datetime import datetime
 
+from PIL import Image
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
@@ -133,6 +135,7 @@ def course_create(request):
             course.organization = request.user.organization
             course.save()
             form.save_m2m()  # save Topic
+            post_process_image(form.cleaned_data, course)
             messages.add_message(request, messages.SUCCESS, 'Aktivita byla úspěšně vytvořena a odeslána ke schválení!')
             return redirect(dashboard)
         else:
@@ -153,10 +156,15 @@ def oneoff_course_create(request):
     if request.method == 'POST':
         form = OneoffCourseForm(data=request.POST, files=request.FILES)  # 'files' includes image upload
         if form.is_valid():
+            cd = form.cleaned_data
             course = form.save(commit=False)
             course.organization = request.user.organization
+            course.date_from = datetime.combine(cd.get('date_from'), cd.get('time_from'))
+            course.date_to = datetime.combine(cd.get('date_from'), cd.get('time_to'))
+            course.is_oneoff = True
             course.save()
-            form.save_m2m()  # save Topic
+            form.save_m2m()
+            post_process_image(cd, course)
             messages.add_message(request, messages.SUCCESS,
                                  'Jednodenní aktivita byla úspěšně vytvořena a odeslána ke schválení!')
             return redirect(dashboard)
@@ -171,6 +179,14 @@ def oneoff_course_create(request):
         if len(teachers) == 1:
             teacher_field.disabled = True
     return render(request, 'catalog/course/create_oneoff.html', {'form': form})
+
+
+def post_process_image(cleaned_data, course):
+    image = Image.open(course.image)
+    x, y, w, h = cleaned_data.get('x'), cleaned_data.get('y'), cleaned_data.get('width'), cleaned_data.get('height')
+    cropped_image = image.crop((x, y, w + x, h + y))  # left, upper, right, and lower pixel
+    resized_image = cropped_image.resize((500, 500), Image.ANTIALIAS)
+    resized_image.save(course.image.path)
 
 
 @login_required
@@ -258,7 +274,7 @@ def course_delete(request, slug=None):
     if request.method == 'POST':
         course.delete()
         messages.add_message(request, messages.SUCCESS, 'Organizace byla odstraněna!')
-        return redirect(dashboard)
+        return redirect(reverse('course_list_by_organization', args=[request.user.organization.slug]))
     return render(request, 'catalog/course/delete.html', {'course_name': course_name})
 
 
@@ -301,15 +317,15 @@ def search(request):
     paginator = Paginator(course_filter.qs, 10)
     page = request.GET.get('page')
     try:
-        paginated_results = paginator.page(page)
+        courses = paginator.page(page)
         custom_page_range = paginator.get_elided_page_range(page, on_each_side=2, on_ends=1)
     except PageNotAnInteger:
-        paginated_results = paginator.page(1)
+        courses = paginator.page(1)
         custom_page_range = paginator.get_elided_page_range(1, on_each_side=2, on_ends=1)
     except EmptyPage:
-        paginated_results = paginator.page(paginator.num_pages)
+        courses = paginator.page(paginator.num_pages)
         custom_page_range = paginator.get_elided_page_range(paginator.num_pages, on_each_side=2, on_ends=1)
-    return render(request, 'catalog/course/search.html', {'paginated_results': paginated_results,
+    return render(request, 'catalog/course/search.html', {'courses': courses,
                                                           'form': form,
                                                           'page': page,  # what for?
                                                           'query': query,
