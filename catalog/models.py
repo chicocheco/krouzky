@@ -72,10 +72,11 @@ class WeekSchedule(models.Model):
         return f'{self.WEEKDAYS[self.day_of_week]} {str(self.hour).zfill(2)}:00'
 
     # helper function
-    def fill_table(self):
+    @classmethod
+    def fill_table(cls):
         for i in range(7, 23):
             for j in range(7):
-                self.objects.create(day_of_week=j, hour=i)
+                cls.objects.create(day_of_week=j, hour=i)
 
 
 class PublishedManager(models.Manager):
