@@ -5,6 +5,11 @@
 {% block title %}Profilová fotografie{% endblock %}
 {% block head_extra %}
     <link href="{% static 'css/cropper.min.css' %}" rel="stylesheet">
+    <style>
+        .cropper-crop-box, .cropper-view-box {
+            border-radius: 50%;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
@@ -43,14 +48,14 @@
                 </div>
                 <div class="modal-footer">
                     <div class="btn-group me-auto" role="group">
-                        <button type="button" class="btn btn-outline-secondary js-zoom-in">
-                            <i class="bi bi-zoom-in"></i>
+                        <button type="button" class="btn btn-outline-primary js-zoom-in">
+                            <i class="fas fa-search-plus"></i>
                         </button>
-                        <button type="button" class="btn btn-outline-secondary js-zoom-out">
-                            <i class="bi bi-zoom-out"></i>
+                        <button type="button" class="btn btn-outline-primary js-zoom-out">
+                            <i class="fas fa-search-minus"></i>
                         </button>
                     </div>
-                    <button type="button" class="btn btn-secondary js-cancel" data-bs-dismiss="modal">Zrušit</button>
+                    <button type="button" class="btn btn-danger js-cancel" data-bs-dismiss="modal">Zrušit</button>
                     <button type="button" class="btn btn-primary js-crop-and-submit" data-bs-dismiss="modal">Ořezat a
                         nahrát
                     </button>
