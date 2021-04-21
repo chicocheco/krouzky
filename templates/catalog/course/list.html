@@ -14,47 +14,12 @@
     <p>Kroužky bez hranic. Online kroužek s lektorem z druhé strany republiky? Proč ne. Hledáme možnosti, ne překážky.
         Z domova, od babičky a dědy, spolu nebo po jednom. Vybírejte podle zaměření, nebo dne konání.
     </p>
-    {% for course in courses %}
-        <div class="card mb-3">
-            <div class="row g-0">
-                <div class="col col-md-4">
-                    <a href="{{ course.get_absolute_url }}">
-                        <img class="img-fluid" src="{{ course.image.url }}" alt="">
-                    </a>
-                </div>
-                <div class="col col-md-8">
-                    <div class="card-body">
-                        <h5 class="card-title mb-0"><a
-                                href="{{ course.get_absolute_url }}">{{ course.name|capfirst }}</a></h5>
-                        <p class="card-text"><small class="text-muted">{{ course.organization.name }}</small></p>
-                        <p class="card-text mt-auto">{{ course.description|striptags|truncatewords_html:30 }}</p>
-                        {% if course.organization == request.user.organization %}
-                            <div class="d-flex">
-                                <div class="me-auto">
-                                    {% if course.status == 'PUBLISHED' %}
-                                        <span class="badge bg-success">Publikováno</span>
-                                    {% else %}
-                                        <span class="badge bg-warning">Čeká ke shválení</span>
-                                    {% endif %}
-                                </div>
-                                <div class="ms-auto mt-auto">
-                                    {% if course.is_oneoff %}
-                                        <a href="{% url 'oneoff_course_update' course.slug %}">Upravit</a> |
-                                    {% else %}
-                                        <a href="{% url 'course_update' course.slug %}">Upravit</a> |
-                                    {% endif %}
-                                    <a href="{% url 'course_delete' course.slug %}">Odstranit</a>
-                                </div>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% empty %}
-        <p>Nenalezeno.</p>
-    {% endfor %}
+    {% include 'list.html' with courses=courses %}
     {% include 'pagination.html' with page=courses custom_page_range=custom_page_range %}
 {% endblock %}
 
-{% block sidebar %}{% endblock %}
+{% block sidebar %}
+    {% if user.is_authenticated %}
+        {% include 'dashboard_sidebar.html' %}
+    {% endif %}
+{% endblock %}

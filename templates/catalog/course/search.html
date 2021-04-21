@@ -15,45 +15,8 @@
     {% if query %}
         <p><b>Výsledky hledání obsahující "{{ query }}"</b></p>
     {% endif %}
-    {% for result in paginated_results %}
-        <div class="card mb-3">
-            <div class="row g-0">
-                <div class="col col-md-4">
-                    <a href="{{ result.get_absolute_url }}">
-                        <img class="img-fluid" src="{{ result.image.url }}">
-                    </a>
-                </div>
-                <div class="col col-md-8">
-                    <div class="card-body">
-                        <h5 class="card-title mb-0"><a
-                                href="{{ result.get_absolute_url }}">{{ result.name|capfirst }}</a></h5>
-                        <p class="card-text"><small class="text-muted">{{ result.organization.name }}</small></p>
-                        <p class="card-text mt-auto">{{ result.description|striptags|truncatewords_html:30 }}</p>
-                        {% if result.organization == request.user.organization %}
-                            <div class="d-flex">
-                                <div class="me-auto">
-                                    {% if result.status == 'PUBLISHED' %}
-                                        <span class="badge bg-success">Publikováno</span>
-                                    {% else %}
-                                        <span class="badge bg-warning">Čeká ke shválení</span>
-                                    {% endif %}
-                                </div>
-                                <div class="ms-auto mt-auto">
-                                    {% if result.is_oneoff %}
-                                        <a href="{% url 'oneoff_course_update' result.slug %}">Upravit</a> |
-                                    {% else %}
-                                        <a href="{% url 'course_update' result.slug %}">Upravit</a> |
-                                    {% endif %}
-                                    <a href="{% url 'course_delete' result.slug %}">Odstranit</a>
-                                </div>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endfor %}
-    {% include 'pagination.html' with page=paginated_results custom_page_range=custom_page_range %}
+    {% include 'list.html' with courses=courses %}
+    {% include 'pagination.html' with page=courses custom_page_range=custom_page_range %}
 
 {% endblock %}
 

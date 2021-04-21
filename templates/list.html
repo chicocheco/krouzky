@@ -1,0 +1,58 @@
+{% for course in courses %}
+    <div class="card mb-3">
+        <div class="row g-0">
+            <div class="col-12 col-md-4">
+                <div class="position-relative">
+                    <a href="{{ course.get_absolute_url }}">
+                        <img class="img-fluid card-img" src="{{ course.image.url }}" alt="{{ course.name }}"
+                             style="filter: brightness(90%);">
+                        <div class="position-absolute" style="top: 1rem; left: 1rem;">
+                            {% if course.is_oneoff %}
+                                <span class="badge bg-light text-muted">{{ course.date_from|date }}</span>
+                            {% endif %}
+                        </div>
+                        {% if course.organization == request.user.organization %}
+                            <div class="position-absolute" style="bottom: 1rem; left: 1rem;">
+                                {% if course.status == 'PUBLISHED' %}
+                                    <span class="badge bg-success">Publikováno</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Čeká ke shválení</span>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+            <div class="col-12 col-md-8 d-flex flex-wrap">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="{{ course.get_absolute_url }}">{{ course.name|capfirst }}</a>
+                    </h5>
+                    {% if course.organization == request.user.organization %}
+                        <p class="card-text">{{ course.description|striptags|truncatewords_html:20 }}</p>
+                    {% else %}
+                        <p class="card-text mt-0"><small class="text-muted">{{ course.organization.name }}</small>
+                        </p>
+                        <p class="card-text">{{ course.description|striptags|truncatewords_html:30 }}</p>
+                    {% endif %}
+                </div>
+                {% if course.organization == request.user.organization %}
+                    <div class="d-flex justify-content-between align-items-end flex-grow-1 flex-shrink-0 mt-0 mb-3"
+                         style="flex-basis: 100%;">
+                        <div class="mx-3">
+                            {% if course.is_oneoff %}
+                                <a class="btn btn-primary"
+                                   href="{% url 'oneoff_course_update' course.slug %}">Upravit</a>
+                            {% else %}
+                                <a class="btn btn-primary" href="{% url 'course_update' course.slug %}">Upravit</a>
+                            {% endif %}
+                            <a class="btn btn-danger" href="{% url 'course_delete' course.slug %}">Odstranit</a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% empty %}
+    <p>Nic nenalezeno.</p>
+{% endfor %}
