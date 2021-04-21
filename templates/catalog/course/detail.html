@@ -2,41 +2,40 @@
 {% load crispy_forms_tags %}
 {% load catalog_tags %}
 
-{% block title %}{{ course.name }}{% endblock %}
+{% block title %}{{ course.name|capfirst }}{% endblock %}
 
 {% block content %}
-
     <div class="row justify-content-center px-3 pt-2">
         <div class="col-12">
             <h2>{{ course.name|capfirst }}</h2>
             <hr>
-            <p>
-                {{ course.description|safe }}
-            </p>
+            <p>{{ course.description|safe }}</p>
         </div>
         <div class="row pt-3">
             <div class="col-6">
                 <img src="{{ course.image.url }}" alt="{{ course.name }}" class="img-fluid rounded-3">
             </div>
             <div class="col-6">
-                <p><b>Cena:</b><br>{{ course.price }} Kč ({{ price_hour }} Kč/hod)</p>
-                <p><b>Trvání aktivity:</b><br>{{ course.hours }} hodin</p>
-                <p><b>Kapacita:</b><br>{{ course.capacity }} osob</p>
-                <p><b>Věková skupina:</b><br>{{ course.age_category }}</p>
-                <p><b>Zaměření aktivity:</b><br>
-                    {% for topic in course.topic.all %}
-                        {{ topic.name }}
-                        {% if not forloop.last %}, {% endif %}
-                    {% endfor %}
-                </p>
-                <p><b>Doba konání:</b><br>
-                    {% if course.is_oneoff %}
-                        {{ course.date_from }} - {{ course.date_to|time }}
-                    {% else %}
-                        od {{ course.date_from|date }}<br>
-                        do {{ course.date_to|date }}
-                    {% endif %}
-                </p>
+                <div class="row g-3">
+                    <div class="col-6"><b>Cena:</b><br>{{ course.price }} Kč ({{ price_hour }} Kč/hod)</div>
+                    <div class="col-6"><b>Trvání aktivity:</b><br>{{ course.hours }} hodin</div>
+                    <div class="col-6"><b>Kapacita:</b><br>{{ course.capacity }} osob</div>
+                    <div class="col-6"><b>Věková skupina:</b><br>{{ course.age_category }}</div>
+                    <div class="col-12"><b>Zaměření aktivity:</b><br>
+                        {% for topic in course.topic.all %}
+                            {{ topic.name }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="col-12">
+                        <b>Doba konání:</b><br>
+                        {% if course.is_oneoff %}
+                            {{ course.date_from }} - {{ course.date_to|time }}
+                        {% else %}
+                            od {{ course.date_from|date }}<br>
+                            do {{ course.date_to|date }}
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
         {% if not course.is_oneoff %}
@@ -83,31 +82,30 @@
                 </div>
             </div>
         {% endif %}
+        {% if course.organization == request.user.organization %}
+            <div class="d-flex mt-3">
+                <div class="me-auto my-auto">
+                    {% if course.status == 'PUBLISHED' %}
+                        <span class="badge bg-success">Publikováno</span>
+                    {% else %}
+                        <span class="badge bg-warning">Čeká ke shválení</span>
+                    {% endif %}
+                </div>
+                <div class="ms-auto my-auto">
+                    {% if course.is_oneoff %}
+                        <a class="btn btn-primary" href="{% url 'oneoff_course_update' course.slug %}">Upravit</a>
+                    {% else %}
+                        <a class="btn btn-primary" href="{% url 'course_update' course.slug %}">Upravit</a>
+                    {% endif %}
+                    <a class="btn btn-danger" href="{% url 'course_delete' course.slug %}">Odstranit</a>
+                </div>
+            </div>
+        {% endif %}
     </div>
-    {% if course.organization == request.user.organization %}
-        <div class="d-flex">
-            <div class="me-auto mt-auto">
-                {% if course.status == 'PUBLISHED' %}
-                    <span class="badge bg-success">Publikováno</span>
-                {% else %}
-                    <span class="badge bg-warning">Čeká ke shválení</span>
-                {% endif %}
-            </div>
-            <div class="ms-auto mt-auto">
-                {% if course.is_oneoff %}
-                    <a class="btn btn-primary" href="{% url 'oneoff_course_update' course.slug %}">Upravit</a>
-                {% else %}
-                    <a class="btn btn-primary" href="{% url 'course_update' course.slug %}">Upravit</a>
-                {% endif %}
-                <a class="btn btn-danger" href="{% url 'course_delete' course.slug %}">Odstranit</a>
-            </div>
-        </div>
-    {% endif %}
 {% endblock %}
 
 {% block sidebar %}
     <div class="border p-4 bg-light">
-
         <div class="row align-items-start align-items-lg-center">
             <div class="col-12 col-sm-4 col-lg-12">
                 <p><b>Organizuje:</b><br>
