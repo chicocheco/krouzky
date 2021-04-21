@@ -10,6 +10,7 @@ from django.core.mail import send_mail
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.utils.text import slugify
+from django.utils.timezone import localtime
 
 from users.models import User
 from .filters import CourseFilter
@@ -126,6 +127,17 @@ def organization_delete(request):
     return render(request, 'catalog/organization/delete.html')
 
 
+def post_process_image(cleaned_data, course):
+    image = Image.open(course.image)
+    x, y, w, h = cleaned_data.get('x'), cleaned_data.get('y'), cleaned_data.get('width'), cleaned_data.get('height')
+    if x or y or w or h:
+        cropped_image = image.crop((x, y, w + x, h + y))  # left, upper, right, and lower pixel
+        resized_image = cropped_image.resize((500, 500), Image.ANTIALIAS)
+        resized_image.save(course.image.path)
+        return True
+    return False
+
+
 @login_required
 def course_create(request):
     if request.method == 'POST':
@@ -181,14 +193,6 @@ def oneoff_course_create(request):
     return render(request, 'catalog/course/create_oneoff.html', {'form': form})
 
 
-def post_process_image(cleaned_data, course):
-    image = Image.open(course.image)
-    x, y, w, h = cleaned_data.get('x'), cleaned_data.get('y'), cleaned_data.get('width'), cleaned_data.get('height')
-    cropped_image = image.crop((x, y, w + x, h + y))  # left, upper, right, and lower pixel
-    resized_image = cropped_image.resize((500, 500), Image.ANTIALIAS)
-    resized_image.save(course.image.path)
-
-
 @login_required
 def course_update(request, slug=None):
     course = get_object_or_404(Course, slug=slug)
@@ -224,21 +228,25 @@ def oneoff_course_update(request, slug=None):
     course = get_object_or_404(Course, slug=slug)
     original_name, original_desc = course.name, course.description
     form = OneoffCourseForm(instance=course)
-    form.fields['time_from'].initial = course.date_from.strftime('%H:%M')
-    form.fields['time_to'].initial = course.date_to.strftime('%H:%M')
+    form.fields['time_from'].initial = localtime(course.date_from).strftime('%H:%M')
+    form.fields['time_to'].initial = localtime(course.date_to).strftime('%H:%M')
     form.fields['teacher'].queryset = User.objects.filter(organization_id=request.user.organization.id)
     if request.method == 'POST':
         # 'instance' parameter to relate to the existing object!
         form = OneoffCourseForm(data=request.POST, files=request.FILES, instance=course)
         if form.is_valid():
+            cd = form.cleaned_data
             course = form.save(commit=False)
+            # TODO: do not hit db if unnecessary
+            course.date_from = datetime.combine(cd.get('date_from'), cd.get('time_from'))
+            course.date_to = datetime.combine(cd.get('date_from'), cd.get('time_to'))
             approval_req = False
             if original_name != course.name or original_desc != course.description:
                 course.status = Course.Status.DRAFT
                 approval_req = True
             course.save()
             form.save_m2m()
-            post_process_image(form.cleaned_data, course)
+            post_process_image(cd, course)
             if approval_req:
                 messages.add_message(request, messages.SUCCESS,
                                      'Jednodenní aktivita byla úspěšně upravena a odeslána ke schválení!')
