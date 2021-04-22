@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from crispy_forms.bootstrap import PrependedText, InlineCheckboxes
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field, Row, Column
@@ -125,8 +127,8 @@ class OneoffCourseForm(forms.ModelForm):
     y = forms.FloatField(widget=forms.HiddenInput(), required=False)
     width = forms.FloatField(widget=forms.HiddenInput(), required=False)
     height = forms.FloatField(widget=forms.HiddenInput(), required=False)
-    time_from = forms.TimeField(label='Od hodin', required=True, widget=CustomTimeInput)
-    time_to = forms.TimeField(label='Do hodin', required=True, widget=CustomTimeInput)
+    time_from = forms.TimeField(label='Čas začátku', required=True, widget=CustomTimeInput)
+    time_to = forms.TimeField(label='Čas konce', required=True, widget=CustomTimeInput)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -158,6 +160,16 @@ class OneoffCourseForm(forms.ModelForm):
             'description',
             Submit('submit', 'Potvrdit')
         )
+
+    def clean_time_to(self):  # clean_<fieldname>()
+        cd = self.cleaned_data
+        date_from = datetime.combine(cd.get('date_from'), cd.get('time_from'))
+        date_to = datetime.combine(cd.get('date_from'), cd.get('time_to'))
+        if date_from > date_to:
+            raise forms.ValidationError('Čas začátku je později než čas konce.')
+        elif cd['time_from'] == cd['time_to']:
+            raise forms.ValidationError('Čas začátku roven času konce.')
+        return cd['time_to']
 
     class Meta:
         model = Course
