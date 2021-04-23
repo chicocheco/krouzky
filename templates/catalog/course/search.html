@@ -10,14 +10,15 @@
     <form method="get" id="search-form">
         {% crispy form %}
         <p><input class="btn btn-primary me-2" type="submit" value="Hledat">
-        <input type="button" class="btn btn-danger" value="Vymazat" onclick="resetSearchForm()"></p>
+            <input type="button" class="btn btn-danger" value="Vymazat" onclick="resetSearchForm()"></p>
     </form>
     {% if query %}
-        <p><b>Výsledky hledání obsahující "{{ query }}"</b></p>
+        <p><b>Nalezeno {{ counter }} výsledků hledání obsahující klíčové slovo "{{ query }}".</b></p>
+    {% else %}
+        <p><b>Nalezeno {{ counter }} výsledků hledání.</b></p>
     {% endif %}
     {% include 'list.html' with courses=courses %}
     {% include 'pagination.html' with page=courses custom_page_range=custom_page_range %}
-
 {% endblock %}
 
 {% block sidebar %}{% endblock %}
@@ -45,7 +46,7 @@
         let minPriceElement = document.getElementById('id_price_min');
         let maxPriceElement = document.getElementById('id_price_max');
         [minPriceElement, maxPriceElement].forEach(element => {
-            element.addEventListener('blur', ()=>{
+            element.addEventListener('blur', () => {
                 let minPrice = minPriceElement.valueAsNumber;
                 let maxPrice = maxPriceElement.valueAsNumber;
                 if (maxPrice < minPrice) {

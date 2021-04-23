@@ -19,12 +19,31 @@ from .forms import (UpdateOrganizationForm, RenameOrganizationForm, RegisterOrga
 from .models import Course, Organization
 
 
+def paginate(request, objects, per_page=10):
+    paginator = Paginator(objects, per_page)
+    page = request.GET.get('page')
+    try:
+        courses = paginator.page(page)
+        custom_page_range = paginator.get_elided_page_range(page, on_each_side=2, on_ends=1)
+    except PageNotAnInteger:
+        courses = paginator.page(1)
+        custom_page_range = paginator.get_elided_page_range(1, on_each_side=2, on_ends=1)
+    except EmptyPage:
+        courses = paginator.page(paginator.num_pages)
+        custom_page_range = paginator.get_elided_page_range(paginator.num_pages, on_each_side=2, on_ends=1)
+    return courses, custom_page_range
+
+
 def home(request):
     return render(request, 'catalog/home.html')
 
 
 def cooperation(request):
     return render(request, 'catalog/cooperation.html', {'section': 'cooperation'})
+
+
+def about_us(request):
+    return render(request, 'catalog/about.html', {'section': 'about_us'})
 
 
 @login_required
@@ -44,25 +63,10 @@ def course_list(request, slug=None):
     else:
         organization_name = None
         object_list = Course.published.all()
-    paginator = Paginator(object_list, 10)
-    page = request.GET.get('page')
-    try:
-        courses = paginator.page(page)
-        custom_page_range = paginator.get_elided_page_range(page, on_each_side=2, on_ends=1)
-    except PageNotAnInteger:
-        courses = paginator.page(1)
-        custom_page_range = paginator.get_elided_page_range(1, on_each_side=2, on_ends=1)
-    except EmptyPage:
-        courses = paginator.page(paginator.num_pages)
-        custom_page_range = paginator.get_elided_page_range(paginator.num_pages, on_each_side=2, on_ends=1)
+    courses, custom_page_range = paginate(request, object_list)
     return render(request, 'catalog/course/list.html',
-                  {'page': page, 'custom_page_range': custom_page_range, 'courses': courses,
-                   'organization_name': organization_name,
-                   'section': 'courses'})
-
-
-def about_us(request):
-    return render(request, 'catalog/about.html', {'section': 'about_us'})
+                  {'custom_page_range': custom_page_range, 'courses': courses,
+                   'organization_name': organization_name, 'section': 'courses'})
 
 
 @login_required
@@ -311,6 +315,7 @@ def search(request):
     course_filter = CourseFilter(request.GET, Course.published.all())
     form = course_filter.form
     if 'query' in request.GET:
+        # TODO: does not work combined with other filters
         query = request.GET.get('query')
         form.fields['query'].initial = query
         # to use __unaccent lookup field, you must CREATE EXTENSION unaccent; in postgres db
@@ -321,23 +326,24 @@ def search(request):
             search=search_vector,
             rank=SearchRank(search_vector, search_query)).filter(rank__gte=0.3).order_by('-rank')
         queryset = request.GET.copy()
-        queryset.pop('query')
+        queryset.pop('query')  # do not process in CourseFilter - fix Cannot resolve keyword 'query' into field.
+        course_filter = CourseFilter(queryset, object_list)
+    if 'topic' in request.GET:
+        topic = request.GET.get('topic')
+        object_list = Course.published.filter(topic__id__exact=topic)
+        course_filter = CourseFilter(request.GET, object_list)
+    if 'week_day' in request.GET:
+        week_days = request.GET.getlist('week_day')
+        object_list = Course.published.filter(week_schedule__day_of_week__in=week_days).distinct()
+        queryset = request.GET.copy()
+        queryset.pop('week_day')  # do not process in CourseFilter
         course_filter = CourseFilter(queryset, object_list)
     # extract attached form from CourseFilter, fixes "Failed lookup for key [form] in <Page 1 of 2>":
-    paginator = Paginator(course_filter.qs, 10)
-    page = request.GET.get('page')
-    try:
-        courses = paginator.page(page)
-        custom_page_range = paginator.get_elided_page_range(page, on_each_side=2, on_ends=1)
-    except PageNotAnInteger:
-        courses = paginator.page(1)
-        custom_page_range = paginator.get_elided_page_range(1, on_each_side=2, on_ends=1)
-    except EmptyPage:
-        courses = paginator.page(paginator.num_pages)
-        custom_page_range = paginator.get_elided_page_range(paginator.num_pages, on_each_side=2, on_ends=1)
+    counter = len(course_filter.qs)
+    courses, custom_page_range = paginate(request, course_filter.qs)
     return render(request, 'catalog/course/search.html', {'courses': courses,
+                                                          'counter': counter,
                                                           'form': form,
-                                                          'page': page,  # what for?
                                                           'query': query,
                                                           'custom_page_range': custom_page_range,
                                                           'section': 'search'})

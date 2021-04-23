@@ -2,9 +2,18 @@ import django_filters
 from crispy_forms.bootstrap import InlineCheckboxes, AppendedText
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Row, Column
-from django import forms
 
 from .models import Course, Topic
+
+WEEKDAYS = (
+    (0, 'Pondělí'),
+    (1, 'Úterý'),
+    (2, 'Středa'),
+    (3, 'Čtvrtek'),
+    (4, 'Pátek'),
+    (5, 'Sobota'),
+    (6, 'Neděle'),
+)
 
 
 class CourseFilter(django_filters.FilterSet):
@@ -13,8 +22,8 @@ class CourseFilter(django_filters.FilterSet):
                                             help_text='Zvolte násobky 100')
     price_max = django_filters.NumberFilter(field_name='price', lookup_expr='lte', label='Maximální cena aktivity')
     topic = django_filters.ModelMultipleChoiceFilter(queryset=Topic.objects.all(),
-                                                     widget=forms.CheckboxSelectMultiple,
                                                      label='Omezit výběr zaměření')
+    week_day = django_filters.MultipleChoiceFilter(choices=WEEKDAYS, label='Vybrat den v týdnu')
     date_from = django_filters.DateFilter(input_formats=['%d.%m.%Y'], lookup_expr='gte', label='Od data',
                                           help_text='Kliknutím se otevře kalendář')
     date_to = django_filters.DateFilter(input_formats=['%d.%m.%Y'], lookup_expr='lte', label='Do data')
@@ -36,7 +45,11 @@ class CourseFilter(django_filters.FilterSet):
                                              Column('date_from'),
                                              Column('date_to')
                                          ),
-                                         InlineCheckboxes('topic', css_class='col-12'), )
+                                         InlineCheckboxes('topic', css_class='col-12'),
+                                         InlineCheckboxes('week_day', css_class='col-12'),
+                                         )
+        # TODO: self.form.fields['price_min'].initial = 0
+        # TODO: self.form.fields['price_max'].initial = 0
         self.form.fields['price_min'].widget.attrs.update({'min': 0, 'max': 99999, 'step': 100})
         self.form.fields['price_max'].widget.attrs.update({'min': 0, 'max': 99999, 'step': 100})
         self.form.fields['age_category'].empty_label = 'Bez omezení'
