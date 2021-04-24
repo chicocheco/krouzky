@@ -2,6 +2,7 @@ import django_filters
 from crispy_forms.bootstrap import InlineCheckboxes, AppendedText
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Row, Column
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 
 from .models import Course, Topic
 
@@ -16,8 +17,17 @@ WEEKDAYS = (
 )
 
 
+def filter_by_query(queryset, _, value):
+    search_vector = SearchVector('name__unaccent', weight='A') + \
+                    SearchVector('description__unaccent', weight='B')
+    search_query = SearchQuery(value)
+    return queryset.annotate(
+        search=search_vector,
+        rank=SearchRank(search_vector, search_query)).filter(rank__gte=0.3).order_by('-rank')
+
+
 class CourseFilter(django_filters.FilterSet):
-    query = django_filters.CharFilter(label='Klíčové slovo')
+    q = django_filters.CharFilter(label='Klíčové slovo', method=filter_by_query)
     price_min = django_filters.NumberFilter(field_name='price', lookup_expr='gte', label='Minimální cena aktivity',
                                             help_text='Zvolte násobky 100')
     price_max = django_filters.NumberFilter(field_name='price', lookup_expr='lte', label='Maximální cena aktivity')
@@ -35,7 +45,7 @@ class CourseFilter(django_filters.FilterSet):
         self.form.helper.form_tag = False
         self.form.helper.form_show_labels = True
         self.form.helper.form_show_errors = False
-        self.form.helper.layout = Layout(Field('query', css_class='col-12'),
+        self.form.helper.layout = Layout(Field('q', css_class='col-12'),
                                          Row(
                                              Column(AppendedText('price_min', 'Kč')),
                                              Column(AppendedText('price_max', 'Kč')),

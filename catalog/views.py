@@ -4,7 +4,6 @@ from datetime import datetime
 from PIL import Image
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
@@ -314,20 +313,10 @@ def search(request):
     query = None
     course_filter = CourseFilter(request.GET, Course.published.all())
     form = course_filter.form
-    if 'query' in request.GET:
-        # TODO: does not work combined with other filters
-        query = request.GET.get('query')
-        form.fields['query'].initial = query
-        # to use __unaccent lookup field, you must CREATE EXTENSION unaccent; in postgres db
-        search_vector = SearchVector('name__unaccent', weight='A') + \
-                        SearchVector('description__unaccent', weight='B')
-        search_query = SearchQuery(query)
-        object_list = Course.published.annotate(
-            search=search_vector,
-            rank=SearchRank(search_vector, search_query)).filter(rank__gte=0.3).order_by('-rank')
-        queryset = request.GET.copy()
-        queryset.pop('query')  # do not process in CourseFilter - fix Cannot resolve keyword 'query' into field.
-        course_filter = CourseFilter(queryset, object_list)
+    form.fields['price_min'].initial = 0
+    form.fields['price_max'].initial = 0
+    if 'q' in request.GET:
+        form.fields['q'].initial = request.GET.get('q')
     if 'topic' in request.GET:
         topic = request.GET.get('topic')
         object_list = Course.published.filter(topic__id__exact=topic)
