@@ -26,6 +26,14 @@ def filter_by_query(queryset, _, value):
         rank=SearchRank(search_vector, search_query)).filter(rank__gte=0.3).order_by('-rank')
 
 
+"""
+Notes for week_day:
+week_day filter equals more or less this:
+week_days = request.GET.getlist('week_day')
+object_list = Course.published.filter(week_schedule__day_of_week__in=week_days).distinct()
+"""
+
+
 class CourseFilter(django_filters.FilterSet):
     q = django_filters.CharFilter(label='Klíčové slovo', method=filter_by_query)
     price_min = django_filters.NumberFilter(field_name='price', lookup_expr='gte', label='Minimální cena aktivity',
@@ -35,7 +43,12 @@ class CourseFilter(django_filters.FilterSet):
                                                      field_name='topic',
                                                      lookup_expr='exact',
                                                      label='Omezit výběr zaměření')
-    week_day = django_filters.MultipleChoiceFilter(choices=WEEKDAYS, label='Vybrat den v týdnu')
+    week_day = django_filters.MultipleChoiceFilter(choices=WEEKDAYS,
+                                                   field_name='week_schedule__day_of_week',
+                                                   lookup_expr='in',  # choices get collect in a list
+                                                   distinct=True,
+                                                   conjoined=False,
+                                                   label='Vybrat den v týdnu')
     date_from = django_filters.DateFilter(input_formats=['%d.%m.%Y'], lookup_expr='gte', label='Od data',
                                           help_text='Kliknutím se otevře kalendář')
     date_to = django_filters.DateFilter(input_formats=['%d.%m.%Y'], lookup_expr='lte', label='Do data')

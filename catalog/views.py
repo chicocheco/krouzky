@@ -312,18 +312,11 @@ def contact_teacher(request, slug=None):
 def search(request):
     query = None
     course_filter = CourseFilter(request.GET, Course.published.all())
-    form = course_filter.form
+    form = course_filter.form  # fixes "Failed lookup for key [form] in <Page 1 of 2>":
     form.fields['price_min'].initial = 0  # does not work
     form.fields['price_max'].initial = 0  # does not work
     if 'q' in request.GET:
         form.fields['q'].initial = request.GET.get('q')  # works
-    if 'week_day' in request.GET:
-        week_days = request.GET.getlist('week_day')
-        object_list = Course.published.filter(week_schedule__day_of_week__in=week_days).distinct()
-        queryset = request.GET.copy()
-        queryset.pop('week_day')  # do not process in CourseFilter
-        course_filter = CourseFilter(queryset, object_list)
-    # extract attached form from CourseFilter, fixes "Failed lookup for key [form] in <Page 1 of 2>":
     counter = len(course_filter.qs)
     courses, custom_page_range = paginate(request, course_filter.qs)
     return render(request, 'catalog/course/search.html', {'courses': courses,
