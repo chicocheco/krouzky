@@ -106,11 +106,12 @@ class Course(models.Model):
                                      verbose_name='organizace', related_name='courses', on_delete=models.CASCADE)
     age_category = models.ForeignKey(AgeCategory,
                                      verbose_name='věková kategorie', related_name='courses', on_delete=models.CASCADE)
-    topic = models.ManyToManyField(Topic, verbose_name='zaměření')
+    topic = models.ManyToManyField(Topic, verbose_name='zaměření', related_name='courses')
     status = models.CharField(_('stav'), max_length=9, choices=Status.choices, default=Status.DRAFT)
     date_from = models.DateTimeField(_('Datum začátku'), help_text='Kliknutím se otevře kalendář')
     date_to = models.DateTimeField(_('Datum konce'))
-    week_schedule = models.ManyToManyField(WeekSchedule, verbose_name='týdenní rozvrh', blank=True)
+    week_schedule = models.ManyToManyField(WeekSchedule, verbose_name='týdenní rozvrh', blank=True,
+                                           related_name='courses')
     is_oneoff = models.BooleanField(_('Je jednodenní'), default=False)
     date_modified = models.DateTimeField(_('upraveno'), auto_now=True)
     date_created = models.DateTimeField(_('vytvořeno'), auto_now_add=True)

@@ -34,7 +34,10 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'django_filters',
     'tinymce',
+    'debug_toolbar',
 ]
+
+INTERNAL_IPS = ['172.22.0.1', ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
@@ -75,6 +78,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',  # 3rd party
 ]
 
 ROOT_URLCONF = 'config.urls'
