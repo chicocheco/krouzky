@@ -60,7 +60,7 @@ class WeekSchedule(models.Model):
         SUNDAY = 6, _('Neděle')
 
     day_of_week = models.PositiveSmallIntegerField(validators=[MaxValueValidator(6)])  # 0-6
-    hour = models.PositiveSmallIntegerField(validators=[MaxValueValidator(22)])  # 7-22
+    hour = models.PositiveSmallIntegerField(validators=[MinValueValidator(7), MaxValueValidator(22)])  # 7-22
 
     class Meta:
         ordering = ['hour', 'day_of_week']
@@ -92,6 +92,7 @@ class Course(models.Model):
     class Status(models.TextChoices):
         DRAFT = 'DRAFT', _('Ke schválení')
         PUBLISHED = 'PUBLISHED', _('Publikováno')
+        # TODO: add EXPIRED state
 
     name = models.CharField(_('název'), max_length=50, blank=False)
     slug = AutoSlugField(_('slug'), populate_from='name')  # make unique with organization?

@@ -23,6 +23,29 @@ def filter_by_query(queryset, _, value):
         rank=SearchRank(search_vector, search_query)).filter(rank__gte=0.3).order_by('-rank')
 
 
+TIME_BLOCKS = (
+    (0, 'Dopoledne'),  # [7-12]
+    (1, 'Odpoledne'),  # [12-18]
+    (2, 'Večer'),  # [18-22]
+)
+
+
+def filter_by_timeblock(queryset, _, values):
+    print('values', values)
+    time_blocks = []
+    if '0' in values:
+        morning = [i for i in range(7, 12)]
+        time_blocks.extend(morning)
+    if '1' in values:
+        afternoon = [i for i in range(12, 19)]
+        time_blocks.extend(afternoon)
+    if '2' in values:
+        evening = [i for i in range(19, 23)]
+        time_blocks.extend(evening)
+    print(time_blocks)
+    return queryset.filter(week_schedule__hour__in=time_blocks).distinct()
+
+
 class CourseFilter(django_filters.FilterSet):
     q = django_filters.CharFilter(label='Klíčové slovo', method=filter_by_query)
     price_min = django_filters.NumberFilter(field_name='price', lookup_expr='gte', label='Minimální cena aktivity',
@@ -35,9 +58,12 @@ class CourseFilter(django_filters.FilterSet):
     week_day = django_filters.MultipleChoiceFilter(choices=WeekSchedule.WeekDay.choices,
                                                    field_name='week_schedule__day_of_week',
                                                    lookup_expr='in',  # choices get collected in a list
-                                                   distinct=True,
-                                                   conjoined=False,
+                                                   distinct=True,  # default
+                                                   conjoined=False,  # default
                                                    label='Den v týdnu')
+    time_block = django_filters.MultipleChoiceFilter(choices=TIME_BLOCKS,
+                                                     method=filter_by_timeblock,
+                                                     label='Hodinový blok')
     date_from = django_filters.DateFilter(input_formats=['%d.%m.%Y'], lookup_expr='gte', label='Od data',
                                           help_text='Kliknutím se otevře kalendář')
     date_to = django_filters.DateFilter(input_formats=['%d.%m.%Y'], lookup_expr='lte', label='Do data')
@@ -61,6 +87,7 @@ class CourseFilter(django_filters.FilterSet):
                                          ),
                                          InlineCheckboxes('topic', css_class='col-12'),
                                          InlineCheckboxes('week_day', css_class='col-12'),
+                                         InlineCheckboxes('time_block', css_class='col-12'),
                                          )
         # TODO: self.form.fields['price_min'].initial = 0
         # TODO: self.form.fields['price_max'].initial = 0
