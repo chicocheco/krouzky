@@ -33,6 +33,9 @@ class UserManager(BaseUserManager):
         user = self._create_user(email, password, True, True, **extra_fields)
         return user
 
+    def get(self, *args, **kwargs):  # reduces db hits
+        return super().select_related('organization').get(*args, **kwargs)
+
 
 class User(AbstractBaseUser, PermissionsMixin):
     class Roles(models.TextChoices):

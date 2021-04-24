@@ -61,7 +61,7 @@ def course_list(request, slug=None):
         object_list = Course.objects.filter(organization=organization)
     else:
         organization_name = None
-        object_list = Course.published.all()
+        object_list = Course.published.all().prefetch_related('organization')
     courses, custom_page_range = paginate(request, object_list)
     return render(request, 'catalog/course/list.html',
                   {'custom_page_range': custom_page_range, 'courses': courses,
@@ -263,7 +263,7 @@ def oneoff_course_update(request, slug=None):
 
 
 def course_detail(request, slug=None):
-    course = get_object_or_404(Course, slug=slug)
+    course = get_object_or_404(Course.published.select_related('organization'), slug=slug)
     form = ContactTeacherForm()
     price_hour = round(course.price / course.hours)
 
@@ -311,7 +311,7 @@ def contact_teacher(request, slug=None):
 
 def search(request):
     query = None
-    course_filter = CourseFilter(request.GET, Course.published.all())
+    course_filter = CourseFilter(request.GET, Course.published.all().prefetch_related('organization'))
     form = course_filter.form  # fixes "Failed lookup for key [form] in <Page 1 of 2>":
     form.fields['price_min'].initial = 0  # does not work
     form.fields['price_max'].initial = 0  # does not work
