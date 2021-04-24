@@ -1,7 +1,7 @@
 import django_filters
 from crispy_forms.bootstrap import InlineCheckboxes, AppendedText
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field, Row, Column
+from crispy_forms.layout import Layout, Field, Row, Column, HTML, Div
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 
 from .models import Course, Topic, WeekSchedule
@@ -86,11 +86,16 @@ class CourseFilter(django_filters.FilterSet):
                                              Column('date_to')
                                          ),
                                          InlineCheckboxes('topic', css_class='col-12'),
-                                         InlineCheckboxes('week_day', css_class='col-12'),
-                                         InlineCheckboxes('time_block', css_class='col-12'),
+                                         # expand searching button
+                                         HTML('<a class="btn btn-primary mb-3" type="button" data-bs-toggle="collapse"'
+                                              ' data-bs-target="#collapseRegActivitiesFilter" aria-expanded="false" '
+                                              'aria-controls="collapseExample">Filtrovat pravidelné aktivity</a>'),
+                                         Div(
+                                             InlineCheckboxes('week_day', css_class='col-12'),
+                                             InlineCheckboxes('time_block', css_class='col-12'),
+                                             css_class='collapse', id='collapseRegActivitiesFilter'
+                                         ),
                                          )
-        # TODO: self.form.fields['price_min'].initial = 0
-        # TODO: self.form.fields['price_max'].initial = 0
         self.form.fields['price_min'].widget.attrs.update({'min': 0, 'max': 99999, 'step': 100})
         self.form.fields['price_max'].widget.attrs.update({'min': 0, 'max': 99999, 'step': 100})
         self.form.fields['age_category'].empty_label = 'Bez omezení'

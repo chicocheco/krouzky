@@ -30,11 +30,12 @@
 {% block js %}
     <script src="{% static 'js/litepicker.js' %}"></script>
     <script>
+        /* reset button */
         function resetSearchForm() {
             document.getElementById("search-form").reset();
             window.location.href = window.location.origin + window.location.pathname;
         }
-
+        /* date picker */
         new Litepicker({
             lang: 'cs',
             singleMode: false,
@@ -46,17 +47,12 @@
             element: document.getElementById('id_date_from'),
             elementEnd: document.getElementById('id_date_to'),
         });
-
-        let minPriceElement = document.getElementById('id_price_min');
-        let maxPriceElement = document.getElementById('id_price_max');
-        [minPriceElement, maxPriceElement].forEach(element => {
-            element.addEventListener('blur', () => {
-                let minPrice = minPriceElement.valueAsNumber;
-                let maxPrice = maxPriceElement.valueAsNumber;
-                if (maxPrice < minPrice) {
-                    minPriceElement.value = maxPriceElement.value;
-                }
-            })
+        /* keep expanded if any checkbox is checked */
+        let weekDayElement = document.getElementById('collapseRegActivitiesFilter');
+        weekDayElement.querySelectorAll('input[type="checkbox"]').forEach(element => {
+            if (element.checked) {
+                weekDayElement.classList.add('show');
+            }
         })
     </script>
 {% endblock %}
