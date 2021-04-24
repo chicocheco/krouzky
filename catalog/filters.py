@@ -32,6 +32,8 @@ class CourseFilter(django_filters.FilterSet):
                                             help_text='Zvolte násobky 100')
     price_max = django_filters.NumberFilter(field_name='price', lookup_expr='lte', label='Maximální cena aktivity')
     topic = django_filters.ModelMultipleChoiceFilter(queryset=Topic.objects.all(),
+                                                     field_name='topic',
+                                                     lookup_expr='exact',
                                                      label='Omezit výběr zaměření')
     week_day = django_filters.MultipleChoiceFilter(choices=WEEKDAYS, label='Vybrat den v týdnu')
     date_from = django_filters.DateFilter(input_formats=['%d.%m.%Y'], lookup_expr='gte', label='Od data',

@@ -313,14 +313,10 @@ def search(request):
     query = None
     course_filter = CourseFilter(request.GET, Course.published.all())
     form = course_filter.form
-    form.fields['price_min'].initial = 0
-    form.fields['price_max'].initial = 0
+    form.fields['price_min'].initial = 0  # does not work
+    form.fields['price_max'].initial = 0  # does not work
     if 'q' in request.GET:
-        form.fields['q'].initial = request.GET.get('q')
-    if 'topic' in request.GET:
-        topic = request.GET.get('topic')
-        object_list = Course.published.filter(topic__id__exact=topic)
-        course_filter = CourseFilter(request.GET, object_list)
+        form.fields['q'].initial = request.GET.get('q')  # works
     if 'week_day' in request.GET:
         week_days = request.GET.getlist('week_day')
         object_list = Course.published.filter(week_schedule__day_of_week__in=week_days).distinct()
