@@ -124,5 +124,17 @@
             startDate: new Date(),
             element: document.getElementById('id_date_from'),
         });
+        /* calculate hours */
+        let startElement = document.getElementById('id_time_from');
+        let endElement = document.getElementById('id_time_to');
+        [startElement, endElement].forEach(element => {
+            element.addEventListener('input', ()=>{
+                let startTime = new Date(startElement.valueAsNumber).getHours();
+                let endTime = new Date(endElement.valueAsNumber).getHours();
+                if ((endTime - startTime) >= 0) {
+                    document.getElementById('id_hours').value = endTime - startTime
+                }
+            })
+        })
     </script>
 {% endblock js %}
