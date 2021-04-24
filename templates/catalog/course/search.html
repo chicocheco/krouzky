@@ -15,7 +15,11 @@
     {% if query %}
         <p><b>Nalezeno {{ counter }} výsledků hledání obsahující klíčové slovo "{{ query }}".</b></p>
     {% else %}
-        <p><b>Nalezeno {{ counter }} výsledků hledání.</b></p>
+        {% if counter %}
+            <p><b>Nalezeno {{ counter }} výsledků hledání.</b></p>
+        {% else %}
+            <p><b>Bohužel jsme nic nenašli.</b></p>
+        {% endif %}
     {% endif %}
     {% include 'list.html' with courses=courses %}
     {% include 'pagination.html' with page=courses custom_page_range=custom_page_range %}
