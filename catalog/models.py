@@ -97,7 +97,7 @@ class Course(models.Model):
     name = models.CharField(_('název'), max_length=50, blank=False)
     slug = AutoSlugField(_('slug'), populate_from='name')  # make unique with organization?
     description = models.TextField(_('popis'), blank=True)
-    image = models.ImageField(_('obrázek'), upload_to=image_directory_path)
+    image = models.ImageField(_('obrázek'), upload_to=image_directory_path, help_text='minimální rozměr 500x500 px')
     price = models.PositiveIntegerField(_('cena za kurz'), null=False, blank=False)
     hours = models.PositiveIntegerField(_('počet hodin'), null=False, blank=False, validators=[MinValueValidator(1)])
     capacity = models.PositiveIntegerField(_('maximální kapacita'), null=True, blank=True)
