@@ -50,17 +50,17 @@ class Topic(models.Model):
 
 
 class WeekSchedule(models.Model):
-    WEEKDAYS = {
-        0: 'Pondělí',
-        1: 'Úterý',
-        2: 'Středa',
-        3: 'Čtvrtek',
-        4: 'Pátek',
-        5: 'Sobota',
-        6: 'Neděle',
-    }
+    class WeekDay(models.IntegerChoices):
+        MONDAY = 0, _('Pondělí')
+        TUESDAY = 1, _('Úterý')
+        WEDNESDAY = 2, _('Středa')
+        THURSDAY = 3, _('Čtvrtek')
+        FRIDAY = 4, _('Pátek')
+        SATURDAY = 5, _('Sobota')
+        SUNDAY = 6, _('Neděle')
+
     day_of_week = models.PositiveSmallIntegerField(validators=[MaxValueValidator(6)])  # 0-6
-    hour = models.PositiveSmallIntegerField(validators=[MaxValueValidator(23)])  # 7-23
+    hour = models.PositiveSmallIntegerField(validators=[MaxValueValidator(22)])  # 7-22
 
     class Meta:
         ordering = ['hour', 'day_of_week']
@@ -69,7 +69,7 @@ class WeekSchedule(models.Model):
         unique_together = [['day_of_week', 'hour']]
 
     def __str__(self):
-        return f'{self.WEEKDAYS[self.day_of_week]} {str(self.hour).zfill(2)}:00'
+        return f'{self.WeekDay.labels[self.day_of_week]} {str(self.hour).zfill(2)}:00'
 
     # helper function
     @classmethod
