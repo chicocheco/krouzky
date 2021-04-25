@@ -159,6 +159,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # EMAIL_USE_SSL = True
 # EMAIL_HOST_USER = environ.get('EMAIL_HOST_USER')
 # EMAIL_HOST_PASSWORD = environ.get('EMAIL_HOST_PASSWORD')
+# DEFAULT_FROM_EMAIL = 'info@vyberaktivitu.online'  # for allauth
 
 TINYMCE_DEFAULT_CONFIG = {
     "height": "320px",
