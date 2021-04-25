@@ -10,7 +10,8 @@
 
 {% block content %}
     <h2>Upravit aktivitu</h2>
-    <p><b>Pozor: Pokud upravíte název nebo popis aktivity, bude odeslána k novému schválení a až poté znovu publikována.</b></p>
+    <p><b>Pozor: Pokud upravíte název nebo popis aktivity, bude odeslána k novému schválení a až poté znovu
+        publikována.</b></p>
     <hr>
     {% crispy form %}
     <div class="modal fade" id="modalCrop" data-bs-keyboard="false" data-bs-backdrop="static">
@@ -34,6 +35,9 @@
                         <button type="button" class="btn btn-outline-primary js-zoom-out">
                             <i class="fas fa-search-minus"></i>
                         </button>
+                        <button type="button" class="btn btn-outline-primary js-reset">
+                            <i class="fas fa-undo"></i>
+                        </button>
                     </div>
                     <button type="button" class="btn btn-danger js-cancel" data-bs-dismiss="modal">Zrušit</button>
                     <button type="button" class="btn btn-primary js-crop" data-bs-dismiss="modal">Ořezat
@@ -51,9 +55,8 @@
     <script src="{% static 'js/cropper.min.js' %}"></script>
     <script>
         $(function () {
-            /* SCRIPT TO OPEN THE MODAL WITH THE PREVIEW */
+            /* script to open the modal with the preview */
             $("#id_image").change(function () {
-                $('#id_preview_image').hide()
                 if (this.files && this.files[0]) {
                     const reader = new FileReader();
                     reader.onload = function (e) {
@@ -63,16 +66,17 @@
                     reader.readAsDataURL(this.files[0]);
                 }
             });
-            /* SCRIPTS TO HANDLE THE CROPPER BOX */
+            /* scripts to handle the cropper box */
             const $image = $("#image_to_crop");
             let cropBoxData;
             let canvasData;
             $("#modalCrop").on("shown.bs.modal", function () {
                 $image.cropper({
+                    dragMode: 'move',
                     viewMode: 1,
                     aspectRatio: 1,
-                    minCropBoxWidth: 500,
-                    minCropBoxHeight: 500,
+                    minCropBoxWidth: 100,
+                    minCropBoxHeight: 100,
                     ready: function () {
                         $image.cropper("setCanvasData", canvasData);
                         $image.cropper("setCropBoxData", cropBoxData);
@@ -83,17 +87,17 @@
                 canvasData = $image.cropper("getCanvasData");
                 $image.cropper("destroy");
             });
-            // Enable zoom in button
             $(".js-zoom-in").click(function () {
                 $image.cropper("zoom", 0.1);
             });
-            // Enable zoom out button
             $(".js-zoom-out").click(function () {
                 $image.cropper("zoom", -0.1);
             });
-            /* SCRIPT TO COLLECT THE DATA AND POST TO THE SERVER */
+            $(".js-reset").click(function () {
+                $image.cropper("reset");
+            });
+            /* script to collect the data and post to the server */
             $(".js-cancel").click(function () {
-                $('#id_preview_image').show()
                 $("#id_x").val('');
                 $("#id_y").val('');
                 $("#id_height").val('');
@@ -126,11 +130,20 @@
         let startElement = document.getElementById('id_time_from');
         let endElement = document.getElementById('id_time_to');
         [startElement, endElement].forEach(element => {
-            element.addEventListener('input', ()=>{
-                let startTime = new Date(startElement.valueAsNumber).getHours();
-                let endTime = new Date(endElement.valueAsNumber).getHours();
-                if ((endTime - startTime) >= 0) {
+            element.addEventListener('input', () => {
+                /* care only about time in local TZ */
+                let startTime = new Date('1970-01-01T' + startElement.value).getHours();
+                let endTime = new Date('1970-01-01T' + endElement.value).getHours();
+                let timeDiff = endTime - startTime;
+                if (timeDiff < 0) {
+                    document.getElementById('id_hours').value = 0
+                    startElement.style.color = "red";
+                    endElement.style.color = "red";
+                }
+                if (timeDiff >= 0) {
                     document.getElementById('id_hours').value = endTime - startTime
+                    startElement.style.removeProperty('color');
+                    endElement.style.removeProperty('color');
                 }
             })
         })
