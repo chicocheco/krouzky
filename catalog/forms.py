@@ -133,7 +133,9 @@ class OneoffCourseForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['teacher'].empty_label = None  # can't create course w/o org
-        self.fields['hours'].widget.attrs.update({'readonly': 'readonly'})
+        self.fields['hours'].widget.attrs.update({'readonly': 'readonly',
+                                                  'style': 'pointer-events: none;',
+                                                  'tabindex': "-1"})
         self.fields['hours'].initial = 0
         self.fields['date_from'].label = 'Dne'
         self.helper = FormHelper()

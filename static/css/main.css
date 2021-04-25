@@ -2,13 +2,18 @@ body {
     font-family: 'Signika', sans-serif;
 }
 
+/* hide arrows in read-only number input field (firefox) */
+input[readonly][type=number] {
+    -moz-appearance: textfield;
+}
+
 a {
     text-decoration: none;
 }
 
 .d-flex-nav-link {
-    display: flex;             /* establish flex container */
-    align-items: center;       /* center nav items vertically */
+    display: flex; /* establish flex container */
+    align-items: center; /* center nav items vertically */
     justify-content: center;
 }
 

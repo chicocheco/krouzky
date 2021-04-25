@@ -6,6 +6,12 @@
 {% block head_extra %}
     <link href="{% static 'css/cropper.min.css' %}" rel="stylesheet">
     {{ form.media }}
+    <style>
+        /* hide asterisk in read-only field */
+        #div_id_hours .asteriskField {
+            display: none;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}

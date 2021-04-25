@@ -162,7 +162,9 @@ def course_create(request):
         teachers = User.objects.filter(organization_id=request.user.organization.id).order_by('date_created')
         teacher_field.queryset = teachers
         if len(teachers) == 1:
-            teacher_field.disabled = True
+            # simulate readonly attribute for <select> element
+            teacher_field.widget.attrs.update({'style': 'pointer-events: none; background-color: #e9ecef;',
+                                               'tabindex': "-1"})
     return render(request, 'catalog/course/create.html', {'form': form})
 
 
@@ -192,7 +194,9 @@ def oneoff_course_create(request):
         teachers = User.objects.filter(organization_id=request.user.organization.id).order_by('date_created')
         teacher_field.queryset = teachers
         if len(teachers) == 1:
-            teacher_field.disabled = True
+            # simulate readonly attribute for <select> element
+            teacher_field.widget.attrs.update({'style': 'pointer-events: none; background-color: #e9ecef;',
+                                               'tabindex': "-1"})
     return render(request, 'catalog/course/create_oneoff.html', {'form': form})
 
 
