@@ -39,6 +39,13 @@ class AgeCategory(models.Model):
 
 
 class Topic(models.Model):
+    class Category(models.TextChoices):
+        MUSIC = 'MUSIC', _('Hudební')
+        ART = 'ART', _('Umělecké')
+        LANG = 'LANG', _('Jazykové')
+        SPORT = 'SPORT', _('Sportovní')
+        OTHER = 'OTHER', _('Ostatní')
+    category = models.CharField(_('Kategorie'), max_length=5, choices=Category.choices, default=Category.OTHER)
     name = models.CharField(_('název'), max_length=50, blank=False)
 
     class Meta:
