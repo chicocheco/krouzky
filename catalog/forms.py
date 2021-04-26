@@ -82,6 +82,7 @@ class CourseForm(forms.ModelForm):
         # Column() adds 'col-md' automatically
         self.helper.layout = Layout(
             'name',
+            'url',
             Row(
                 Column('price'),
                 Column('hours'),
@@ -112,8 +113,8 @@ class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
         fields = (
-            'name', 'price', 'hours', 'capacity', 'date_from', 'date_to', 'week_schedule', 'teacher', 'age_category',
-            'image', 'topic', 'description', 'x', 'y', 'width', 'height')
+            'name', 'url', 'price', 'hours', 'capacity', 'date_from', 'date_to', 'week_schedule', 'teacher',
+            'age_category', 'image', 'topic', 'description', 'x', 'y', 'width', 'height')
         widgets = {
             'description': TinyMCE(),
             'topic': forms.CheckboxSelectMultiple(),
@@ -142,6 +143,7 @@ class OneoffCourseForm(forms.ModelForm):
         # Column() adds 'col-md' automatically
         self.helper.layout = Layout(
             'name',
+            'url',
             Row(
                 Column('price'),
                 Column('capacity'),
@@ -175,7 +177,7 @@ class OneoffCourseForm(forms.ModelForm):
 
     class Meta:
         model = Course
-        fields = ('name', 'price', 'capacity', 'hours', 'date_from', 'teacher', 'age_category',
+        fields = ('name', 'url', 'price', 'capacity', 'hours', 'date_from', 'teacher', 'age_category',
                   'image', 'topic', 'description', 'x', 'y', 'width', 'height')
         widgets = {
             'description': TinyMCE(),
