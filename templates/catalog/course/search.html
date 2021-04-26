@@ -2,14 +2,14 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
-{% block title %}Hledat{% endblock %}
+{% block title %}Filtrovat{% endblock %}
 
 {% block content %}
-    <h1>Hledat</h1>
+    <h1>Filtrovat</h1>
     <hr>
     <form method="get" id="search-form">
         {% crispy form %}
-        <p><input class="btn btn-primary me-2" type="submit" value="Hledat">
+        <p><input class="btn btn-primary me-2" type="submit" value="Filtrovat">
             <input type="button" class="btn btn-danger" value="Vymazat" onclick="resetSearchForm()"></p>
     </form>
     {% if query %}

@@ -85,16 +85,18 @@ class CourseFilter(django_filters.FilterSet):
                                              Column('date_from'),
                                              Column('date_to')
                                          ),
-                                         InlineCheckboxes('topic', css_class='col-12'),
                                          # expand searching button
-                                         HTML('<a class="btn btn-primary mb-3" type="button" data-bs-toggle="collapse"'
-                                              ' data-bs-target="#collapseRegActivitiesFilter" aria-expanded="false" '
-                                              'aria-controls="collapseExample">Filtrovat pravidelné aktivity</a>'),
+                                         HTML(
+                                             '<a class="btn btn-outline-primary mb-3" type="button" data-bs-toggle="collapse"'
+                                             ' data-bs-target="#collapseRegActivitiesFilter" aria-expanded="false" '
+                                             'aria-controls="collapseExample">Filtrovat pouze pravidelné aktivity</a>'),
                                          Div(
                                              InlineCheckboxes('week_day', css_class='col-12'),
-                                             InlineCheckboxes('time_block', css_class='col-12'),
-                                             css_class='collapse', id='collapseRegActivitiesFilter'
+                                             InlineCheckboxes('time_block', css_class='col-12'),  # mb-3 is forced
+                                             css_class='collapse border rounded p-3 mb-3',
+                                             id='collapseRegActivitiesFilter'
                                          ),
+                                         InlineCheckboxes('topic', css_class='col-12'),
                                          )
         self.form.fields['price_min'].widget.attrs.update({'min': 0, 'max': 99999, 'step': 100})
         self.form.fields['price_max'].widget.attrs.update({'min': 0, 'max': 99999, 'step': 100})
