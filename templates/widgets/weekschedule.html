@@ -35,7 +35,7 @@
                                        id="id_{{ field.html_name }}_{{ forloop.counter }}"
                                        value="{{ choice.0|unlocalize }}" {{ field.field.widget.attrs|flatatt }}>
                                 <label class="btn btn-outline-primary"
-                                       for="id_{{ field.html_name }}_{{ forloop.counter }}">
+                                       for="id_{{ field.html_name }}_{{ forloop.counter }}" style="word-spacing: 100vw;">
                                     {{ choice.1|unlocalize }}
                                 </label>
                                 {% if field.errors and forloop.last and not inline_class %}
