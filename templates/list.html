@@ -1,3 +1,4 @@
+{% load static %}
 {% for course in courses %}
     <div class="card mb-3">
         <div class="row g-0">
@@ -23,33 +24,45 @@
                     </a>
                 </div>
             </div>
-            <div class="col-12 col-md-8 d-flex flex-wrap">
-                <div class="card-body">
-                    <h5 class="card-title">
-                        <a href="{{ course.get_absolute_url }}">{{ course.name|capfirst }}</a>
-                    </h5>
+            <div class="col-12 col-md-8 d-flex p-3">
+                <div class="row flex-grow-1">
+                    <div class="col-10">
+                        <h5 class="mb-0">
+                            <a href="{{ course.get_absolute_url }}">{{ course.name|capfirst|truncatewords_html:5 }}</a>
+                        </h5>
+                        {% if not course.organization == request.user.organization %}
+                            <p class="text-muted mt-2 mb-3 my-lg-0"><small>{{ course.organization.name }}</small></p>
+                        {% endif %}
+                    </div>
+                    <div class="col-2">
+                        {% if course.category == 'OTHER' %}
+                            <img class="float-end mb-2 mb-md-0" src="{% static 'img/jine.svg' %}" alt="Ostatní">
+                        {% elif course.category == 'LANG' %}
+                            <img class="float-end mb-2 mb-md-0" src="{% static 'img/jazyky.svg' %}" alt="Jazykové">
+                        {% elif course.category == 'ART' %}
+                            <img class="float-end mb-2 mb-md-0" src="{% static 'img/art.svg' %}" alt="Umělecké">
+                        {% elif course.category == 'SPORT' %}
+                            <img class="float-end mb-2 mb-md-0" src="{% static 'img/sport.svg' %}" alt="Sportovní">
+                        {% else %}
+                            <img class="float-end mb-2 mb-md-0" src="{% static 'img/music.svg' %}" alt="Hudební">
+                        {% endif %}
+                    </div>
+                    <div class="col-12">
+                        <p class="mb-0 lh-sm">{{ course.description|striptags|truncatewords_html:25 }}</p>
+                    </div>
                     {% if course.organization == request.user.organization %}
-                        <p class="card-text">{{ course.description|striptags|truncatewords_html:20 }}</p>
-                    {% else %}
-                        <p class="card-text mt-0"><small class="text-muted">{{ course.organization.name }}</small>
-                        </p>
-                        <p class="card-text">{{ course.description|striptags|truncatewords_html:30 }}</p>
-                    {% endif %}
-                </div>
-                {% if course.organization == request.user.organization %}
-                    <div class="d-flex justify-content-between align-items-end flex-grow-1 flex-shrink-0 mt-0 mb-3"
-                         style="flex-basis: 100%;">
-                        <div class="mx-3">
+                        <div class="col-12 align-self-end mt-3 mt-md-1">
                             {% if course.is_oneoff %}
-                                <a class="btn btn-primary"
+                                <a class="btn btn-sm btn-primary"
                                    href="{% url 'oneoff_course_update' course.slug %}">Upravit</a>
                             {% else %}
-                                <a class="btn btn-primary" href="{% url 'course_update' course.slug %}">Upravit</a>
+                                <a class="btn btn-sm btn-primary"
+                                   href="{% url 'course_update' course.slug %}">Upravit</a>
                             {% endif %}
-                            <a class="btn btn-danger" href="{% url 'course_delete' course.slug %}">Odstranit</a>
+                            <a class="btn btn-sm btn-danger" href="{% url 'course_delete' course.slug %}">Odstranit</a>
                         </div>
-                    </div>
-                {% endif %}
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
