@@ -85,15 +85,25 @@ class CourseFilter(django_filters.FilterSet):
                                              Column('date_from'),
                                              Column('date_to')
                                          ),
-                                         # expand searching button
-                                         HTML(
-                                             '<a class="btn btn-outline-primary mb-3" type="button" data-bs-toggle="collapse"'
-                                             ' data-bs-target="#collapseRegActivitiesFilter" aria-expanded="false" '
-                                             'aria-controls="collapseExample">Filtrovat pouze pravidelné aktivity</a>'),
+                                         Row(
+                                             Column(
+                                                 HTML(
+                                                     '<a class="btn btn-outline-secondary mb-3" type="button" '
+                                                     'data-bs-toggle="collapse" '
+                                                     'data-bs-target="#collapseRegActivitiesFilter">'
+                                                     'Filtr pravidelných aktivit</a>'
+                                                 )
+                                             ),
+                                         ),
                                          Div(
+                                             HTML(
+                                                 '<p><b>Pozor: Označením některé z následujících položek budete '
+                                                 'filtrovat pouze pravidelně pořádané aktivity. Jednodenní aktivity '
+                                                 'budou vyloučeny z výsledků</b></p>'
+                                             ),
                                              InlineCheckboxes('week_day', css_class='col-12'),
                                              InlineCheckboxes('time_block', css_class='col-12'),  # mb-3 is forced
-                                             css_class='collapse border rounded p-3 mb-3',
+                                             css_class='collapse border rounded px-3 pt-3 pt-0 mb-3 mb-3',
                                              id='collapseRegActivitiesFilter'
                                          ),
                                          InlineCheckboxes('topic', css_class='col-12'),
