@@ -27,7 +27,7 @@ class CourseAdmin(admin.ModelAdmin):
         'description': TinyMCE(),
     }
     fields = (
-        'status', 'name', 'url', 'description', 'price', 'hours', 'capacity', 'date_from', 'date_to', 'teacher',
+        'status', 'name', 'url', 'description', 'category', 'price', 'hours', 'capacity', 'date_from', 'date_to', 'teacher',
         'organization',
         'age_category', 'image', 'topic', 'week_schedule'
     )

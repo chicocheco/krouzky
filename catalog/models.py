@@ -39,13 +39,6 @@ class AgeCategory(models.Model):
 
 
 class Topic(models.Model):
-    class Category(models.TextChoices):
-        MUSIC = 'MUSIC', _('Hudební')
-        ART = 'ART', _('Umělecké')
-        LANG = 'LANG', _('Jazykové')
-        SPORT = 'SPORT', _('Sportovní')
-        OTHER = 'OTHER', _('Ostatní')
-    category = models.CharField(_('Kategorie'), max_length=5, choices=Category.choices, default=Category.OTHER)
     name = models.CharField(_('název'), max_length=50, blank=False)
 
     class Meta:
@@ -101,10 +94,18 @@ class Course(models.Model):
         PUBLISHED = 'PUBLISHED', _('Publikováno')
         # TODO: add EXPIRED state
 
+    class Category(models.TextChoices):
+        OTHER = 'OTHER', _('Ostatní')
+        LANG = 'LANG', _('Jazykové')
+        MUSIC = 'MUSIC', _('Hudební')
+        ART = 'ART', _('Umělecké')
+        SPORT = 'SPORT', _('Sportovní')
+
     name = models.CharField(_('název'), max_length=50, blank=False)
     slug = AutoSlugField(_('slug'), populate_from='name')  # make unique with organization?
     description = models.TextField(_('popis'), blank=True)
     url = models.URLField(_('URL'), max_length=500, blank=True)
+    category = models.CharField(_('Kategorie'), max_length=5, choices=Category.choices, default=Category.OTHER)
     image = models.ImageField(_('obrázek'), upload_to=image_directory_path, help_text='minimální rozměr 500x500 px')
     price = models.PositiveIntegerField(_('cena za kurz'), null=False, blank=False)
     hours = models.PositiveIntegerField(_('počet hodin'), null=False, blank=False, validators=[MinValueValidator(1)])

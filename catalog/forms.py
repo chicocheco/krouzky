@@ -95,6 +95,7 @@ class CourseForm(forms.ModelForm):
             WeekScheduleInlineCheckboxes('week_schedule'),
             Row(
                 Column('age_category'),
+                Column('category'),
                 Column('teacher')
             ),
             Field('image', css_class='form-control'),
@@ -114,7 +115,7 @@ class CourseForm(forms.ModelForm):
         model = Course
         fields = (
             'name', 'url', 'price', 'hours', 'capacity', 'date_from', 'date_to', 'week_schedule', 'teacher',
-            'age_category', 'image', 'topic', 'description', 'x', 'y', 'width', 'height')
+            'age_category', 'category', 'image', 'topic', 'description', 'x', 'y', 'width', 'height')
         widgets = {
             'description': TinyMCE(),
             'topic': forms.CheckboxSelectMultiple(),
@@ -156,6 +157,7 @@ class OneoffCourseForm(forms.ModelForm):
             ),
             Row(
                 Column('age_category'),
+                Column('category'),
                 Column('teacher')
             ),
             Field('image', css_class='form-control'),
@@ -177,7 +179,7 @@ class OneoffCourseForm(forms.ModelForm):
 
     class Meta:
         model = Course
-        fields = ('name', 'url', 'price', 'capacity', 'hours', 'date_from', 'teacher', 'age_category',
+        fields = ('name', 'url', 'price', 'capacity', 'hours', 'date_from', 'teacher', 'age_category', 'category',
                   'image', 'topic', 'description', 'x', 'y', 'width', 'height')
         widgets = {
             'description': TinyMCE(),
