@@ -1,4 +1,5 @@
 {% extends '_base.html' %}
+{% load static %}
 {% load crispy_forms_tags %}
 {% load catalog_tags %}
 
@@ -12,14 +13,39 @@
             <p>{{ course.description|safe }}</p>
         </div>
         <div class="row pt-3">
-            <div class="col-6">
-                <img src="{{ course.image.url }}" alt="{{ course.name }}" class="img-fluid rounded-3">
+            <div class="col-12 col-md-6 mb-sm-3">
+                <div class="position-relative">
+                    <img src="{{ course.image.url }}" alt="{{ course.name }}"
+                         class="img-fluid mb-4 mb-lg-0 rounded-3">
+                    <div class="position-absolute" style="top: 1rem; left: 1rem;">
+                        {% if course.category == 'OTHER' %}
+                            <img style="height: 50px;" src="{% static 'img/jine.svg' %}"
+                                 alt="Ostatní">
+                        {% elif course.category == 'LANG' %}
+                            <img style="height: 50px;" src="{% static 'img/jazyky.svg' %}"
+                                 alt="Jazykové">
+                        {% elif course.category == 'ART' %}
+                            <img style="height: 50px;" src="{% static 'img/art.svg' %}"
+                                 alt="Umělecké">
+                        {% elif course.category == 'SPORT' %}
+                            <img style="height: 50px;" src="{% static 'img/sport.svg' %}"
+                                 alt="Sportovní">
+                        {% else %}
+                            <img style="height: 50px;" src="{% static 'img/music.svg' %}"
+                                 alt="Hudební">
+                        {% endif %}
+                    </div>
+                </div>
             </div>
-            <div class="col-6">
+            <div class="col-12 col-md-6">
                 <div class="row g-3">
-                    <div class="col-6"><b>Cena:</b><br>{{ course.price }} Kč ({{ price_hour }} Kč/hod)</div>
+                    <div class="col-6"><b>Cena:</b><br>{{ course.price }} Kč <br>({{ price_hour }} Kč/hod)</div>
                     <div class="col-6"><b>Trvání aktivity:</b><br>{{ course.hours }} hodin</div>
-                    <div class="col-6"><b>Kapacita:</b><br>{{ course.capacity }} osob</div>
+                    {% with capacity=course.capacity %}
+                        {% if capacity %}
+                            <div class="col-6"><b>Kapacita:</b><br>{{ capacity }} osob</div>
+                        {% endif %}
+                    {% endwith %}
                     <div class="col-6"><b>Věková skupina:</b><br>{{ course.age_category }}</div>
                     <div class="col-12"><b>Zaměření aktivity:</b><br>
                         {% for topic in course.topic.all %}
@@ -31,8 +57,7 @@
                         {% if course.is_oneoff %}
                             {{ course.date_from }} - {{ course.date_to|time }}
                         {% else %}
-                            od {{ course.date_from|date }}<br>
-                            do {{ course.date_to|date }}
+                            {{ course.date_from|date }} - {{ course.date_to|date }}
                         {% endif %}
                     </div>
                 </div>
@@ -41,44 +66,46 @@
         {% if not course.is_oneoff %}
             <div class="row pt-3 g-2">
                 <div class="col-12">
-                    <table class="table table-sm table-bordered text-center">
-                        <thead style="height: 80px;">
-                        <tr>
-                            <th scope="col" style="vertical-align: middle;">Týdenní rozvrh</th>
-                            <th scope="col" style="width: 12%; transform: rotate(-45deg); vertical-align: middle;">
-                                Pondělí
-                            </th>
-                            <th scope="col" style="width: 12%; transform: rotate(-45deg); vertical-align: middle;">
-                                Úterý
-                            </th>
-                            <th scope="col" style="width: 12%; transform: rotate(-45deg); vertical-align: middle;">
-                                Středa
-                            </th>
-                            <th scope="col" style="width: 12%; transform: rotate(-45deg); vertical-align: middle;">
-                                Čtvrtek
-                            </th>
-                            <th scope="col" style="width: 12%; transform: rotate(-45deg); vertical-align: middle;">
-                                Pátek
-                            </th>
-                            <th scope="col" style="width: 12%; transform: rotate(-45deg); vertical-align: middle;">
-                                Sobota
-                            </th>
-                            <th scope="col" style="width: 12%; transform: rotate(-45deg); vertical-align: middle;">
-                                Neděle
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for hour, day in schedule.items %}
+                    <div class="table-responsive-sm">
+                        <table class="table table-sm table-bordered text-center">
+                            <thead style="height: 80px;">
                             <tr>
-                                <th scope="row">{% convert_hour_block hour %}</th>
-                                {% for i in day %}
-                                    <td class="{% if i == 'X' %}bg-success{% else %}bg-white{% endif %}"></td>
-                                {% endfor %}
+                                <th scope="col" style="vertical-align: middle;">Týdenní rozvrh</th>
+                                <th scope="col" style="width: 12%; transform: rotate(-45deg); vertical-align: middle;">
+                                    Pondělí
+                                </th>
+                                <th scope="col" style="width: 12%; transform: rotate(-45deg); vertical-align: middle;">
+                                    Úterý
+                                </th>
+                                <th scope="col" style="width: 12%; transform: rotate(-45deg); vertical-align: middle;">
+                                    Středa
+                                </th>
+                                <th scope="col" style="width: 12%; transform: rotate(-45deg); vertical-align: middle;">
+                                    Čtvrtek
+                                </th>
+                                <th scope="col" style="width: 12%; transform: rotate(-45deg); vertical-align: middle;">
+                                    Pátek
+                                </th>
+                                <th scope="col" style="width: 12%; transform: rotate(-45deg); vertical-align: middle;">
+                                    Sobota
+                                </th>
+                                <th scope="col" style="width: 12%; transform: rotate(-45deg); vertical-align: middle;">
+                                    Neděle
+                                </th>
                             </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            {% for hour, day in schedule.items %}
+                                <tr>
+                                    <th scope="row">{% convert_hour_block hour %}</th>
+                                    {% for i in day %}
+                                        <td class="{% if i == 'X' %}bg-success{% else %}bg-white{% endif %}"></td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         {% endif %}
@@ -88,7 +115,7 @@
                     {% if course.status == 'PUBLISHED' %}
                         <span class="badge bg-success">Publikováno</span>
                     {% else %}
-                        <span class="badge bg-warning">Čeká ke shválení</span>
+                        <span class="badge bg-warning">Čeká ke schválení</span>
                     {% endif %}
                 </div>
                 <div class="ms-auto my-auto">
@@ -107,14 +134,13 @@
 {% block sidebar %}
     <div class="border p-4 bg-light">
         <div class="row align-items-start align-items-lg-center">
-            <div class="col-12 col-sm-4 col-lg-12">
+            <div class="col-12 text-center text-lg-start col-sm-4 col-lg-12">
                 <p><b>Organizuje:</b><br>
                     {{ course.organization.name }}<br>
-                    <a href="{{ course.organization.url }}"
-                       class="text-break">{{ course.organization.url }}</a>
+                    <a href="{{ course.organization.url }}" class="text-break">{{ course.organization.url }}</a>
                 </p>
             </div>
-            <div class="col-8 col-sm-4 text-center text-lg-start col-lg-7">
+            <div class="col-6 col-sm-4 text-center text-lg-start col-lg-7">
                 <p>{% if course.teacher.name %}
                     <b>Vedoucí:</b><br>
                     {{ course.teacher.name }}<br>
@@ -127,15 +153,16 @@
                     {% endif %}
                 </p>
             </div>
-            <div class="col-4 col-sm-4 col-lg-5">
+            <div class="col-6 col-sm-4 col-lg-5">
                 {% if course.teacher.photo %}
                     <img src="{{ course.teacher.photo.url }}" alt="" class="rounded-circle float-end"
                          style="height: 100px;">
                 {% endif %}
             </div>
             <div class="col text-center text-lg-start">
-                <p>E-mailová adresa:<br><a href="mailto:{{ course.teacher.email }}"
-                                           class="text-break">{{ course.teacher.email }}</a></p>
+                <p>E-mailová adresa:<br>
+                    <a href="mailto:{{ course.teacher.email }}" class="text-break">{{ course.teacher.email }}</a>
+                </p>
             </div>
         </div>
         <div class="row">
