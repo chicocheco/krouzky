@@ -11,6 +11,13 @@
             <h2>{{ course.name|capfirst }}</h2>
             <hr>
             <p>{{ course.description|safe }}</p>
+            {% with url=course.url %}
+                {% if url %}
+                    <p><b>URL odkaz:</b><br>
+                        <a href="{{ url }}">{{ url }}</a>
+                    </p>
+                {% endif %}
+            {% endwith %}
         </div>
         <div class="row pt-3">
             <div class="col-12 col-md-6 mb-sm-3">
