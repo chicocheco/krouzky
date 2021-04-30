@@ -61,7 +61,10 @@
                         </a>
                     {% else %}
                         <a href="{% url 'account_login' %}" class="nav-link d-flex-nav-link">
-                            Přihlásit se
+                            <p class="lh-1 m-0 d-none d-lg-block">
+                                Přihlásit se/<br>
+                                Registrovat se
+                            </p>
                             <i class="fas fa-sign-in-alt fa-lg ms-3"></i>
                         </a>
                     {% endif %}
