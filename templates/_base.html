@@ -79,7 +79,7 @@
         </div>
     </div>
 </nav>
-<main class="container-md px-1 pb-3 min-vh-100">
+<main class="container-md pb-3 min-vh-100">
     <!--errors-->
     <div class="row py-3">
         <div class="col">
@@ -116,13 +116,13 @@
     {% block top_content %}{% endblock top_content %}
     <!--low-content-->
     {% block low_content %}
-        <div class="row g-4 pb-3">
-            <div class="col-lg-8">
+        <div class="row pb-3">
+            <div class="col-12 col-lg-8">
                 <div class="border p-4 bg-light">
                     {% block content %}{% endblock %}
                 </div>
             </div>
-            <div class="col-lg-4">
+            <div class="col-12 col-lg-4">
                 {% block sidebar %}
                     <div class="border p-4 bg-light">
                         Sidebar

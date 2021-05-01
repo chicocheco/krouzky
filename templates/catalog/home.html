@@ -4,31 +4,35 @@
 {% block title %}Vyber aktivitu online{% endblock %}
 
 {% block top_content %}
-    <div class="row g-5 p-3">
-        <div class="col-12 col-lg-6 align-self-center">
-            <img src="{% static 'img/komplet.svg' %}" alt="" class="img img-fluid">
+    <div class="row pb-3">
+        <div class="row g-3">
+            <div class="col-12 col-lg-6 align-self-center px-3">
+                <img src="{% static 'img/komplet.svg' %}" alt="" class="img img-fluid">
+            </div>
+            <div class="col-12 col-lg-6 align-self-center text-center text-lg-start px-3">
+                <h1 class="display-1">Vyhledávač online aktivit</h1>
+                <a class="btn btn-lg btn-primary mt-3" href="{% url 'search' %}">Filtrovat aktivity</a>
+            </div>
         </div>
-        <div class="col-12 col-lg-6 align-self-center text-center text-lg-start">
-            <h1 class="display-1">Vyhledávač online aktivit</h1>
-            <a class="btn btn-lg btn-primary mt-3" href="{% url 'search' %}">Filtrovat aktivity</a>
-        </div>
-        <div class="col-12 col-lg-6">
-            <h1 class="display-6">Vybírám aktivitu online</h1>
-            <ul>
-                <li>vybírejte podle zaměření, ceny nebo přibližného času konání</li>
-                <li>pravidelné i jednorázové akce</li>
-                <li>podrobnosti a přihlášky přímo u organizátorů</li>
-                <li><a href="{% url 'search' %}">Vyber si z online aktivit</a></li>
-            </ul>
-        </div>
-        <div class="col-12 col-lg-6">
-            <h1 class="display-6">Nabízím aktivitu online</h1>
-            <ul>
-                <li>registrace je zdarma</li>
-                <li>pravidelné i jednorázové akce</li>
-                <li>přihlašování studentů a účastníků přímo u vás, tak jak jste zvyklí</li>
-                <li><a href="{% url 'account_login' %}">přihlásit se / zaregistrovat se</a></li>
-            </ul>
+        <div class="row g-3">
+            <div class="col-12 col-lg-6 px-5">
+                <h1 class="display-6">Vybírám aktivitu online</h1>
+                <ul>
+                    <li>vybírejte podle zaměření, ceny nebo přibližného času konání</li>
+                    <li>pravidelné i jednorázové akce</li>
+                    <li>podrobnosti a přihlášky přímo u organizátorů</li>
+                    <li><a href="{% url 'search' %}">Vyber si z online aktivit</a></li>
+                </ul>
+            </div>
+            <div class="col-12 col-lg-6 px-5">
+                <h1 class="display-6">Nabízím aktivitu online</h1>
+                <ul>
+                    <li>registrace je zdarma</li>
+                    <li>pravidelné i jednorázové akce</li>
+                    <li>přihlašování studentů a účastníků přímo u vás, tak jak jste zvyklí</li>
+                    <li><a href="{% url 'account_login' %}">přihlásit se / zaregistrovat se</a></li>
+                </ul>
+            </div>
         </div>
     </div>
 {% endblock %}
