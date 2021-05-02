@@ -45,6 +45,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap5'
 # allauth
 # https://django-allauth.readthedocs.io/en/latest/advanced.html#custom-user-models
 SITE_ID = 1
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
