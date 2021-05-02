@@ -2,10 +2,11 @@ from collections import defaultdict
 from datetime import datetime
 
 from PIL import Image
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.utils.text import slugify
@@ -303,11 +304,14 @@ def contact_teacher(request, slug=None):
             cd = form.cleaned_data
             course_url = request.build_absolute_uri(course.get_absolute_url())
             subject = f'{cd["sender_name"]} má dotaz k {course.name}'
-            message = f'Uživatel/ka {cd["sender_name"].upper()} vám zaslal/a dotaz k aktivitě {course.name.upper()}\n' \
-                      f'(odkaz: {course_url})' \
-                      f'\n\nText dotazu:\n{cd["body"]}'
-            send_mail(subject, message, cd['from_email'], [course.teacher.email, ])
-            messages.add_message(request, messages.SUCCESS, 'Dotaz byl odeslán!')
+            body = f'Uživatel "{cd["sender_name"].capitalize()}" vám zaslal dotaz k aktivitě {course.name.upper()}\n' \
+                   f'(odkaz: {course_url})\n' \
+                   f'E-mailová adresa pro odpověd: {cd["from_email"]}\n\n' \
+                   f'Text dotazu:\n{cd["body"]}'
+            email = EmailMessage(subject, body, settings.DEFAULT_FROM_EMAIL, [course.teacher.email, ],
+                                 reply_to=[cd["from_email"]], )
+            email.send()
+            messages.add_message(request, messages.SUCCESS, 'Dotaz na vedoucího byl odeslán!')
         else:
             messages.add_message(request, messages.ERROR, 'Chyba při odesílání dotazu!')
     return redirect(course.get_absolute_url())

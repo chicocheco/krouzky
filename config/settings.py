@@ -153,14 +153,14 @@ MESSAGE_TAGS = {
     messages.ERROR: 'alert-danger',
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # in production
-# EMAIL_HOST = environ.get('EMAIL_HOST')
-# EMAIL_PORT = 465
-# EMAIL_USE_SSL = True
-# EMAIL_HOST_USER = environ.get('EMAIL_HOST_USER')
-# EMAIL_HOST_PASSWORD = environ.get('EMAIL_HOST_PASSWORD')
-# DEFAULT_FROM_EMAIL = 'info@vyberaktivitu.online'  # for allauth
+EMAIL_HOST = environ.get('EMAIL_HOST')
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = environ.get('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = 'info@vyberaktivitu.online'  # for allauth
 
 TINYMCE_DEFAULT_CONFIG = {
     "height": "320px",
