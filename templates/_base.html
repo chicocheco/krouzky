@@ -29,7 +29,7 @@
             <ul class="navbar-nav me-auto">
                 <li class="nav-item" aria-current="page">
                     <a class="nav-link {% if section == 'search' %}active{% endif %}"
-                       href="{% url 'search' %}">Filtrovat</a>
+                       href="{% url 'search' %}">Vybírat</a>
                 </li>
                 <li class="nav-item" aria-current="page">
                     <a class="nav-link {% if section == 'courses' %}active{% endif %}"
@@ -65,7 +65,7 @@
                                 Přihlásit se/<br>
                                 Registrovat se
                             </p>
-                            <i class="fas fa-sign-in-alt fa-lg ms-3"></i>
+                            <i class="fas fa-sign-in-alt fa-lg mb-3 mb-md-0"></i>
                         </a>
                     {% endif %}
                 </li>
@@ -117,7 +117,7 @@
     <!--low-content-->
     {% block low_content %}
         <div class="row pb-3">
-            <div class="col-12 col-lg-8">
+            <div class="col-12 col-lg-8 pb-3">
                 <div class="border p-4 bg-light">
                     {% block content %}{% endblock %}
                 </div>
@@ -133,14 +133,32 @@
     {% endblock low_content %}
 </main>
 <!--footer-->
-<footer class="container-fluid bg-light border">
-    <div class="row py-4 justify-content-center">
-        <div class="col text-center">
-            © 2021 Kroužky Online<br>
-            +420 777 888 999 | info@vyberaktivitu.online
+<div class="container-fluid">
+    <footer class="row bg-light border py-4">
+        <div class="col-12 col-md-4 text-center text-md-start">
+            <p class="mx-5 mb-0">
+                © 2021 Kroužky Online<br>
+                +420 777 888 999<br>
+                info@vyberaktivitu.online
+            </p>
         </div>
-    </div>
-</footer>
+        <div class="col-12 col-md-4 align-self-center text-center">
+            <p class="mx-5 my-1">
+                <a href="https://www.facebook.com/VyberAktivituOnline-110275201159420"><i
+                        class="fab fa-2x fa-facebook text-secondary"></i>
+                </a>
+            </p>
+        </div>
+        <div class="col-12 col-md-4 align-self-center text-center text-md-end">
+            <p class="mx-5 lh-1 mb-0">
+                <small>
+                    Provozovatelem webu je Mgr. Klára Matasová, IČ, zapsaná v obchodním rejstříku.
+                </small>
+            </p>
+        </div>
+
+    </footer>
+</div>
 <script src="{% static 'js/bootstrap.min.js' %}"></script>
 {% block js %}
 {% endblock %}
