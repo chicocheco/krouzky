@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <title>{% block title %}Vyber aktivitu online{% endblock %}</title>
     <link rel="icon" href="{% static 'img/art.svg' %}"/>
-    <meta name="keywords" content="online aktivity, kroužky, databáze">
+    <meta name="keywords" content="online aktivity, online kurzy, online kroužky, databáze, vyhledávač, dálkové studium">
     <link rel="stylesheet" href="{% static 'css/custom_bootstrap.min.css' %}">
     <script src="https://kit.fontawesome.com/1e9ff6302a.js" crossorigin="anonymous"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -29,7 +29,7 @@
             <ul class="navbar-nav me-auto">
                 <li class="nav-item" aria-current="page">
                     <a class="nav-link {% if section == 'search' %}active{% endif %}"
-                       href="{% url 'search' %}">Vybírat</a>
+                       href="{% url 'search' %}">Vybrat</a>
                 </li>
                 <li class="nav-item" aria-current="page">
                     <a class="nav-link {% if section == 'courses' %}active{% endif %}"
@@ -137,9 +137,9 @@
     <footer class="row bg-light border py-4">
         <div class="col-12 col-md-4 text-center text-md-start">
             <p class="mx-5 mb-0">
-                © 2021 Kroužky Online<br>
+                © 2021 vyberaktivitu.online<br>
                 +420 777 888 999<br>
-                info@vyberaktivitu.online
+                <a href="mailto:info@vyberaktivitu.online">info@vyberaktivitu.online</a>
             </p>
         </div>
         <div class="col-12 col-md-4 align-self-center text-center">
