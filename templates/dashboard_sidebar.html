@@ -10,6 +10,7 @@
             <p><a href="{% url 'user_photo' %}">Profilová fotografie</a></p>
             <p><a href="{% url 'user_update' %}">Úprava údajů</a></p>
             <p><a href="{% url 'account_change_password' %}">Změna hesla</a></p>
+            <p><a href="{% url 'user_delete' %}">Odstranit účet</a></p>
         </div>
         <div class="col col-lg-12">
             <h5 class="d-flex align-items-center">
@@ -53,6 +54,5 @@
                 {% endif %}
             {% endwith %}
         </div>
-
     </div>
 </div>

@@ -13,9 +13,9 @@ urlpatterns = [
     path('prihlaseni/', allauth_views.login, name='account_login'),
     path('odhlaseni/', allauth_views.logout, name='account_logout'),
     path('heslo/zmenit/', allauth_views.password_change, name='account_change_password'),
-
-    path("heslo/nastavit/", allauth_views.password_set, name="account_set_password"),
-    path("neaktivni/", allauth_views.account_inactive, name="account_inactive"),
+    path('heslo/nastavit/', allauth_views.password_set, name="account_set_password"),
+    path('neaktivni/', allauth_views.account_inactive, name="account_inactive"),
+    path('smazat/', users_views.delete, name='user_delete'),
 
     # E-mail
     path('email/', allauth_views.email, name='account_email'),
