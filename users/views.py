@@ -69,6 +69,6 @@ def photo_delete(request):
     if request.method == 'POST':
         request.user.photo = None
         request.user.save()
-        messages.add_message(request, messages.SUCCESS, 'Profilová fotografie byla úspěšně odstraněna!')
+        messages.add_message(request, messages.INFO, 'Profilová fotografie byla úspěšně odstraněna!')
         return redirect('dashboard')
     return render(request, 'account/photo_delete.html')

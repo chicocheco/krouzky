@@ -126,7 +126,7 @@ def organization_delete(request):
         # todo: change status of all teachers to 'student' as well
 
         request.user.organization.delete()
-        messages.add_message(request, messages.SUCCESS, 'Organizace byla odstraněna.')
+        messages.add_message(request, messages.INFO, 'Organizace byla odstraněna.')
         return redirect(dashboard)
     return render(request, 'catalog/organization/delete.html')
 
@@ -291,7 +291,7 @@ def course_delete(request, slug=None):
     course_name = course.name
     if request.method == 'POST':
         course.delete()
-        messages.add_message(request, messages.SUCCESS, 'Organizace byla odstraněna!')
+        messages.add_message(request, messages.INFO, 'Organizace byla odstraněna!')
         return redirect(reverse('course_list_by_organization', args=[request.user.organization.slug]))
     return render(request, 'catalog/course/delete.html', {'course_name': course_name})
 
