@@ -1,7 +1,3 @@
-body {
-    font-family: 'Signika', sans-serif;
-}
-
 /* hide arrows in read-only number input field (firefox) */
 input[readonly][type=number] {
     -moz-appearance: textfield;
