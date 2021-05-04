@@ -19,7 +19,10 @@ urlpatterns = [
     path('aktivita/<slug:slug>/upravit', catalog_views.course_update, name='course_update'),
     path('aktivita/<slug:slug>/jednodenni/upravit', catalog_views.oneoff_course_update, name='oneoff_course_update'),
     path('aktivita/<slug:slug>/odstranit', catalog_views.course_delete, name='course_delete'),
+
     path('o-nas/', catalog_views.about_us, name='about_us'),
     path('spoluprace/', catalog_views.cooperation, name='cooperation'),
     path('hledani/', catalog_views.search, name='search'),
+    path('podminky-uzivani/', catalog_views.conditions, name='conditions'),
+    path('gdpr/', catalog_views.gdpr, name='gdpr'),
 ]

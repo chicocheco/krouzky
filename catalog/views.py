@@ -38,6 +38,14 @@ def home(request):
     return render(request, 'catalog/home.html')
 
 
+def gdpr(request):
+    return render(request, 'catalog/gdpr.html')
+
+
+def conditions(request):
+    return render(request, 'catalog/conditions.html')
+
+
 def cooperation(request):
     return render(request, 'catalog/cooperation.html', {'section': 'cooperation'})
 
