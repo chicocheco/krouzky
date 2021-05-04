@@ -35,6 +35,7 @@
             document.getElementById("search-form").reset();
             window.location.href = window.location.origin + window.location.pathname;
         }
+
         /* date picker */
         new Litepicker({
             lang: 'cs',
@@ -47,8 +48,22 @@
             element: document.getElementById('id_date_from'),
             elementEnd: document.getElementById('id_date_to'),
         });
-        /* keep expanded if any checkbox is checked */
         let weekDayElement = document.getElementById('collapseRegActivitiesFilter');
+
+        /* expand advanced regular activity filter if selected */
+        document.getElementById('id_is_oneoff').addEventListener("change", function () {
+            if (this.value === "0") {
+                console.log('Selected');
+                weekDayElement.classList.add('show');
+            } else {
+                console.log('Not selected');
+                weekDayElement.classList.remove('show');
+                weekDayElement.querySelectorAll('input[type="checkbox"]').forEach(element => {
+                    element.checked = false;
+                })
+            }
+        });
+        /* keep expanded if any checkbox within is already checked */
         weekDayElement.querySelectorAll('input[type="checkbox"]').forEach(element => {
             if (element.checked) {
                 weekDayElement.classList.add('show');

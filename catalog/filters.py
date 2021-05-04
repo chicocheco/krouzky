@@ -1,4 +1,5 @@
 import django_filters
+from django import forms
 from crispy_forms.bootstrap import InlineCheckboxes, AppendedText
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Row, Column, HTML, Div
@@ -29,6 +30,11 @@ TIME_BLOCKS = (
     (2, 'Večer'),  # [18-22]
 )
 
+REGULARITY = (
+    (1, 'Jednodenní'),
+    (0, 'Pravidelná'),
+)
+
 
 def filter_by_timeblock(queryset, _, values):
     print('values', values)
@@ -48,6 +54,10 @@ def filter_by_timeblock(queryset, _, values):
 
 class CourseFilter(django_filters.FilterSet):
     q = django_filters.CharFilter(label='Klíčové slovo', method=filter_by_query)
+    is_oneoff = django_filters.ChoiceFilter(field_name='is_oneoff',
+                                            choices=REGULARITY,
+                                            empty_label='Bez omezení',
+                                            label='Opakování')
     price_min = django_filters.NumberFilter(field_name='price', lookup_expr='gte', label='Minimální cena aktivity',
                                             help_text='Zvolte násobky 100')
     price_max = django_filters.NumberFilter(field_name='price', lookup_expr='lte', label='Maximální cena aktivity')
@@ -83,23 +93,12 @@ class CourseFilter(django_filters.FilterSet):
                                          ),
                                          Row(
                                              Column('date_from'),
-                                             Column('date_to')
-                                         ),
-                                         Row(
-                                             Column(
-                                                 HTML(
-                                                     '<a class="btn btn-outline-secondary mb-3" type="button" '
-                                                     'data-bs-toggle="collapse" '
-                                                     'data-bs-target="#collapseRegActivitiesFilter">'
-                                                     'Filtr pravidelných aktivit</a>'
-                                                 )
-                                             ),
+                                             Column('date_to'),
+                                             Column('is_oneoff')
                                          ),
                                          Div(
                                              HTML(
-                                                 '<p><b>Pozor: Označením některé z následujících položek budete '
-                                                 'filtrovat pouze pravidelně pořádané aktivity. Jednodenní aktivity '
-                                                 'budou vyloučeny z výsledků</b></p>'
+                                                 '<p><b>Jaká je vaše přibližná časová dostupnost?</b></p> '
                                              ),
                                              InlineCheckboxes('week_day', css_class='col-12'),
                                              InlineCheckboxes('time_block', css_class='col-12'),  # mb-3 is forced
