@@ -152,12 +152,16 @@
                     <b>Vedoucí:</b><br>
                     {{ course.teacher.name }}<br>
                 {% endif %}
-                    {% if course.teacher.phone %}
-                        Telefonní číslo:<br>
-                        +420
-                        {% for i in course.teacher.phone %}{{ i }}{% if forloop.counter == 3 or forloop.counter == 6 %}
-                        {% endif %}{% endfor %}
-                    {% endif %}
+                    {% with phone_number=course.teacher.phone %}
+                        {% if phone_number %}
+                            Telefonní číslo:<br>
+                            <a href="tel:+420{{ phone_number }}">
+                                +420
+                                {% for i in phone_number %}{{ i }}{% if forloop.counter == 3 or forloop.counter == 6 %}
+                                {% endif %}{% endfor %}
+                            </a>
+                        {% endif %}
+                    {% endwith %}
                 </p>
             </div>
             <div class="col-6 col-sm-4 col-lg-5">
