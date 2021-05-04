@@ -2,7 +2,7 @@ from PIL import Image
 from allauth.account.forms import LoginForm, SignupForm, ChangePasswordForm, ResetPasswordForm, ResetPasswordKeyForm
 from crispy_forms.bootstrap import PrependedText
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit
+from crispy_forms.layout import Layout, Submit, HTML, Div
 from django import forms
 from django.contrib.auth import get_user_model
 
@@ -36,18 +36,27 @@ class CustomLoginForm(LoginForm):
 
 
 class CustomSignupForm(SignupForm):
+    conditions = forms.BooleanField(required=True,
+                                    label='Souhlasím s podmínkami užívání a zásadami ochrany osobních dat')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.field_class = 'col-lg-8'
+        self.fields['email'].label, self.fields['password1'].label, self.fields['password2'].label = False, False, False
         self.helper.layout = Layout(
             PrependedText('email', '<i class="fas fa-user"></i>'),
             PrependedText('password1', '<i class="fas fa-key"></i>'),
-            PrependedText('password2', '<i class="fas fa-key"></i>')
+            PrependedText('password2', '<i class="fas fa-key"></i>'),
+            Div(
+                HTML('<ul><li><a target="_blank" href="{% url \'conditions\' %}">Podmínky užívání</a></li>'
+                     '<li><a target="_blank" href="{% url \'gdpr\' %}">Zásady ochrany osobních údajů</a></li></ul>'),
+                css_class='mb-3'
+            ),
+            'conditions',
+
         )
         self.helper.form_tag = False
-        self.helper.form_show_labels = False
         self.helper.form_show_errors = False  # displayed under navbar instead
 
 
