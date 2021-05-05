@@ -131,6 +131,7 @@ class Course(models.Model):
     class Meta:
         verbose_name = 'Aktivita'
         verbose_name_plural = 'Aktivity'
+        ordering = ['-date_modified']
 
     def __str__(self):
         return f'{self.name} [{self.organization.name}]'
