@@ -7,9 +7,8 @@
 
 {% block content %}
     <h1>Zaregistrovat se</h1>
-
+    <hr>
     <p>Máte již účet? <a href="{{ login_url }}">Přihlašte se</a>, prosím.</p>
-
     <form id="signup_form" method="post" action="{% url 'account_signup' %}">
         {% crispy form %}
         {% if redirect_field_value %}

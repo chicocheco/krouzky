@@ -6,9 +6,8 @@
 
 {% block content %}
     <h1>Odhlásit se</h1>
-
+    <hr>
     <p>Jste si jisti, že se chcete odhlásit?</p>
-
     <form method="post" action="{% url 'account_logout' %}">
         {% csrf_token %}
         {% if redirect_field_value %}
@@ -16,8 +15,6 @@
         {% endif %}
         <button class="btn btn-primary" type="submit">Odhlásit se</button>
     </form>
-
-
 {% endblock %}
 
 {% block sidebar %}{% include 'dashboard_sidebar.html' %}{% endblock %}

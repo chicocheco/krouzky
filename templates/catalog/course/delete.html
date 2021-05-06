@@ -6,7 +6,6 @@
     <h2>Odstranění aktivity</h2>
     <hr>
     <p>Jste si jisti, že chcete odstranit aktivitu "<b>{{ course_name }}</b>"?</p>
-
     <form method="post">
         {% csrf_token %}
         <button class="btn btn-danger" type="submit">Odstranit</button>

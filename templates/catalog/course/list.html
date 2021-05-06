@@ -2,24 +2,33 @@
 
 {% block title %}Katalog{% endblock %}
 
-{% block content %}
-    <h1>
-        {% if organization_name %}
-            {{ organization_name }}
-        {% else %}
-            Katalog
-        {% endif %}
-    </h1>
-    <hr>
-    <p>Kroužky bez hranic. Online kroužek s lektorem z druhé strany republiky? Proč ne. Hledáme možnosti, ne překážky.
-        Z domova, od babičky a dědy, spolu nebo po jednom. Vybírejte podle zaměření, nebo dne konání.
-    </p>
-    {% include 'list.html' with courses=courses %}
-    {% include 'pagination.html' with page=courses custom_page_range=custom_page_range %}
-{% endblock %}
-
-{% block sidebar %}
-    {% if user.is_authenticated %}
-        {% include 'dashboard_sidebar.html' %}
-    {% endif %}
+{% block main %}
+    <div class="row pb-4">
+        {# start of content #}
+        <div class="col-12 order-1 order-lg-0 col-lg-8">
+            <div class="border p-4 bg-light">
+                <h1>
+                    {% if organization_name %}
+                        {{ organization_name }}
+                    {% else %}
+                        Katalog
+                    {% endif %}
+                </h1>
+                <hr>
+                <p>Aktivity bez hranic. Online aktivita s lektorem z druhé strany republiky? Proč ne. Hledáme možnosti,
+                    ne
+                    překážky. Z domova, od babičky a dědy, spolu nebo po jednom. Vybírejte podle zaměření, nebo dne
+                    konání.
+                </p>
+                {% include 'list.html' with courses=courses %}
+                {% include 'pagination.html' with page=courses custom_page_range=custom_page_range %}
+            </div>
+        </div>
+        {# end of content, start of sidebar #}
+        <div class="col-12 order-0 order-lg-1 col-lg-4 pb-4 pb-lg-0">
+            <div class="border p-4 bg-light">
+                Reklamní prostor
+            </div>
+        </div>
+    </div>
 {% endblock %}
