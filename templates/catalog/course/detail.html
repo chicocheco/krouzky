@@ -19,11 +19,11 @@
                 {% endif %}
             {% endwith %}
         </div>
-        <div class="row pt-3">
-            <div class="col-12 col-md-6 mb-sm-3">
+        <div class="row px-0">
+            <div class="col-12 col-md-6 mb-4">
                 <div class="position-relative">
                     <img src="{{ course.image.url }}" alt="{{ course.name }}"
-                         class="img-fluid mb-4 mb-lg-0 rounded-3">
+                         class="img-fluid w-100 rounded-3">
                     <div class="position-absolute" style="top: 1rem; left: 1rem;">
                         {% if course.category == 'OTHER' %}
                             <img style="height: 50px;" src="{% static 'img/jine.svg' %}"
@@ -44,9 +44,9 @@
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-md-6 mb-4">
                 <div class="row g-3">
-                    <div class="col-6"><b>Cena:</b><br>{{ course.price }} Kč <br>({{ price_hour }} Kč/hod)</div>
+                    <div class="col-6"><b>Cena:</b><br>{{ course.price }} Kč ({{ price_hour }} Kč/hod)</div>
                     <div class="col-6"><b>Trvání aktivity:</b><br>{{ course.hours }} hodin</div>
                     {% with capacity=course.capacity %}
                         {% if capacity %}
@@ -54,12 +54,12 @@
                         {% endif %}
                     {% endwith %}
                     <div class="col-6"><b>Věková skupina:</b><br>{{ course.age_category }}</div>
-                    <div class="col-12"><b>Zaměření aktivity:</b><br>
+                    <div class="col-6 col-md-12"><b>Zaměření aktivity:</b><br>
                         {% for topic in course.topic.all %}
                             {{ topic.name }}{% if not forloop.last %}, {% endif %}
                         {% endfor %}
                     </div>
-                    <div class="col-12">
+                    <div class="col-6 col-md-12">
                         <b>Doba konání:</b><br>
                         {% if course.is_oneoff %}
                             {{ course.date_from }} - {{ course.date_to|time }}
@@ -71,7 +71,7 @@
             </div>
         </div>
         {% if not course.is_oneoff %}
-            <div class="row pt-3 g-2">
+            <div class="row px-0">
                 <div class="col-12">
                     <div class="table-responsive-sm">
                         <table class="table table-sm table-bordered text-center">
