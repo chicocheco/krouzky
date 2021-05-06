@@ -1,5 +1,4 @@
 import django_filters
-from django import forms
 from crispy_forms.bootstrap import InlineCheckboxes, AppendedText
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Row, Column, HTML, Div
@@ -27,7 +26,7 @@ def filter_by_query(queryset, _, value):
 TIME_BLOCKS = (
     (0, 'Dopoledne'),  # [7-12]
     (1, 'Odpoledne'),  # [12-18]
-    (2, 'Večer'),  # [18-22]
+    (2, 'Večer (od 18:00)'),  # [18-22]
 )
 
 REGULARITY = (
@@ -37,7 +36,6 @@ REGULARITY = (
 
 
 def filter_by_timeblock(queryset, _, values):
-    print('values', values)
     time_blocks = []
     if '0' in values:
         morning = [i for i in range(7, 12)]
@@ -48,7 +46,6 @@ def filter_by_timeblock(queryset, _, values):
     if '2' in values:
         evening = [i for i in range(19, 23)]
         time_blocks.extend(evening)
-    print(time_blocks)
     return queryset.filter(week_schedule__hour__in=time_blocks).distinct()
 
 
@@ -73,7 +70,7 @@ class CourseFilter(django_filters.FilterSet):
                                                    label='Den v týdnu')
     time_block = django_filters.MultipleChoiceFilter(choices=TIME_BLOCKS,
                                                      method=filter_by_timeblock,
-                                                     label='Hodinový blok')
+                                                     label='Část dne')
     date_from = django_filters.DateFilter(input_formats=['%d.%m.%Y'], lookup_expr='gte', label='Od data',
                                           help_text='Kliknutím se otevře kalendář')
     date_to = django_filters.DateFilter(input_formats=['%d.%m.%Y'], lookup_expr='lte', label='Do data')
@@ -113,5 +110,4 @@ class CourseFilter(django_filters.FilterSet):
 
     class Meta:
         model = Course
-        # query, price, topic, age_category, datem_from, date_to
         fields = ['age_category']  # this works only as fallback

@@ -17,10 +17,10 @@
                         <input type="button" class="btn btn-danger" value="Vymazat" onclick="resetSearchForm()"></p>
                 </form>
                 {% if query %}
-                    <p><b>Nalezeno {{ counter }} výsledků hledání obsahující klíčové slovo "{{ query }}".</b></p>
+                    <p><b>Nalezeno {{ counter }} aktivit obsahující klíčové slovo "{{ query }}".</b></p>
                 {% else %}
                     {% if counter %}
-                        <p><b>Nalezeno {{ counter }} výsledků hledání.</b></p>
+                        <p><b>Nalezeno {{ counter }} aktivit.</b></p>
                     {% else %}
                         <p><b>Bohužel jsme nic nenašli.</b></p>
                     {% endif %}
@@ -31,9 +31,7 @@
         </div>
         {# end of content, start of sidebar #}
         <div class="col-12 order-0 order-lg-1 col-lg-4 pb-4 pb-lg-0">
-            <div class="border p-4 bg-light">
-                Reklamní prostor
-            </div>
+            {% include 'ads.html' %}
         </div>
     </div>
 {% endblock %}
@@ -59,26 +57,20 @@
             element: document.getElementById('id_date_from'),
             elementEnd: document.getElementById('id_date_to'),
         });
-        let weekDayElement = document.getElementById('collapseRegActivitiesFilter');
-
-        /* expand advanced regular activity filter if selected */
-        document.getElementById('id_is_oneoff').addEventListener("change", function () {
-            if (this.value === "0") {
-                console.log('Selected');
-                weekDayElement.classList.add('show');
+        let regActivityBox = document.getElementById('collapseRegActivitiesFilter');
+        let selectRegularity = document.getElementById('id_is_oneoff');
+        function toggleWeekDayElement() {
+            if (selectRegularity.value === "0") {
+                regActivityBox.classList.add('show');
             } else {
-                console.log('Not selected');
-                weekDayElement.classList.remove('show');
-                weekDayElement.querySelectorAll('input[type="checkbox"]').forEach(element => {
+                regActivityBox.classList.remove('show');
+                regActivityBox.querySelectorAll('input[type="checkbox"]').forEach(element => {
                     element.checked = false;
                 })
             }
-        });
-        /* keep expanded if any checkbox within is already checked */
-        weekDayElement.querySelectorAll('input[type="checkbox"]').forEach(element => {
-            if (element.checked) {
-                weekDayElement.classList.add('show');
-            }
-        })
+        }
+        /* expand advanced regular activity filter if already selected or just switched to it */
+        toggleWeekDayElement();
+        selectRegularity.addEventListener("change", toggleWeekDayElement);
     </script>
 {% endblock %}
