@@ -123,6 +123,7 @@ class Course(models.Model):
     week_schedule = models.ManyToManyField(WeekSchedule, verbose_name='týdenní rozvrh', blank=True,
                                            related_name='courses')
     is_oneoff = models.BooleanField(_('Je jednodenní'), default=False)
+    is_ad = models.BooleanField(_('Je topováno'), default=False)
     date_modified = models.DateTimeField(_('upraveno'), auto_now=True)
     date_created = models.DateTimeField(_('vytvořeno'), auto_now_add=True)
     objects = models.Manager()  # define implicitly to preserve this manager

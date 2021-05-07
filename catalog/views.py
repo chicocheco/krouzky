@@ -1,5 +1,6 @@
 from collections import defaultdict
 from datetime import datetime
+from random import shuffle
 
 from PIL import Image
 from django.conf import settings
@@ -72,9 +73,14 @@ def course_list(request, slug=None):
         organization_name = None
         object_list = Course.published.all().prefetch_related('organization')
     courses, custom_page_range = paginate(request, object_list)
-    return render(request, 'catalog/course/list.html',
-                  {'custom_page_range': custom_page_range, 'courses': courses,
-                   'organization_name': organization_name, 'section': 'courses'})
+    sponsored_courses = Course.published.filter(is_ad=True).prefetch_related('organization')
+    sp_courses_list = list(sponsored_courses)[:3]
+    shuffle(sp_courses_list)
+    return render(request, 'catalog/course/list.html', {'courses': courses,
+                                                        'sponsored_courses': sp_courses_list,
+                                                        'organization_name': organization_name,
+                                                        'custom_page_range': custom_page_range,
+                                                        'section': 'courses'})
 
 
 @login_required
@@ -334,8 +340,12 @@ def search(request):
     if 'q' in request.GET:
         form.fields['q'].initial = request.GET.get('q')  # works
     counter = len(course_filter.qs)
+    sponsored_courses = Course.published.filter(is_ad=True).prefetch_related('organization')
+    sp_courses_list = list(sponsored_courses)[:3]
+    shuffle(sp_courses_list)
     courses, custom_page_range = paginate(request, course_filter.qs)
     return render(request, 'catalog/course/search.html', {'courses': courses,
+                                                          'sponsored_courses': sp_courses_list,
                                                           'counter': counter,
                                                           'form': form,
                                                           'query': query,

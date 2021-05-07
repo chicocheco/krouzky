@@ -25,6 +25,7 @@
                         <p><b>Bohužel jsme nic nenašli.</b></p>
                     {% endif %}
                 {% endif %}
+                {% include 'list.html' with courses=sponsored_courses flag_ads=True %}
                 {% include 'list.html' with courses=courses %}
                 {% include 'pagination.html' with page=courses custom_page_range=custom_page_range %}
             </div>
