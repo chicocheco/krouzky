@@ -1,5 +1,5 @@
 # Pull base image
-FROM python:3.7-slim-buster
+FROM python:3.9-slim-buster
 # Set environment variable
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
