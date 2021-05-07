@@ -161,8 +161,10 @@ def course_create(request):
     if request.method == 'POST':
         form = CourseForm(data=request.POST, files=request.FILES)  # 'files' includes image upload
         if form.is_valid():
+            cd = form.cleaned_data
             course = form.save(commit=False)
             course.organization = request.user.organization
+            course.name = cd['name'].capitalize()
             course.save()
             form.save_m2m()  # save Topic
             post_process_image(form.cleaned_data, course)
@@ -191,6 +193,7 @@ def oneoff_course_create(request):
             cd = form.cleaned_data
             course = form.save(commit=False)
             course.organization = request.user.organization
+            course.name = cd['name'].capitalize()
             course.date_from = datetime.combine(cd.get('date_from'), cd.get('time_from'))
             course.date_to = datetime.combine(cd.get('date_from'), cd.get('time_to'))
             course.is_oneoff = True
@@ -225,9 +228,11 @@ def course_update(request, slug=None):
         # 'instance' parameter to relate to the existing object!
         form = CourseForm(data=request.POST, files=request.FILES, instance=course)
         if form.is_valid():
+            cd = form.cleaned_data
             course = form.save(commit=False)
             approval_req = False
             if original_name != course.name or original_desc != course.description:
+                course.name = cd['name'].capitalize()
                 course.status = Course.Status.DRAFT
                 approval_req = True
             course.save()
@@ -264,6 +269,7 @@ def oneoff_course_update(request, slug=None):
             course.date_to = datetime.combine(cd.get('date_from'), cd.get('time_to'))
             approval_req = False
             if original_name != course.name or original_desc != course.description:
+                course.name = cd['name'].capitalize()
                 course.status = Course.Status.DRAFT
                 approval_req = True
             course.save()
