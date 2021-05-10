@@ -66,7 +66,7 @@ def course_list(request, slug=None):
         if not request.user.is_authenticated:
             return redirect('home')
         if organization != request.user.organization:  # display 403 (todo: custom template)
-            raise PermissionDenied()
+            raise PermissionDenied
         organization_name = organization.name
         object_list = Course.objects.filter(organization=organization)
     else:
@@ -288,7 +288,9 @@ def oneoff_course_update(request, slug=None):
 
 
 def course_detail(request, slug=None):
-    course = get_object_or_404(Course.published.select_related('organization'), slug=slug)
+    course = get_object_or_404(Course.objects.select_related('organization'), slug=slug)
+    if course.status == Course.Status.DRAFT and course.organization != request.user.organization:
+        raise PermissionDenied
     form = ContactTeacherForm()
     price_hour = round(course.price / course.hours)
 
