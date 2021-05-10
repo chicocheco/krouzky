@@ -62,6 +62,11 @@ class CourseFilter(django_filters.FilterSet):
                                                      field_name='topic',
                                                      lookup_expr='exact',
                                                      label='Omezit výběr zaměření')
+    category = django_filters.ChoiceFilter(field_name='category',
+                                           lookup_expr='exact',
+                                           choices=Course.Category.choices,
+                                           empty_label='Bez omezení',
+                                           label='Kategorie')
     week_day = django_filters.MultipleChoiceFilter(choices=WeekSchedule.WeekDay.choices,
                                                    field_name='week_schedule__day_of_week',
                                                    lookup_expr='in',  # choices get collected in a list
@@ -102,6 +107,7 @@ class CourseFilter(django_filters.FilterSet):
                                              css_class='collapse border rounded px-3 pt-3 pt-0 mb-3 mb-3',
                                              id='collapseRegActivitiesFilter'
                                          ),
+                                         'category',
                                          InlineCheckboxes('topic', css_class='col-12'),
                                          )
         self.form.fields['price_min'].widget.attrs.update({'min': 0, 'max': 99999, 'step': 100})
@@ -110,4 +116,4 @@ class CourseFilter(django_filters.FilterSet):
 
     class Meta:
         model = Course
-        fields = ['age_category']  # this works only as fallback
+        fields = ['age_category', 'category']  # this works only as fallback
