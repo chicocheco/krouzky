@@ -115,10 +115,10 @@ class CourseForm(forms.ModelForm):
         model = Course
         fields = (
             'name', 'url', 'price', 'hours', 'capacity', 'date_from', 'date_to', 'week_schedule', 'teacher',
-            'age_category', 'category', 'image', 'topic', 'description', 'x', 'y', 'width', 'height')
+            'age_category', 'category', 'image', 'tag', 'description', 'x', 'y', 'width', 'height')
         widgets = {
             'description': TinyMCE(),
-            'topic': forms.CheckboxSelectMultiple(),
+            'tag': forms.CheckboxSelectMultiple(),
             'week_schedule': forms.CheckboxSelectMultiple(),
             'image': CustomClearableInput(),
         }
@@ -180,10 +180,10 @@ class OneoffCourseForm(forms.ModelForm):
     class Meta:
         model = Course
         fields = ('name', 'url', 'price', 'capacity', 'hours', 'date_from', 'teacher', 'age_category', 'category',
-                  'image', 'topic', 'description', 'x', 'y', 'width', 'height')
+                  'image', 'tag', 'description', 'x', 'y', 'width', 'height')
         widgets = {
             'description': TinyMCE(),
-            'topic': forms.CheckboxSelectMultiple(),
+            'tag': forms.CheckboxSelectMultiple(),
             'image': CustomClearableInput(),
         }
 

@@ -38,12 +38,11 @@ class AgeCategory(models.Model):
         return f'{self.name} ({self.age_from}-{self.age_to})'
 
 
-class Topic(models.Model):
+class Tag(models.Model):
     name = models.CharField(_('název'), max_length=50, blank=False)
 
     class Meta:
-        verbose_name = 'Zaměření'
-        verbose_name_plural = 'Zaměření'
+        verbose_name_plural = 'Tagy'
 
     def __str__(self):
         return self.name
@@ -116,7 +115,7 @@ class Course(models.Model):
                                      verbose_name='organizace', related_name='courses', on_delete=models.CASCADE)
     age_category = models.ForeignKey(AgeCategory,
                                      verbose_name='věková kategorie', related_name='courses', on_delete=models.CASCADE)
-    topic = models.ManyToManyField(Topic, verbose_name='zaměření', related_name='courses')
+    tag = models.ManyToManyField(Tag, verbose_name='tagy', related_name='courses')
     status = models.CharField(_('stav'), max_length=9, choices=Status.choices, default=Status.DRAFT)
     date_from = models.DateTimeField(_('Datum začátku'), help_text='Kliknutím se otevře kalendář')
     date_to = models.DateTimeField(_('Datum konce'))

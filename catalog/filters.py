@@ -4,7 +4,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Row, Column, HTML, Div
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 
-from .models import Course, Topic, WeekSchedule
+from .models import Course, Tag, WeekSchedule, AgeCategory
 
 """
 Notes for week_day filter:
@@ -58,15 +58,20 @@ class CourseFilter(django_filters.FilterSet):
     price_min = django_filters.NumberFilter(field_name='price', lookup_expr='gte', label='Minimální cena aktivity',
                                             help_text='Zvolte násobky 100')
     price_max = django_filters.NumberFilter(field_name='price', lookup_expr='lte', label='Maximální cena aktivity')
-    topic = django_filters.ModelMultipleChoiceFilter(queryset=Topic.objects.all(),
-                                                     field_name='topic',
-                                                     lookup_expr='exact',
-                                                     label='Omezit výběr zaměření')
+    tag = django_filters.ModelMultipleChoiceFilter(queryset=Tag.objects.all(),
+                                                   field_name='tag',
+                                                   lookup_expr='exact',
+                                                   label='Omezit dle tagů')
     category = django_filters.ChoiceFilter(field_name='category',
                                            lookup_expr='exact',
                                            choices=Course.Category.choices,
                                            empty_label='Bez omezení',
-                                           label='Kategorie')
+                                           label='Kategorie dle zaměření')
+    age_category = django_filters.ModelChoiceFilter(field_name='age_category',
+                                                    lookup_expr='exact',
+                                                    queryset=AgeCategory.objects.all(),
+                                                    empty_label='Bez omezení',
+                                                    label='Kategorie dle věku')
     week_day = django_filters.MultipleChoiceFilter(choices=WeekSchedule.WeekDay.choices,
                                                    field_name='week_schedule__day_of_week',
                                                    lookup_expr='in',  # choices get collected in a list
@@ -91,7 +96,6 @@ class CourseFilter(django_filters.FilterSet):
                                          Row(
                                              Column(AppendedText('price_min', 'Kč')),
                                              Column(AppendedText('price_max', 'Kč')),
-                                             Column('age_category')
                                          ),
                                          Row(
                                              Column('date_from'),
@@ -107,12 +111,14 @@ class CourseFilter(django_filters.FilterSet):
                                              css_class='collapse border rounded px-3 pt-3 pt-0 mb-3 mb-3',
                                              id='collapseRegActivitiesFilter'
                                          ),
-                                         'category',
-                                         InlineCheckboxes('topic', css_class='col-12'),
+                                         Row(
+                                             Column('category'),
+                                             Column('age_category')
+                                         ),
+                                         InlineCheckboxes('tag', css_class='col-12'),
                                          )
         self.form.fields['price_min'].widget.attrs.update({'min': 0, 'max': 99999, 'step': 100})
         self.form.fields['price_max'].widget.attrs.update({'min': 0, 'max': 99999, 'step': 100})
-        self.form.fields['age_category'].empty_label = 'Bez omezení'
 
     class Meta:
         model = Course
