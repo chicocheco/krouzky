@@ -4,6 +4,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from taggit.managers import TaggableManager
 
 
 class Organization(models.Model):
@@ -36,16 +37,6 @@ class AgeCategory(models.Model):
 
     def __str__(self):
         return f'{self.name} ({self.age_from}-{self.age_to})'
-
-
-class Tag(models.Model):
-    name = models.CharField(_('název'), max_length=50, blank=False)
-
-    class Meta:
-        verbose_name_plural = 'Tagy'
-
-    def __str__(self):
-        return self.name
 
 
 class WeekSchedule(models.Model):
@@ -115,7 +106,6 @@ class Course(models.Model):
                                      verbose_name='organizace', related_name='courses', on_delete=models.CASCADE)
     age_category = models.ForeignKey(AgeCategory,
                                      verbose_name='věková kategorie', related_name='courses', on_delete=models.CASCADE)
-    tag = models.ManyToManyField(Tag, verbose_name='tagy', related_name='courses')
     status = models.CharField(_('stav'), max_length=9, choices=Status.choices, default=Status.DRAFT)
     date_from = models.DateTimeField(_('Datum začátku'), help_text='Kliknutím se otevře kalendář')
     date_to = models.DateTimeField(_('Datum konce'))
@@ -127,6 +117,7 @@ class Course(models.Model):
     date_created = models.DateTimeField(_('vytvořeno'), auto_now_add=True)
     objects = models.Manager()  # define implicitly to preserve this manager
     published = PublishedManager()
+    tags = TaggableManager()
 
     class Meta:
         verbose_name = 'Aktivita'

@@ -35,9 +35,14 @@ INSTALLED_APPS = [
     'django_filters',
     'tinymce',
     'debug_toolbar',
+    'taggit'
 ]
 
-INTERNAL_IPS = ['172.22.0.1', ]
+INTERNAL_IPS = ['172.22.0.1', ]  # debug_toolbar
+
+# taggit (must declare both)
+TAGGIT_TAGS_FROM_STRING = 'catalog.utils.comma_splitter'
+TAGGIT_STRING_FROM_TAGS = 'catalog.utils.comma_joiner'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'

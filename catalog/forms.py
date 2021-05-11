@@ -82,6 +82,7 @@ class CourseForm(forms.ModelForm):
         # Column() adds 'col-md' automatically
         self.helper.layout = Layout(
             'name',
+            'tags',
             'url',
             Row(
                 Column('price'),
@@ -100,7 +101,6 @@ class CourseForm(forms.ModelForm):
             ),
             Field('image', css_class='form-control'),
             'x', 'y', 'width', 'height',  # hidden
-            InlineCheckboxes('topic'),
             'description',
             Submit('submit', 'Odeslat')
         )
@@ -114,11 +114,11 @@ class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
         fields = (
-            'name', 'url', 'price', 'hours', 'capacity', 'date_from', 'date_to', 'week_schedule', 'teacher',
-            'age_category', 'category', 'image', 'tag', 'description', 'x', 'y', 'width', 'height')
+            'name', 'tags', 'url', 'price', 'hours', 'capacity', 'date_from', 'date_to', 'week_schedule', 'teacher',
+            'age_category', 'category', 'image', 'description', 'x', 'y', 'width', 'height'
+        )
         widgets = {
             'description': TinyMCE(),
-            'tag': forms.CheckboxSelectMultiple(),
             'week_schedule': forms.CheckboxSelectMultiple(),
             'image': CustomClearableInput(),
         }
@@ -144,6 +144,7 @@ class OneoffCourseForm(forms.ModelForm):
         # Column() adds 'col-md' automatically
         self.helper.layout = Layout(
             'name',
+            'tags',
             'url',
             Row(
                 Column('price'),
@@ -162,7 +163,6 @@ class OneoffCourseForm(forms.ModelForm):
             ),
             Field('image', css_class='form-control'),
             'x', 'y', 'width', 'height',  # hidden
-            InlineCheckboxes('topic'),
             'description',
             Submit('submit', 'Potvrdit')
         )
@@ -179,11 +179,12 @@ class OneoffCourseForm(forms.ModelForm):
 
     class Meta:
         model = Course
-        fields = ('name', 'url', 'price', 'capacity', 'hours', 'date_from', 'teacher', 'age_category', 'category',
-                  'image', 'tag', 'description', 'x', 'y', 'width', 'height')
+        fields = (
+            'name', 'tags', 'url', 'price', 'capacity', 'hours', 'date_from', 'teacher', 'age_category', 'category',
+            'image', 'description', 'x', 'y', 'width', 'height'
+        )
         widgets = {
             'description': TinyMCE(),
-            'tag': forms.CheckboxSelectMultiple(),
             'image': CustomClearableInput(),
         }
 

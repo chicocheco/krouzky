@@ -54,9 +54,9 @@
                         {% endif %}
                     {% endwith %}
                     <div class="col-6"><b>Věková skupina:</b><br>{{ course.age_category }}</div>
-                    <div class="col-6 col-md-12"><b>Zaměření aktivity:</b><br>
-                        {% for topic in course.topic.all %}
-                            {{ topic.name }}{% if not forloop.last %}, {% endif %}
+                    <div class="col-6 col-md-12"><b>Tagy:</b><br>
+                        {% for tag in course.tags.all %}
+                            {{ tag.name }}{% if not forloop.last %}, {% endif %}
                         {% endfor %}
                     </div>
                     <div class="col-6 col-md-12">

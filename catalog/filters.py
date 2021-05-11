@@ -3,8 +3,10 @@ from crispy_forms.bootstrap import InlineCheckboxes, AppendedText
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Row, Column, HTML, Div
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+from django.db.models import Q
 
-from .models import Course, Tag, WeekSchedule, AgeCategory
+from .models import Course, WeekSchedule, AgeCategory
+from .utils import get_slugs, asciify
 
 """
 Notes for week_day filter:
@@ -15,12 +17,24 @@ object_list = Course.published.filter(week_schedule__day_of_week__in=week_days).
 
 
 def filter_by_query(queryset, _, value):
-    search_vector = SearchVector('name__unaccent', weight='A') + \
-                    SearchVector('description__unaccent', weight='B')
+    """
+    Case and accent insensitive search in 'name', 'description' and tags.
+
+    Remove accents from the string and fulltext search through unaccented columns 'name' and 'description'.
+    Get a list of slugs based off of the string and search in tags. Order both queries by rank so fulltext results have
+    always priority ('name' > 'description').
+    """
+
+    value = asciify(value)
+    search_vector = SearchVector('name__unaccent', weight='A') + SearchVector('description__unaccent', weight='B')
     search_query = SearchQuery(value)
     return queryset.annotate(
         search=search_vector,
-        rank=SearchRank(search_vector, search_query)).filter(rank__gte=0.3).order_by('-rank')
+        rank=SearchRank(search_vector, search_query)) \
+        .filter(Q(rank__gte=0.3) |
+                Q(tags__slug__in=get_slugs(value))) \
+        .distinct() \
+        .order_by('-rank')
 
 
 TIME_BLOCKS = (
@@ -50,7 +64,8 @@ def filter_by_timeblock(queryset, _, values):
 
 
 class CourseFilter(django_filters.FilterSet):
-    q = django_filters.CharFilter(label='Klíčové slovo', method=filter_by_query)
+    q = django_filters.CharFilter(label='Klíčové slovo', method=filter_by_query,
+                                  help_text='Při hledání více klíčových slov, či slovních spojení, oddělujte čárkami')
     is_oneoff = django_filters.ChoiceFilter(field_name='is_oneoff',
                                             choices=REGULARITY,
                                             empty_label='Bez omezení',
@@ -58,10 +73,6 @@ class CourseFilter(django_filters.FilterSet):
     price_min = django_filters.NumberFilter(field_name='price', lookup_expr='gte', label='Minimální cena aktivity',
                                             help_text='Zvolte násobky 100')
     price_max = django_filters.NumberFilter(field_name='price', lookup_expr='lte', label='Maximální cena aktivity')
-    tag = django_filters.ModelMultipleChoiceFilter(queryset=Tag.objects.all(),
-                                                   field_name='tag',
-                                                   lookup_expr='exact',
-                                                   label='Omezit dle tagů')
     category = django_filters.ChoiceFilter(field_name='category',
                                            lookup_expr='exact',
                                            choices=Course.Category.choices,
@@ -115,7 +126,6 @@ class CourseFilter(django_filters.FilterSet):
                                              Column('category'),
                                              Column('age_category')
                                          ),
-                                         InlineCheckboxes('tag', css_class='col-12'),
                                          )
         self.form.fields['price_min'].widget.attrs.update({'min': 0, 'max': 99999, 'step': 100})
         self.form.fields['price_max'].widget.attrs.update({'min': 0, 'max': 99999, 'step': 100})
