@@ -1,0 +1,12 @@
+{% extends '_base.html' %}
+
+{% block title %}Stránka nenalezena{% endblock %}
+
+{% block content %}
+    <h1>Stránka nenalezena</h1>
+    <hr>
+    <p>Chybový kód 404<br>
+    <p>Pokračujte prosím na <a href="{% url 'home' %}">hlavní stránku</a></p>
+{% endblock %}
+
+{% block sidebar %}{% endblock %}
