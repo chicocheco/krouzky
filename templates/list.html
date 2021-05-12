@@ -72,8 +72,13 @@
                                         {% if course.is_oneoff %}
                                             {{ course.date_from|date }}
                                         {% else %}
-                                            Od {{ course.date_from|date }} do {{ course.date_to|date }}
+                                            {{ course.date_from|date:"j.n.Y" }} - {{ course.date_to|date:"j.n.Y" }}
                                         {% endif %}
+                                    </span>
+                                </div>
+                                <div class="col">
+                                    <span class="text-muted float-end">
+                                        {{ course.price }} Kč
                                     </span>
                                 </div>
                             </div>
