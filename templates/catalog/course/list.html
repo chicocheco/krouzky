@@ -15,10 +15,8 @@
                     {% endif %}
                 </h1>
                 <hr>
-                <p>Aktivity bez hranic. Online aktivita s lektorem z druhé strany republiky? Proč ne. Hledáme možnosti,
-                    ne
-                    překážky. Z domova, od babičky a dědy, spolu nebo po jednom. Vybírejte podle zaměření, nebo dne
-                    konání.
+                <p>V katalogu najdete všechny registrované aktivity pohromadě.
+                    Můžete se orientovat podle tematických ikonek nebo přejít na <a href="{% url 'search' %}">vyhledávání</a>.
                 </p>
                 {% include 'list.html' with courses=sponsored_courses flag_ads=True %}
                 {% include 'list.html' with courses=courses %}
