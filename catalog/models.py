@@ -128,4 +128,7 @@ class Course(models.Model):
         return f'{self.name} [{self.organization.name}]'
 
     def get_absolute_url(self):
-        return reverse('course_detail', args=[self.slug])
+        return reverse('course_detail', args=(self.slug,))
+
+    def get_absolute_url_admin(self):  # for emails
+        return reverse(f"admin:{self._meta.app_label}_{self._meta.model_name}_change", args=(self.id,))

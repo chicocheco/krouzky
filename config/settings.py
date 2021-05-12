@@ -165,7 +165,15 @@ EMAIL_PORT = 465
 EMAIL_USE_SSL = True
 EMAIL_HOST_USER = environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = environ.get('EMAIL_HOST_PASSWORD')
+
 DEFAULT_FROM_EMAIL = 'info@vyberaktivitu.online'  # for allauth
+
+SERVER_EMAIL = 'info@vyberaktivitu.online'  # for mail_admins and mail_managers
+ADMINS = [('Standa', 'stanislav.matas@gmail.com'), ]  # if DEBUG=False, sends errors
+MANAGERS = [  # for pending approvals
+    ('Standa', 'stanislav.matas@gmail.com'),
+    # ('Klára', 'klara.matasova@gmail.com'),
+]
 
 TINYMCE_DEFAULT_CONFIG = {
     "height": "320px",

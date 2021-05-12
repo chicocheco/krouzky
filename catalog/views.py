@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, mail_managers
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.utils.text import slugify
@@ -168,6 +168,9 @@ def course_create(request):
             course.save()
             form.save_m2m()  # save Topic
             post_process_image(form.cleaned_data, course)
+            course_url_admin = request.build_absolute_uri(course.get_absolute_url_admin())
+            mail_managers(f'Nová aktivita - čeká na schválení',
+                          f'Název aktivity:\n{course.name}\n\n{course_url_admin}')
             messages.add_message(request, messages.SUCCESS, 'Aktivita byla úspěšně vytvořena a odeslána ke schválení!')
             return redirect(dashboard)
         else:
@@ -175,14 +178,18 @@ def course_create(request):
             messages.add_message(request, messages.ERROR, 'Chyba při pokusu zaregistrovat aktivitu!')
     else:
         form = CourseForm()
-        teacher_field = form.fields['teacher']
-        teachers = User.objects.filter(organization_id=request.user.organization.id).order_by('date_created')
-        teacher_field.queryset = teachers
-        if len(teachers) == 1:
-            # simulate readonly attribute for <select> element
-            teacher_field.widget.attrs.update({'style': 'pointer-events: none; background-color: #e9ecef;',
-                                               'tabindex': "-1"})
+        check_teacher_field(form, request)
     return render(request, 'catalog/course/create.html', {'form': form})
+
+
+def check_teacher_field(form, request):
+    teacher_field = form.fields['teacher']
+    teachers = User.objects.filter(organization_id=request.user.organization.id).order_by('date_created')
+    teacher_field.queryset = teachers
+    if len(teachers) == 1:
+        # simulate readonly attribute for <select> element
+        teacher_field.widget.attrs.update({'style': 'pointer-events: none; background-color: #e9ecef;',
+                                           'tabindex': "-1"})
 
 
 @login_required
@@ -200,6 +207,9 @@ def oneoff_course_create(request):
             course.save()
             form.save_m2m()
             post_process_image(cd, course)
+            course_url_admin = request.build_absolute_uri(course.get_absolute_url_admin())
+            mail_managers(f'Nová aktivita - čeká na schválení',
+                          f'Název aktivity:\n{course.name}\n\n{course_url_admin}')
             messages.add_message(request, messages.SUCCESS,
                                  'Jednodenní aktivita byla úspěšně vytvořena a odeslána ke schválení!')
             return redirect(dashboard)
@@ -208,14 +218,20 @@ def oneoff_course_create(request):
                                  'Chyba při pokusu zaregistrovat jednodenní aktivitu!')
     else:
         form = OneoffCourseForm()
-        teacher_field = form.fields['teacher']
-        teachers = User.objects.filter(organization_id=request.user.organization.id).order_by('date_created')
-        teacher_field.queryset = teachers
-        if len(teachers) == 1:
-            # simulate readonly attribute for <select> element
-            teacher_field.widget.attrs.update({'style': 'pointer-events: none; background-color: #e9ecef;',
-                                               'tabindex': "-1"})
+        check_teacher_field(form, request)
     return render(request, 'catalog/course/create_oneoff.html', {'form': form})
+
+
+def is_approval_requested(cd, course, original_desc, original_name, request):
+    approval_requested = False
+    if (original_name != course.name or original_desc != course.description) \
+            and course.status != Course.Status.DRAFT:
+        course.name = cd['name'].capitalize()
+        course.status = Course.Status.DRAFT
+        approval_requested = True
+        course_url_admin = request.build_absolute_uri(course.get_absolute_url_admin())
+        mail_managers(f'Aktivita upravena - čeká na schválení', f'Název aktivity:\n{course.name}\n\n{course_url_admin}')
+    return approval_requested
 
 
 @login_required
@@ -230,15 +246,11 @@ def course_update(request, slug=None):
         if form.is_valid():
             cd = form.cleaned_data
             course = form.save(commit=False)
-            approval_req = False
-            if original_name != course.name or original_desc != course.description:
-                course.name = cd['name'].capitalize()
-                course.status = Course.Status.DRAFT
-                approval_req = True
+            approval_requested = is_approval_requested(cd, course, original_desc, original_name, request)
             course.save()
             form.save_m2m()
             post_process_image(form.cleaned_data, course)
-            if approval_req:
+            if approval_requested:
                 messages.add_message(request, messages.SUCCESS,
                                      'Aktivita byla úspěšně upravena a odeslána ke schválení!')
                 return redirect(reverse('course_list_by_organization', args=[request.user.organization.slug]))
@@ -267,15 +279,11 @@ def oneoff_course_update(request, slug=None):
             # TODO: do not hit db if unnecessary
             course.date_from = datetime.combine(cd.get('date_from'), cd.get('time_from'))
             course.date_to = datetime.combine(cd.get('date_from'), cd.get('time_to'))
-            approval_req = False
-            if original_name != course.name or original_desc != course.description:
-                course.name = cd['name'].capitalize()
-                course.status = Course.Status.DRAFT
-                approval_req = True
+            approval_requested = is_approval_requested(cd, course, original_desc, original_name, request)
             course.save()
             form.save_m2m()
             post_process_image(cd, course)
-            if approval_req:
+            if approval_requested:
                 messages.add_message(request, messages.SUCCESS,
                                      'Jednodenní aktivita byla úspěšně upravena a odeslána ke schválení!')
                 return redirect(reverse('course_list_by_organization', args=[request.user.organization.slug]))
