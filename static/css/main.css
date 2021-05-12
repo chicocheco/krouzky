@@ -1,5 +1,5 @@
 /* hide arrows in read-only number input field (firefox) */
-input[readonly][type=number] {
+input[type=number] {
     -moz-appearance: textfield;
 }
 

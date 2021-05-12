@@ -17,12 +17,12 @@
                         <input type="button" class="btn btn-danger" value="Vymazat" onclick="resetSearchForm()"></p>
                 </form>
                 {% if query %}
-                    <p><b>Nalezeno {{ counter }} aktivit obsahující klíčové slovo "{{ query }}".</b></p>
+                    <p><b>Nalezeno {{ counter }} aktivit obsahující klíčové slovo "{{ query }}"</b></p>
                 {% else %}
                     {% if counter %}
-                        <p><b>Nalezeno {{ counter }} aktivit.</b></p>
+                        <p><b>Nalezeno {{ counter }} aktivit</b></p>
                     {% else %}
-                        <p><b>Bohužel jsme nic nenašli.</b></p>
+                        <p><b>Bohužel jsme nic nenašli</b></p>
                     {% endif %}
                 {% endif %}
                 {% include 'list.html' with courses=sponsored_courses flag_ads=True %}

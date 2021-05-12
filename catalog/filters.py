@@ -65,7 +65,7 @@ def filter_by_timeblock(queryset, _, values):
 
 class CourseFilter(django_filters.FilterSet):
     q = django_filters.CharFilter(label='Klíčové slovo', method=filter_by_query,
-                                  help_text='Při hledání více klíčových slov, či slovních spojení, oddělujte čárkami')
+                                  help_text='Více klíčových slov, či ustálených slovních spojení, oddělujte čárkami')
     is_oneoff = django_filters.ChoiceFilter(field_name='is_oneoff',
                                             choices=REGULARITY,
                                             empty_label='Bez omezení',
