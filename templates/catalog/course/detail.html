@@ -127,11 +127,11 @@
                 </div>
                 <div class="ms-auto my-auto">
                     {% if course.is_oneoff %}
-                        <a class="btn btn-primary" href="{% url 'oneoff_course_update' course.slug %}">Upravit</a>
+                        <a class="btn btn-primary" href="{% url 'oneoff_course_update' course.slug %}"><i class="fas fa-edit me-1"></i> Upravit</a>
                     {% else %}
-                        <a class="btn btn-primary" href="{% url 'course_update' course.slug %}">Upravit</a>
+                        <a class="btn btn-primary" href="{% url 'course_update' course.slug %}"><i class="fas fa-edit me-1"></i> Upravit</a>
                     {% endif %}
-                    <a class="btn btn-danger" href="{% url 'course_delete' course.slug %}">Odstranit</a>
+                    <a class="btn btn-danger" href="{% url 'course_delete' course.slug %}"><i class="fas fa-trash me-1"></i> Odstranit</a>
                 </div>
             </div>
         {% endif %}

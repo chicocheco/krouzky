@@ -13,8 +13,10 @@
                 <hr>
                 <form method="get" id="search-form">
                     {% crispy form %}
-                    <p><input class="btn btn-primary me-2" type="submit" value="Vybrat">
-                        <input type="button" class="btn btn-danger" value="Vymazat" onclick="resetSearchForm()"></p>
+                    <p>
+                        <button class="btn btn-primary me-2" type="submit"><i class="fas fa-search me-1"></i> Vybrat</button>
+                        <button class="btn btn-danger" type="button" onclick="resetSearchForm()"><i class="fas fa-trash me-1"></i> Vymazat</button>
+                    </p>
                 </form>
                 {% if query %}
                     <p><b>Nalezeno {{ counter }} aktivit obsahující klíčové slovo "{{ query }}"</b></p>
