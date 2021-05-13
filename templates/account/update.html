@@ -9,4 +9,4 @@
     {% crispy form %}
 {% endblock %}
 
-{% block sidebar %}{% include 'dashboard_sidebar.html' %}{% endblock %}
+{% block sidebar %}{% include 'dashboard_sidebar.html' with user_organization=request.user.organization %}{% endblock %}

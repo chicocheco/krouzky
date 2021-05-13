@@ -1,13 +1,49 @@
 {% extends '_base.html' %}
 
-{% block title %}{{ organization.name }} - aktivity{% endblock %}
+{% block title %}{{ organization.name }}{% endblock %}
 
 {% block content %}
-    <h1>{{ organization.name }} - aktivity</h1>
+    <h1>{{ organization.name }}</h1>
     <hr>
-    <p>Zde najdete všechny aktivity organizace {{ organization.name }}.</p>
+    <p>Aktivity organizace <b>{{ organization.name }}</b>.<br>Celkový počet aktivit: {{ counter }}</p>
     {% include 'list.html' with courses=courses %}
     {% include 'pagination.html' with page=courses custom_page_range=custom_page_range %}
 {% endblock %}
 
-{% block sidebar %}{% include 'dashboard_sidebar.html' %}{% endblock %}
+{% block sidebar %}
+    {% if organization == request.user.organization %}
+        {% include 'dashboard_sidebar.html' with user_organization=organization %}
+    {% else %}
+        <div class="border p-4 bg-light">
+            <div class="row px-2">
+                <div class="col col-lg-12">
+                    <h5 class="d-flex align-items-center">
+                        <i class="fas fa-sitemap fa-md ms-1 me-3"></i>
+                        Informace o organizaci
+                    </h5>
+                    <hr>
+                    <div class="row">
+                        <div class="col-6">
+                            Název
+                        </div>
+                        <div class="col-6">
+                            {{ organization.name }}
+                        </div>
+
+                        <div class="col-6">
+                            Registrována dne
+                        </div>
+                        <div class="col-6">
+                            {{ organization.date_created|date }}
+                        </div>
+                        <div class="col-6 col-lg-12">
+                            URL adresa
+                        </div>
+                        <div class="col-6 col-lg-12"><a href="{{ organization.url }}" class="text-break">{{ organization.url }}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

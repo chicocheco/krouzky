@@ -41,7 +41,10 @@ def about_us(request):
 
 @login_required
 def dashboard(request):
-    return render(request, 'catalog/dashboard.html')
+    user_organization = request.user.organization
+    return render(request,
+                  'catalog/dashboard.html',
+                  {'user_organization': user_organization})
 
 
 def search(request):
@@ -68,8 +71,10 @@ def search(request):
 def course_list_by_organization(request, slug):
     organization = get_object_or_404(Organization, slug=slug)
     object_list = Course.objects.filter(organization=organization).select_related()
+    counter = len(object_list)
     courses, custom_page_range = paginate(request, object_list)
     return render(request, 'catalog/course/list_organization.html', {'courses': courses,
+                                                                     'counter': counter,
                                                                      'organization': organization,
                                                                      'custom_page_range': custom_page_range,
                                                                      'section': 'courses_by_organization'})
@@ -111,48 +116,49 @@ def organization_register(request):
 
 @login_required
 def organization_update(request):
-    form = UpdateOrganizationForm(instance=request.user.organization)
+    user_organization = request.user.organization
+    form = UpdateOrganizationForm(instance=user_organization)
     if request.method == 'POST':
-        form = UpdateOrganizationForm(data=request.POST, instance=request.user.organization)
+        form = UpdateOrganizationForm(data=request.POST, instance=user_organization)
         if form.is_valid():
             form.save()
             messages.add_message(request, messages.SUCCESS, 'Údaje organizace upraveny!')
             return redirect(dashboard)
         else:
             messages.add_message(request, messages.ERROR, 'Chyba při pokusu upravit údaje organizace!')
-    return render(request, 'catalog/organization/update.html', {'form': form})
+    return render(request, 'catalog/organization/update.html', {'form': form, 'user_organization': user_organization})
 
 
 @login_required
 def organization_rename(request):
+    user_organization = request.user.organization
+    form = RenameOrganizationForm(instance=user_organization)
     if request.method == 'POST':
-        form = RenameOrganizationForm(data=request.POST)
+        form = RenameOrganizationForm(data=request.POST, instance=user_organization)
         if form.is_valid():
-            org_name = form.cleaned_data['name']
-            organization = request.user.organization
-            organization.name = org_name
-            organization.slug = slugify(org_name)
-            organization.save()
-            messages.add_message(request, messages.SUCCESS, f'Organizace úspěšně přejmenována na "{org_name}"!')
+            name = form.cleaned_data['name']
+            user_organization.name = name
+            user_organization.slug = slugify(name)
+            user_organization.save()
+            messages.add_message(request, messages.SUCCESS, f'Organizace úspěšně přejmenována na "{name}"!')
             return redirect(dashboard)
         else:
             messages.add_message(request, messages.ERROR, 'Chyba při pokusu přejmenovat organizaci!')
-    else:
-        form = RenameOrganizationForm(instance=request.user.organization)
-    return render(request, 'catalog/organization/rename.html', {'form': form})
+    return render(request, 'catalog/organization/rename.html', {'form': form, 'user_organization': user_organization})
 
 
 @login_required
 def organization_delete(request):
+    user_organization = request.user.organization
     if request.method == 'POST':
         request.user.role = User.Roles.STUDENT
         request.user.save()
         # todo: change status of all teachers to 'student' as well
 
-        request.user.organization.delete()
+        user_organization.delete()
         messages.add_message(request, messages.INFO, 'Organizace byla odstraněna.')
         return redirect(dashboard)
-    return render(request, 'catalog/organization/delete.html')
+    return render(request, 'catalog/organization/delete.html', {'user_organization': user_organization})
 
 
 @login_required

@@ -50,7 +50,7 @@
     </div>
 {% endblock %}
 
-{% block sidebar %}{% include 'dashboard_sidebar.html' %}{% endblock %}
+{% block sidebar %}{% include 'dashboard_sidebar.html' with user_organization=request.user.organization %}{% endblock %}
 
 {% block js %}
     <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>

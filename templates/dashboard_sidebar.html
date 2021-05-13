@@ -18,14 +18,13 @@
                 Organizace
             </h5>
             <hr>
-            {% if request.user.organization %}
+            {% if user_organization %}
                 <p><a href="{% url 'organization_rename' %}">Úprava názvu</a></p>
                 <p><a href="{% url 'organization_update' %}">Úprava údajů</a></p>
                 <p><a href="{% url 'organization_delete' %}">Odstranit organizaci</a></p>
             {% else %}
                 <p>Staňte se koordinátorem - <a href="{% url 'organization_register' %}">zaregistrujte svou
-                    organizaci.</a>
-                </p>
+                    organizaci.</a></p>
             {% endif %}
         </div>
         <div class="col col-lg-12">
@@ -34,15 +33,15 @@
                 Aktivity
             </h5>
             <hr>
-            {% with total_courses=request.user.organization.courses.count %}
-                {% if not request.user.organization %}
+            {% with total_courses=user_organization.courses.count %}
+                {% if not user_organization %}
                     <p>Prosím zaregistrujte nejdříve vaší organizaci viz výše.</p>
                 {% else %}
                     {% if not total_courses %}
                         <p>Nemáte vytvořené žádné aktivity.</p>
                     {% else %}
                         <p>
-                            <a href="{% url 'course_list_by_organization' request.user.organization.slug %}"
+                            <a href="{% url 'course_list_by_organization' user_organization.slug %}"
                                class="d-flex align-items-center">
                                 Moje aktivity
                                 <span class="badge rounded-pill bg-primary ms-2">{{ total_courses }}</span>

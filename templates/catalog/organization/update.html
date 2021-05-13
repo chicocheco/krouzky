@@ -1,13 +1,13 @@
 {% extends '_base.html' %}
 {% load crispy_forms_tags %}
 
-{% block title %}{{ request.user.organization.name }} - Editace údajů{% endblock %}
+{% block title %}{{ user_organization.name }} - Editace údajů{% endblock %}
 
 {% block content %}
-    <h1>{{ request.user.organization.name }}</h1>
-    <p>Úprava údajů vaší organizace</p>
+    <h1>{{ user_organization.name }}</h1>
     <hr>
+    <p>Úprava údajů vaší organizace</p>
     {% crispy form %}
 {% endblock %}
 
-{% block sidebar %}{% include 'dashboard_sidebar.html' %}{% endblock %}
+{% block sidebar %}{% include 'dashboard_sidebar.html' with user_organization=user_organization %}{% endblock %}
