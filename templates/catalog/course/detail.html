@@ -77,7 +77,9 @@
                         <table class="table table-sm table-bordered text-center">
                             <thead style="height: 80px;">
                             <tr>
-                                <th scope="col" style="vertical-align: middle; height: 79px; word-spacing: 100vw;">Týdenní rozvrh</th>
+                                <th scope="col" style="vertical-align: middle; height: 79px; word-spacing: 100vw;">
+                                    Týdenní rozvrh
+                                </th>
                                 <th scope="col" style="width: 12%; transform: rotate(-45deg); vertical-align: middle;">
                                     Pondělí
                                 </th>
@@ -127,11 +129,14 @@
                 </div>
                 <div class="ms-auto my-auto">
                     {% if course.is_oneoff %}
-                        <a class="btn btn-primary" href="{% url 'oneoff_course_update' course.slug %}"><i class="fas fa-edit me-1"></i> Upravit</a>
+                        <a class="btn btn-primary" href="{% url 'oneoff_course_update' course.slug %}"><i
+                                class="fas fa-edit me-1"></i> Upravit</a>
                     {% else %}
-                        <a class="btn btn-primary" href="{% url 'course_update' course.slug %}"><i class="fas fa-edit me-1"></i> Upravit</a>
+                        <a class="btn btn-primary" href="{% url 'course_update' course.slug %}"><i
+                                class="fas fa-edit me-1"></i> Upravit</a>
                     {% endif %}
-                    <a class="btn btn-danger" href="{% url 'course_delete' course.slug %}"><i class="fas fa-trash me-1"></i> Odstranit</a>
+                    <a class="btn btn-danger" href="{% url 'course_delete' course.slug %}"><i
+                            class="fas fa-trash me-1"></i> Odstranit</a>
                 </div>
             </div>
         {% endif %}
@@ -140,44 +145,60 @@
 
 {% block sidebar %}
     <div class="border p-4 bg-light">
-        <div class="row align-items-start align-items-lg-center">
-            <div class="col-12 text-center text-lg-start col-sm-4 col-lg-12">
-                <p><b>Organizuje:</b><br>
-                    {{ course.organization.name }}<br>
-                    <a href="{{ course.organization.url }}" class="text-break">{{ course.organization.url }}</a>
-                </p>
-            </div>
-            <div class="col-6 col-sm-4 text-center text-lg-start col-lg-7">
-                <p>{% if course.teacher.name %}
-                    <b>Vedoucí:</b><br>
-                    {{ course.teacher.name }}<br>
-                {% endif %}
-                    {% with phone_number=course.teacher.phone %}
-                        {% if phone_number %}
-                            Telefonní číslo:<br>
-                            <a href="tel:+420{{ phone_number }}">
-                                +420
-                                {% for i in phone_number %}{{ i }}{% if forloop.counter == 3 or forloop.counter == 6 %}
-                                {% endif %}{% endfor %}
-                            </a>
-                        {% endif %}
-                    {% endwith %}
-                </p>
-            </div>
-            <div class="col-6 col-sm-4 col-lg-5">
-                {% if course.teacher.photo %}
-                    <img src="{{ course.teacher.photo.url }}" alt="" class="rounded-circle float-end"
-                         style="height: 100px;">
-                {% endif %}
-            </div>
-            <div class="col text-center text-lg-start">
-                <p>E-mailová adresa:<br>
-                    <a href="mailto:{{ course.teacher.email }}" class="text-break">{{ course.teacher.email }}</a>
-                </p>
+        {# organization section #}
+        <div class="row px-2">
+            <div class="col">
+                <h5 class="d-flex align-items-center">
+                    <i class="fas fa-sitemap fa-md ms-1 me-3"></i>
+                    Organizace
+                </h5>
+                <hr>
+                <p>{{ course.organization.name }}<br>
+                    <a href="{{ course.organization.url }}" class="text-break">{{ course.organization.url }}</a></p>
             </div>
         </div>
-        <div class="row">
-            <p>Dotaz na vedoucího:</p>
+        {# teacher section #}
+        <div class="row px-2 pb-3">
+            <div class="col">
+                <h5 class="d-flex align-items-center">
+                    <i class="fas fa-user fa-md ms-1 me-3"></i>
+                    Vedoucí
+                </h5>
+                <hr>
+                <div class="row gy-3">
+                    <div class="col">
+                        <div class="row">
+                            <div class="col-12">
+                                {{ course.teacher.name }}
+                            </div>
+                            {% with phone_number=course.teacher.phone %}
+                                {% if phone_number %}
+                                    <div class="col-12">
+                                        <a href="tel:+420{{ phone_number }}">
+                                            +420
+                                            {% for i in phone_number %}{{ i }}{% if forloop.counter == 3 or forloop.counter == 6 %}
+                                                {% endif %}{% endfor %}
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                            <div class="col-12"><a
+                                    href="mailto:{{ course.teacher.email }}">{{ course.teacher.email }}</a></div>
+                        </div>
+                    </div>
+                    {% if course.teacher.photo %}
+                        <div class="col d-flex align-items-center justify-content-center">
+                            <img src="{{ course.teacher.photo.url }}" alt="{{ course.teacher.name }}"
+                                 class="rounded-circle align-self-center"
+                                 style="height: 75px;">
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {# contact form section #}
+        <div class="row px-2">
+            <p>Kontaktujte vedoucího:</p>
             <form method="post" action="{% url 'course_contact_teacher' course.slug %}">
                 {% crispy form %}
                 <input class="btn btn-primary" type="submit" value="Odeslat">
