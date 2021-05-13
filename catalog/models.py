@@ -9,7 +9,7 @@ from taggit.managers import TaggableManager
 
 class Organization(models.Model):
     name = models.CharField(_('název'), max_length=30, unique=True, blank=False)
-    url = models.URLField(_('URL'), max_length=35, blank=False)
+    url = models.URLField(_('URL'), max_length=35, blank=False, help_text='např. https://vyberaktivitu.online')
     slug = models.SlugField(_('slug'), max_length=30)
     company_id = models.CharField(_('IČ'), max_length=8, blank=False)
     vat_id = models.CharField(_('DIČ'), max_length=10, blank=True)
@@ -94,7 +94,7 @@ class Course(models.Model):
     name = models.CharField(_('název'), max_length=50, blank=False)
     slug = AutoSlugField(_('slug'), populate_from='name')  # make unique with organization?
     description = models.TextField(_('popis'), blank=True)
-    url = models.URLField(_('URL'), max_length=500, blank=True)
+    url = models.URLField(_('URL'), max_length=500, blank=True, help_text='např. https://vyberaktivitu.online')
     category = models.CharField(_('Kategorie'), max_length=5, choices=Category.choices, default=Category.OTHER)
     image = models.ImageField(_('obrázek'), upload_to=image_directory_path, help_text='minimální rozměr 500x500 px')
     price = models.PositiveIntegerField(_('cena za kurz'), null=False, blank=False)
