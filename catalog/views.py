@@ -2,14 +2,12 @@ from collections import defaultdict
 from datetime import datetime
 from random import shuffle
 
-from PIL import Image
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMessage, mail_managers
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.shortcuts import render, reverse, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.text import slugify
 from django.utils.timezone import localtime
 
@@ -18,21 +16,7 @@ from .filters import CourseFilter
 from .forms import (UpdateOrganizationForm, RenameOrganizationForm, RegisterOrganizationForm, CourseForm,
                     OneoffCourseForm, ContactTeacherForm)
 from .models import Course, Organization
-
-
-def paginate(request, objects, per_page=10):
-    paginator = Paginator(objects, per_page)
-    page = request.GET.get('page')
-    try:
-        courses = paginator.page(page)
-        custom_page_range = paginator.get_elided_page_range(page, on_each_side=2, on_ends=1)
-    except PageNotAnInteger:
-        courses = paginator.page(1)
-        custom_page_range = paginator.get_elided_page_range(1, on_each_side=2, on_ends=1)
-    except EmptyPage:
-        courses = paginator.page(paginator.num_pages)
-        custom_page_range = paginator.get_elided_page_range(paginator.num_pages, on_each_side=2, on_ends=1)
-    return courses, custom_page_range
+from .utils import is_approval_requested, post_process_image, check_teacher_field, paginate
 
 
 def home(request):
@@ -60,25 +44,46 @@ def dashboard(request):
     return render(request, 'catalog/dashboard.html')
 
 
-def course_list(request, slug=None):
-    if slug:
-        organization = get_object_or_404(Organization, slug=slug)
-        if not request.user.is_authenticated:
-            return redirect('home')
-        if organization != request.user.organization:  # display 403 (todo: custom template)
-            raise PermissionDenied
-        organization_name = organization.name
-        object_list = Course.objects.filter(organization=organization)
-    else:
-        organization_name = None
-        object_list = Course.published.all().prefetch_related('organization')
+def search(request):
+    query = None
+    course_filter = CourseFilter(request.GET, Course.published.all().select_related())
+    form = course_filter.form  # detach form for rendering
+    if 'q' in request.GET:
+        form.fields['q'].initial = request.GET.get('q')
+    counter = len(course_filter.qs)
+    courses, custom_page_range = paginate(request, course_filter.qs)
+    # sponsored
+    sponsored_courses = course_filter.qs.filter(is_ad=True)
+    sp_courses_list = list(sponsored_courses)[:3]
+    shuffle(sp_courses_list)
+    return render(request, 'catalog/course/search.html', {'courses': courses,
+                                                          'sponsored_courses': sp_courses_list,
+                                                          'counter': counter,
+                                                          'form': form,
+                                                          'query': query,
+                                                          'custom_page_range': custom_page_range,
+                                                          'section': 'search'})
+
+
+def course_list_by_organization(request, slug):
+    organization = get_object_or_404(Organization, slug=slug)
+    object_list = Course.objects.filter(organization=organization).select_related()
     courses, custom_page_range = paginate(request, object_list)
-    sponsored_courses = Course.published.filter(is_ad=True).prefetch_related('organization')
+    return render(request, 'catalog/course/list_organization.html', {'courses': courses,
+                                                                     'organization': organization,
+                                                                     'custom_page_range': custom_page_range,
+                                                                     'section': 'courses_by_organization'})
+
+
+def course_list(request):
+    object_list = Course.published.all().select_related()
+    courses, custom_page_range = paginate(request, object_list)
+    # sponsored
+    sponsored_courses = object_list.filter(is_ad=True)
     sp_courses_list = list(sponsored_courses)[:3]
     shuffle(sp_courses_list)
     return render(request, 'catalog/course/list.html', {'courses': courses,
                                                         'sponsored_courses': sp_courses_list,
-                                                        'organization_name': organization_name,
                                                         'custom_page_range': custom_page_range,
                                                         'section': 'courses'})
 
@@ -90,13 +95,15 @@ def organization_register(request):
         if form.is_valid():
             org_name = form.cleaned_data['name']
             organization = form.save(commit=False)
-            organization.slug = slugify(org_name)
+            organization.slug = slugify(org_name)  # TODO: can be done in model?
             organization.save()
             request.user.organization = organization
             request.user.role = User.Roles.COORDINATOR
             request.user.save()
-            messages.add_message(request, messages.SUCCESS, f'Organizace "{org_name}" zaregistrována!')
-        return redirect(dashboard)
+            messages.add_message(request, messages.SUCCESS, f'Organizace "{org_name}" úspěšně zaregistrována!')
+            return redirect(dashboard)
+        else:
+            messages.add_message(request, messages.ERROR, 'Chyba při pokusu zaregistrovat organizaci!')
     else:
         form = RegisterOrganizationForm()
     return render(request, 'catalog/organization/register.html', {'form': form})
@@ -110,6 +117,7 @@ def organization_update(request):
         if form.is_valid():
             form.save()
             messages.add_message(request, messages.SUCCESS, 'Údaje organizace upraveny!')
+            return redirect(dashboard)
         else:
             messages.add_message(request, messages.ERROR, 'Chyba při pokusu upravit údaje organizace!')
     return render(request, 'catalog/organization/update.html', {'form': form})
@@ -125,8 +133,10 @@ def organization_rename(request):
             organization.name = org_name
             organization.slug = slugify(org_name)
             organization.save()
-            messages.add_message(request, messages.SUCCESS, f'Organizace přejmenována na {org_name}.')
+            messages.add_message(request, messages.SUCCESS, f'Organizace úspěšně přejmenována na "{org_name}"!')
             return redirect(dashboard)
+        else:
+            messages.add_message(request, messages.ERROR, 'Chyba při pokusu přejmenovat organizaci!')
     else:
         form = RenameOrganizationForm(instance=request.user.organization)
     return render(request, 'catalog/organization/rename.html', {'form': form})
@@ -145,17 +155,6 @@ def organization_delete(request):
     return render(request, 'catalog/organization/delete.html')
 
 
-def post_process_image(cleaned_data, course):
-    image = Image.open(course.image)
-    x, y, w, h = cleaned_data.get('x'), cleaned_data.get('y'), cleaned_data.get('width'), cleaned_data.get('height')
-    if x or y or w or h:
-        cropped_image = image.crop((x, y, w + x, h + y))  # left, upper, right, and lower pixel
-        resized_image = cropped_image.resize((500, 500), Image.ANTIALIAS)
-        resized_image.save(course.image.path)
-        return True
-    return False
-
-
 @login_required
 def course_create(request):
     if request.method == 'POST':
@@ -166,30 +165,19 @@ def course_create(request):
             course.organization = request.user.organization
             course.name = cd['name'].capitalize()
             course.save()
-            form.save_m2m()  # save Topic
+            form.save_m2m()  # save tags
             post_process_image(form.cleaned_data, course)
             course_url_admin = request.build_absolute_uri(course.get_absolute_url_admin())
             mail_managers(f'Nová aktivita - čeká na schválení',
                           f'Název aktivity:\n{course.name}\n\n{course_url_admin}')
             messages.add_message(request, messages.SUCCESS, 'Aktivita byla úspěšně vytvořena a odeslána ke schválení!')
-            return redirect(dashboard)
+            return redirect(course.get_absolute_url())
         else:
-            # do not redirect anywhere here, else you can't see field specific errors
             messages.add_message(request, messages.ERROR, 'Chyba při pokusu zaregistrovat aktivitu!')
     else:
         form = CourseForm()
         check_teacher_field(form, request)
     return render(request, 'catalog/course/create.html', {'form': form})
-
-
-def check_teacher_field(form, request):
-    teacher_field = form.fields['teacher']
-    teachers = User.objects.filter(organization_id=request.user.organization.id).order_by('date_created')
-    teacher_field.queryset = teachers
-    if len(teachers) == 1:
-        # simulate readonly attribute for <select> element
-        teacher_field.widget.attrs.update({'style': 'pointer-events: none; background-color: #e9ecef;',
-                                           'tabindex': "-1"})
 
 
 @login_required
@@ -212,26 +200,13 @@ def oneoff_course_create(request):
                           f'Název aktivity:\n{course.name}\n\n{course_url_admin}')
             messages.add_message(request, messages.SUCCESS,
                                  'Jednodenní aktivita byla úspěšně vytvořena a odeslána ke schválení!')
-            return redirect(dashboard)
+            return redirect(course.get_absolute_url())
         else:
-            messages.add_message(request, messages.ERROR,
-                                 'Chyba při pokusu zaregistrovat jednodenní aktivitu!')
+            messages.add_message(request, messages.ERROR, 'Chyba při pokusu zaregistrovat jednodenní aktivitu!')
     else:
         form = OneoffCourseForm()
         check_teacher_field(form, request)
     return render(request, 'catalog/course/create_oneoff.html', {'form': form})
-
-
-def is_approval_requested(cd, course, original_desc, original_name, request):
-    approval_requested = False
-    if (original_name != course.name or original_desc != course.description) \
-            and course.status != Course.Status.DRAFT:
-        course.name = cd['name'].capitalize()
-        course.status = Course.Status.DRAFT
-        approval_requested = True
-        course_url_admin = request.build_absolute_uri(course.get_absolute_url_admin())
-        mail_managers(f'Aktivita upravena - čeká na schválení', f'Název aktivity:\n{course.name}\n\n{course_url_admin}')
-    return approval_requested
 
 
 @login_required
@@ -253,10 +228,9 @@ def course_update(request, slug=None):
             if approval_requested:
                 messages.add_message(request, messages.SUCCESS,
                                      'Aktivita byla úspěšně upravena a odeslána ke schválení!')
-                return redirect(reverse('course_list_by_organization', args=[request.user.organization.slug]))
             else:
                 messages.add_message(request, messages.SUCCESS, 'Aktivita byla úspěšně upravena!')
-                return redirect(course.get_absolute_url())
+            return redirect(course.get_absolute_url())
         else:
             messages.add_message(request, messages.ERROR, 'Chyba při pokusu upravit aktivitu!')
     return render(request, 'catalog/course/update.html', {'form': form})
@@ -286,17 +260,16 @@ def oneoff_course_update(request, slug=None):
             if approval_requested:
                 messages.add_message(request, messages.SUCCESS,
                                      'Jednodenní aktivita byla úspěšně upravena a odeslána ke schválení!')
-                return redirect(reverse('course_list_by_organization', args=[request.user.organization.slug]))
             else:
                 messages.add_message(request, messages.SUCCESS, 'Jednodenní aktivita byla úspěšně upravena!')
-                return redirect(course.get_absolute_url())
+            return redirect(course.get_absolute_url())
         else:
             messages.add_message(request, messages.ERROR, 'Chyba při pokusu upravit aktivitu!')
     return render(request, 'catalog/course/update_oneoff.html', {'form': form})
 
 
 def course_detail(request, slug=None):
-    course = get_object_or_404(Course.objects.select_related('organization'), slug=slug)
+    course = get_object_or_404(Course.objects.select_related(), slug=slug)
     if course.status == Course.Status.DRAFT and course.organization != request.user.organization:
         raise PermissionDenied
     form = ContactTeacherForm()
@@ -318,12 +291,11 @@ def course_detail(request, slug=None):
 @login_required
 def course_delete(request, slug=None):
     course = get_object_or_404(Course, slug=slug)
-    course_name = course.name
     if request.method == 'POST':
         course.delete()
-        messages.add_message(request, messages.INFO, 'Organizace byla odstraněna!')
-        return redirect(reverse('course_list_by_organization', args=[request.user.organization.slug]))
-    return render(request, 'catalog/course/delete.html', {'course_name': course_name})
+        messages.add_message(request, messages.INFO, 'Aktivita byla odstraněna.')
+        return redirect('course_list_by_organization', slug=request.user.organization.slug)
+    return render(request, 'catalog/course/delete.html', {'course_name': course.name})
 
 
 def contact_teacher(request, slug=None):
@@ -345,25 +317,3 @@ def contact_teacher(request, slug=None):
         else:
             messages.add_message(request, messages.ERROR, 'Chyba při odesílání dotazu!')
     return redirect(course.get_absolute_url())
-
-
-def search(request):
-    query = None
-    course_filter = CourseFilter(request.GET, Course.published.all().prefetch_related('organization'))
-    form = course_filter.form  # fixes "Failed lookup for key [form] in <Page 1 of 2>":
-    form.fields['price_min'].initial = 0  # does not work
-    form.fields['price_max'].initial = 0  # does not work
-    if 'q' in request.GET:
-        form.fields['q'].initial = request.GET.get('q')  # works
-    counter = len(course_filter.qs)
-    sponsored_courses = Course.published.filter(is_ad=True).prefetch_related('organization')
-    sp_courses_list = list(sponsored_courses)[:3]
-    shuffle(sp_courses_list)
-    courses, custom_page_range = paginate(request, course_filter.qs)
-    return render(request, 'catalog/course/search.html', {'courses': courses,
-                                                          'sponsored_courses': sp_courses_list,
-                                                          'counter': counter,
-                                                          'form': form,
-                                                          'query': query,
-                                                          'custom_page_range': custom_page_range,
-                                                          'section': 'search'})

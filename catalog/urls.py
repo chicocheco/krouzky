@@ -9,7 +9,8 @@ urlpatterns = [
     path('organizace/upravit', catalog_views.organization_update, name='organization_update'),
     path('organizace/prejmenovat', catalog_views.organization_rename, name='organization_rename'),
     path('organizace/odstranit', catalog_views.organization_delete, name='organization_delete'),
-    path('organizace/<slug:slug>/aktivity/', catalog_views.course_list, name='course_list_by_organization'),
+    path('organizace/<slug:slug>/aktivity/', catalog_views.course_list_by_organization,
+         name='course_list_by_organization'),
 
     path('aktivity/', catalog_views.course_list, name='course_list'),
     path('aktivita/registrovat', catalog_views.course_create, name='course_create'),
