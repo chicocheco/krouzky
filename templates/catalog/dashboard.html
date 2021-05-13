@@ -5,9 +5,11 @@
 {% block content %}
     <h1>Můj účet</h1>
     <hr>
-    <p>Vítejte,<br>jste přihlášeni jako uživatel <b>{{ request.user.email }}</b>. </p>
+    <p>Vítejte,<br>jste přihlášen/a jako uživatel <b>{{ request.user.email }}</b>. </p>
     {% if user_organization %}
         <p>Jste koordinátorem organizace <b>{{ user_organization.name }}</b>.</p>
+    {% else %}
+        <p>Momentálně nejste registrován/a v žádné organizaci.</p>
     {% endif %}
     <a class="btn btn-primary" href="{% url 'account_logout' %}">Odhlásit se</a>
 {% endblock %}
