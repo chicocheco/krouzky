@@ -13,6 +13,15 @@
                         <div class="position-absolute" style="bottom: 1rem; left: 1rem;">
                             <span class="badge bg-light text-muted">{{ course.age_category }}</span>
                         </div>
+                        {% if course.organization == request.user.organization %}
+                            <div class="position-absolute" style="bottom: 3rem; left: 1rem;">
+                                {% if course.status == 'PUBLISHED' %}
+                                    <span class="badge bg-success float-end">Publikováno</span>
+                                {% else %}
+                                    <span class="badge bg-warning float-end">Čeká ke schválení</span>
+                                {% endif %}
+                            </div>
+                        {% endif %}
                     </a>
                 </div>
             </div>
@@ -42,32 +51,23 @@
                     <div class="col-12 align-self-center">
                         <p class="mb-0 lh-sm">{{ course.description|striptags|truncatewords_html:25 }}</p>
                     </div>
-                    {% if course.organization == request.user.organization %}
-                        <div class="col-12 align-self-end">
-                            <div class="row pt-3 pt-md-0">
-                                <div class="col">
+                    <div class="col-12 align-self-end">
+                        <div class="row pt-3 pt-md-0 justify-content-between align-items-end">
+                            {% if course.organization == request.user.organization %}
+                                <div class="col-auto">
                                     {% if course.is_oneoff %}
                                         <a class="btn btn-sm btn-primary"
-                                           href="{% url 'oneoff_course_update' course.slug %}">Upravit</a>
+                                           href="{% url 'oneoff_course_update' course.slug %}"><i
+                                                class="fas fa-edit"></i></a>
                                     {% else %}
                                         <a class="btn btn-sm btn-primary"
-                                           href="{% url 'course_update' course.slug %}">Upravit</a>
+                                           href="{% url 'course_update' course.slug %}"><i class="fas fa-edit"></i></a>
                                     {% endif %}
-                                    <a class="btn btn-sm btn-danger" href="{% url 'course_delete' course.slug %}">Odstranit</a>
+                                    <a class="btn btn-sm btn-danger" href="{% url 'course_delete' course.slug %}"><i
+                                            class="fas fa-trash"></i></a>
                                 </div>
-                                <div class="col align-self-end">
-                                    {% if course.status == 'PUBLISHED' %}
-                                        <span class="badge bg-success float-end">Publikováno</span>
-                                    {% else %}
-                                        <span class="badge bg-warning float-end">Čeká ke schválení</span>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    {% else %}
-                        <div class="col-12 align-self-end">
-                            <div class="row pt-3 pt-md-0">
-                                <div class="col">
+                            {% endif %}
+                            <div class="col-auto">
                                     <span class="text-muted">
                                         {% if course.is_oneoff %}
                                             {{ course.date_from|date }}
@@ -75,15 +75,12 @@
                                             {{ course.date_from|date:"j.n.Y" }} - {{ course.date_to|date:"j.n.Y" }}
                                         {% endif %}
                                     </span>
-                                </div>
-                                <div class="col">
-                                    <span class="text-muted float-end">
-                                        {{ course.price }} Kč
-                                    </span>
-                                </div>
+                            </div>
+                            <div class="col-auto text-muted">
+                                {{ course.price }} Kč
                             </div>
                         </div>
-                    {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
