@@ -38,7 +38,11 @@ INSTALLED_APPS = [
     'taggit'
 ]
 
-INTERNAL_IPS = ['172.22.0.1', ]  # debug_toolbar
+
+# show debug_toolbar
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': lambda request: True if DEBUG else False,
+}
 
 # taggit (must declare both)
 TAGGIT_TAGS_FROM_STRING = 'catalog.utils.comma_splitter'
