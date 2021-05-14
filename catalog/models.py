@@ -3,6 +3,7 @@ from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from taggit.managers import TaggableManager
 
@@ -71,7 +72,7 @@ class WeekSchedule(models.Model):
 
 class PublishedManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(status=Course.Status.PUBLISHED)
+        return super().get_queryset().filter(status=Course.Status.PUBLISHED, date_to__gte=timezone.now())
 
 
 def image_directory_path(instance, filename):
@@ -82,7 +83,7 @@ class Course(models.Model):
     class Status(models.TextChoices):
         DRAFT = 'DRAFT', _('Ke schválení')
         PUBLISHED = 'PUBLISHED', _('Publikováno')
-        # TODO: add EXPIRED state
+        FINISHED = 'FINISHED', _('Ukončeno')
 
     class Category(models.TextChoices):
         OTHER = 'OTHER', _('Ostatní')
@@ -132,3 +133,11 @@ class Course(models.Model):
 
     def get_absolute_url_admin(self):  # for emails
         return reverse(f"admin:{self._meta.app_label}_{self._meta.model_name}_change", args=(self.id,))
+
+    @classmethod
+    def mark_finished(cls):
+        update_queries = []
+        for obj in cls.objects.filter(date_to__lt=timezone.now()):
+            obj.status = cls.Status.FINISHED
+            update_queries.append(obj)
+        cls.objects.bulk_update(update_queries, ['status'])
