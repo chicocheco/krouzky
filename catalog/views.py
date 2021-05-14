@@ -53,7 +53,7 @@ def search(request):
     form = course_filter.form  # detach form for rendering
     if 'q' in request.GET:
         form.fields['q'].initial = request.GET.get('q')
-    counter = len(course_filter.qs)
+    counter = course_filter.qs.count()
     courses, custom_page_range = paginate(request, course_filter.qs)
     # sponsored
     sponsored_courses = course_filter.qs.filter(is_ad=True)
@@ -71,7 +71,7 @@ def search(request):
 def course_list_by_organization(request, slug):
     organization = get_object_or_404(Organization, slug=slug)
     object_list = Course.objects.filter(organization=organization).select_related()
-    counter = len(object_list)
+    counter = object_list.count()
     courses, custom_page_range = paginate(request, object_list)
     return render(request, 'catalog/course/list_organization.html', {'courses': courses,
                                                                      'counter': counter,
