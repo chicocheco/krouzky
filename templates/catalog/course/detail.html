@@ -121,11 +121,7 @@
         {% if course.organization == request.user.organization %}
             <div class="d-flex mt-3">
                 <div class="me-auto my-auto">
-                    {% if course.status == 'PUBLISHED' %}
-                        <span class="badge bg-success">Publikováno</span>
-                    {% else %}
-                        <span class="badge bg-warning">Čeká ke schválení</span>
-                    {% endif %}
+                    <span class="badge bg-{% if course.status == 'PUBLISHED' %}success{% elif course.status == 'DRAFT' %}info{% else %}warning{% endif %} float-end">{{ course.get_status_display }}</span>
                 </div>
                 <div class="ms-auto my-auto">
                     {% if course.is_oneoff %}

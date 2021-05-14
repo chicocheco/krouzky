@@ -15,11 +15,7 @@
                         </div>
                         {% if course.organization == request.user.organization %}
                             <div class="position-absolute" style="bottom: 3rem; left: 1rem;">
-                                {% if course.status == 'PUBLISHED' %}
-                                    <span class="badge bg-success float-end">Publikováno</span>
-                                {% else %}
-                                    <span class="badge bg-warning float-end">Čeká na schválení</span>
-                                {% endif %}
+                                <span class="badge bg-{% if course.status == 'PUBLISHED' %}success{% elif course.status == 'DRAFT' %}info{% else %}warning{% endif %} float-end">{{ course.get_status_display }}</span>
                             </div>
                         {% endif %}
                     </a>
