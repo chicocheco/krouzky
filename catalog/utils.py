@@ -1,4 +1,5 @@
 import unicodedata
+from random import shuffle
 
 from PIL import Image
 from django.core.mail import mail_managers
@@ -66,7 +67,7 @@ def check_teacher_field(form, request):
     teacher_field = form.fields['teacher']
     teachers = User.objects.filter(organization_id=request.user.organization.id).order_by('date_created')
     teacher_field.queryset = teachers
-    if len(teachers) == 1:
+    if teachers.count() == 1:
         # simulate readonly attribute for <select> element
         teacher_field.widget.attrs.update({'style': 'pointer-events: none; background-color: #e9ecef;',
                                            'tabindex': "-1"})
@@ -84,4 +85,11 @@ def paginate(request, objects, per_page=10):
     except EmptyPage:
         courses = paginator.page(paginator.num_pages)
         custom_page_range = paginator.get_elided_page_range(paginator.num_pages, on_each_side=2, on_ends=1)
-    return courses, custom_page_range
+    return courses, custom_page_range, paginator.count
+
+
+def get_sponsored_courses_list(qs):
+    sponsored_courses = qs.filter(is_ad=True)
+    sp_courses_list = list(sponsored_courses)[:3]
+    shuffle(sp_courses_list)
+    return sp_courses_list

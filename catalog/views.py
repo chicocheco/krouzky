@@ -1,6 +1,5 @@
 from collections import defaultdict
 from datetime import datetime
-from random import shuffle
 
 from django.conf import settings
 from django.contrib import messages
@@ -16,7 +15,7 @@ from .filters import CourseFilter
 from .forms import (UpdateOrganizationForm, RenameOrganizationForm, RegisterOrganizationForm, CourseForm,
                     OneoffCourseForm, ContactTeacherForm)
 from .models import Course, Organization
-from .utils import is_approval_requested, post_process_image, check_teacher_field, paginate
+from .utils import is_approval_requested, post_process_image, check_teacher_field, paginate, get_sponsored_courses_list
 
 
 def home(request):
@@ -49,18 +48,16 @@ def dashboard(request):
 
 def search(request):
     query = None
-    course_filter = CourseFilter(request.GET, Course.published.all().select_related())
+    qs = Course.published.all().select_related()
+    sponsored_courses = get_sponsored_courses_list(qs)
+
+    course_filter = CourseFilter(request.GET, qs)
     form = course_filter.form  # detach form for rendering
     if 'q' in request.GET:
         form.fields['q'].initial = request.GET.get('q')
-    counter = course_filter.qs.count()
-    courses, custom_page_range = paginate(request, course_filter.qs)
-    # sponsored
-    sponsored_courses = course_filter.qs.filter(is_ad=True)
-    sp_courses_list = list(sponsored_courses)[:3]
-    shuffle(sp_courses_list)
+    courses, custom_page_range, counter = paginate(request, course_filter.qs)
     return render(request, 'catalog/course/search.html', {'courses': courses,
-                                                          'sponsored_courses': sp_courses_list,
+                                                          'sponsored_courses': sponsored_courses,
                                                           'counter': counter,
                                                           'form': form,
                                                           'query': query,
@@ -70,25 +67,25 @@ def search(request):
 
 def course_list_by_organization(request, slug):
     organization = get_object_or_404(Organization, slug=slug)
-    object_list = Course.objects.filter(organization=organization).select_related()
-    counter = object_list.count()
-    courses, custom_page_range = paginate(request, object_list)
+    qs = Course.objects.filter(organization=organization).select_related()
+    is_organization_of_user = False
+    if request.user.is_authenticated:
+        is_organization_of_user = (request.user.organization == organization)
+    courses, custom_page_range, counter = paginate(request, qs)
     return render(request, 'catalog/course/list_organization.html', {'courses': courses,
                                                                      'counter': counter,
                                                                      'organization': organization,
+                                                                     'is_organization_of_user': is_organization_of_user,
                                                                      'custom_page_range': custom_page_range,
                                                                      'section': 'courses_by_organization'})
 
 
 def course_list(request):
-    object_list = Course.published.all().select_related()
-    courses, custom_page_range = paginate(request, object_list)
-    # sponsored
-    sponsored_courses = object_list.filter(is_ad=True)
-    sp_courses_list = list(sponsored_courses)[:3]
-    shuffle(sp_courses_list)
+    qs = Course.published.all().select_related()
+    sponsored_courses = get_sponsored_courses_list(qs)
+    courses, custom_page_range, counter = paginate(request, qs)
     return render(request, 'catalog/course/list.html', {'courses': courses,
-                                                        'sponsored_courses': sp_courses_list,
+                                                        'sponsored_courses': sponsored_courses,
                                                         'custom_page_range': custom_page_range,
                                                         'section': 'courses'})
 
@@ -220,7 +217,7 @@ def course_update(request, slug=None):
     course = get_object_or_404(Course, slug=slug)
     original_name, original_desc = course.name, course.description
     form = CourseForm(instance=course)
-    form.fields['teacher'].queryset = User.objects.filter(organization_id=request.user.organization.id)
+    check_teacher_field(form, request)
     if request.method == 'POST':
         # 'instance' parameter to relate to the existing object!
         form = CourseForm(data=request.POST, files=request.FILES, instance=course)
@@ -249,7 +246,7 @@ def oneoff_course_update(request, slug=None):
     form = OneoffCourseForm(instance=course)
     form.fields['time_from'].initial = localtime(course.date_from).strftime('%H:%M')
     form.fields['time_to'].initial = localtime(course.date_to).strftime('%H:%M')
-    form.fields['teacher'].queryset = User.objects.filter(organization_id=request.user.organization.id)
+    check_teacher_field(form, request)
     if request.method == 'POST':
         # 'instance' parameter to relate to the existing object!
         form = OneoffCourseForm(data=request.POST, files=request.FILES, instance=course)

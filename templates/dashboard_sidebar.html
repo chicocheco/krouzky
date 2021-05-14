@@ -23,8 +23,7 @@
                 <p><a href="{% url 'organization_update' %}">Úprava údajů</a></p>
                 <p><a href="{% url 'organization_delete' %}">Odstranit organizaci</a></p>
             {% else %}
-                <p>Staňte se koordinátorem - <a href="{% url 'organization_register' %}">zaregistrujte svou
-                    organizaci.</a></p>
+                <p><a href="{% url 'organization_register' %}">Zaregistrovat organizaci</a></p>
             {% endif %}
         </div>
         <div class="col col-lg-12">
@@ -33,25 +32,17 @@
                 Aktivity
             </h5>
             <hr>
-            {% with total_courses=user_organization.courses.count %}
-                {% if not user_organization %}
-                    <p>Prosím zaregistrujte nejdříve vaší organizaci.</p>
-                {% else %}
-                    {% if not total_courses %}
-                        <p>Nemáte vytvořené žádné aktivity.</p>
-                    {% else %}
-                        <p>
-                            <a href="{% url 'course_list_by_organization' user_organization.slug %}"
-                               class="d-flex align-items-center">
-                                Moje aktivity
-                                <span class="badge rounded-pill bg-primary ms-2">{{ total_courses }}</span>
-                            </a>
-                        </p>
-                    {% endif %}
-                    <p><a href="{% url 'course_create' %}">Registrovat pravidelnou aktivitu</a></p>
-                    <p><a href="{% url 'oneoff_course_create' %}">Registrovat jednodenní aktivitu</a></p>
-                {% endif %}
-            {% endwith %}
+            {% if not user_organization %}
+                <p>Prosím zaregistrujte nejdříve vaší organizaci.</p>
+            {% else %}
+                <p>
+                    <a href="{% url 'course_list_by_organization' user_organization.slug %}">
+                        Katalog organizace
+                    </a>
+                </p>
+                <p><a href="{% url 'course_create' %}">Registrovat pravidelnou aktivitu</a></p>
+                <p><a href="{% url 'oneoff_course_create' %}">Registrovat jednodenní aktivitu</a></p>
+            {% endif %}
         </div>
     </div>
 </div>
