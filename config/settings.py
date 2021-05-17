@@ -9,6 +9,17 @@ ENVIRONMENT = environ.get('ENVIRONMENT', default='development')
 SECRET_KEY = environ.get('DJANGO_SECRET_KEY')
 DEBUG = int(environ.get('DEBUG', default=0))
 
+if ENVIRONMENT == 'production':
+    SECURE_BROWSER_XSS_FILTER = True
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    # X_FRAME_OPTIONS = 'SAMEORIGIN'
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 3600
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+
 ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost']
 
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'  # allows forms widget customization
