@@ -11,7 +11,7 @@ from taggit.managers import TaggableManager
 class Organization(models.Model):
     name = models.CharField(_('název'), max_length=30, unique=True, blank=False)
     url = models.URLField(_('URL'), max_length=35, blank=False, help_text='např. https://vyberaktivitu.online')
-    slug = models.SlugField(_('slug'), max_length=30)
+    slug = models.SlugField(_('slug'), max_length=30)  # automated in views
     company_id = models.CharField(_('IČ'), max_length=8, blank=False)
     vat_id = models.CharField(_('DIČ'), max_length=10, blank=True)
     address = models.CharField(_('adresa'), max_length=100, blank=False)
@@ -25,6 +25,9 @@ class Organization(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('course_list_by_organization', args=(self.slug,))
 
 
 class AgeCategory(models.Model):

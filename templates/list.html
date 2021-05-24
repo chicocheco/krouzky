@@ -27,7 +27,7 @@
                         <h5 class="mb-0">
                             <a href="{{ course.get_absolute_url }}">{{ course.name|capfirst|truncatewords_html:5 }}</a>
                         </h5>
-                        <a href="{% url 'course_list_by_organization' course.organization.slug  %}" class="text-muted mt-2 mb-3 my-lg-0"><small>{{ course.organization.name }}</small></a>
+                        <a href="{{ course.organization.get_absolute_url }}" class="text-muted mt-2 mb-3 my-lg-0"><small>{{ course.organization.name }}</small></a>
                     </div>
                     <div class="col-2">
                         {% if course.category == 'OTHER' %}
