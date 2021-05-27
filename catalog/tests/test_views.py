@@ -1,6 +1,7 @@
 import shutil
 from datetime import timedelta, date
 
+from PIL import Image
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
@@ -268,3 +269,13 @@ class CourseTests(TestCase):
         self.client.post(url, self.data_regular)
         course = Course.objects.first()
         self.assertEqual(course.name, self.data_regular['name'].capitalize())
+
+    @override_settings(MEDIA_ROOT=(TEST_DIR / 'media'))
+    def test_course_create_resizes_uploaded_image_POST(self):
+        url = reverse('course_create')
+
+        self.client.post(url, self.data_regular)
+        course = Course.objects.first()
+        with open(course.image.path, 'rb') as fp:
+            image = Image.open(fp)
+        self.assertEqual(image.size, (settings.SIDE_LENGTH_COURSE_IMG, settings.SIDE_LENGTH_COURSE_IMG))

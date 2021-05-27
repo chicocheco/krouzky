@@ -163,6 +163,7 @@ STATICFILES_DIRS = [BASE_DIR / 'static', ]  # for dev
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+SIDE_LENGTH_COURSE_IMG = 500
 
 # for bootstrap5
 MESSAGE_TAGS = {

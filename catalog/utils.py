@@ -2,6 +2,7 @@ import unicodedata
 from random import shuffle
 
 from PIL import Image
+from django.conf import settings
 from django.core.mail import mail_managers
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.utils.text import slugify
@@ -50,12 +51,10 @@ def post_process_image(cleaned_data, course):
 
     image = Image.open(course.image)
     x, y, w, h = cleaned_data.get('x'), cleaned_data.get('y'), cleaned_data.get('width'), cleaned_data.get('height')
-    if x or y or w or h:
-        cropped_image = image.crop((x, y, w + x, h + y))  # left, upper, right, and lower pixel
-        resized_image = cropped_image.resize((500, 500), Image.ANTIALIAS)
-        resized_image.save(course.image.path)
-        return True
-    return False
+    cropped_image = image.crop((x, y, w + x, h + y))  # left, upper, right, and lower pixel
+    resized_image = cropped_image.resize((settings.SIDE_LENGTH_COURSE_IMG, settings.SIDE_LENGTH_COURSE_IMG),
+                                         Image.ANTIALIAS)
+    resized_image.save(course.image.path)
 
 
 def check_teacher_field(form, request):
