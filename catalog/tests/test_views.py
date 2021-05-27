@@ -3,6 +3,7 @@ from datetime import timedelta, date
 
 from PIL import Image
 from django.conf import settings
+from django.core import mail
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 from django.test import TestCase, override_settings
@@ -189,6 +190,7 @@ class OrganizationTests(TestCase):
         self.assertEqual(self.new_user.role, User.Roles.STUDENT)
 
 
+@override_settings(MEDIA_ROOT=(TEST_DIR / 'media'))
 class CourseTests(TestCase):
 
     def setUp(self):
@@ -246,7 +248,6 @@ class CourseTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'catalog/course/create.html')
 
-    @override_settings(MEDIA_ROOT=(TEST_DIR / 'media'))
     def test_course_create_creates_new_object_POST(self):
         url = reverse('course_create')
 
@@ -254,7 +255,6 @@ class CourseTests(TestCase):
 
         self.assertEqual(Course.objects.count(), 1)
 
-    @override_settings(MEDIA_ROOT=(TEST_DIR / 'media'))
     def test_course_create_get_assigned_users_organization_POST(self):
         url = reverse('course_create')
 
@@ -262,7 +262,6 @@ class CourseTests(TestCase):
         course = Course.objects.first()
         self.assertEqual(course.organization, self.new_organization)
 
-    @override_settings(MEDIA_ROOT=(TEST_DIR / 'media'))
     def test_course_create_capitalizes_name_POST(self):
         url = reverse('course_create')
 
@@ -270,7 +269,6 @@ class CourseTests(TestCase):
         course = Course.objects.first()
         self.assertEqual(course.name, self.data_regular['name'].capitalize())
 
-    @override_settings(MEDIA_ROOT=(TEST_DIR / 'media'))
     def test_course_create_resizes_uploaded_image_POST(self):
         url = reverse('course_create')
 
@@ -279,3 +277,20 @@ class CourseTests(TestCase):
         with open(course.image.path, 'rb') as fp:
             image = Image.open(fp)
         self.assertEqual(image.size, (settings.SIDE_LENGTH_COURSE_IMG, settings.SIDE_LENGTH_COURSE_IMG))
+
+    def test_course_create_sends_correct_email_about_pending_approval_POST(self):
+        url = reverse('course_create')
+
+        self.client.post(url, self.data_regular)
+        course = Course.objects.first()
+        course_url_admin = course.get_absolute_url_admin()
+
+        self.assertIn(course_url_admin, mail.outbox[0].body)
+
+    def test_course_create_redirects_to_detail_POST(self):
+        url = reverse('course_create')
+
+        response = self.client.post(url, self.data_regular)
+        course = Course.objects.first()
+
+        self.assertEqual(response.url, course.get_absolute_url())
