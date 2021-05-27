@@ -51,6 +51,9 @@ def post_process_image(cleaned_data, course):
 
     image = Image.open(course.image)
     x, y, w, h = cleaned_data.get('x'), cleaned_data.get('y'), cleaned_data.get('width'), cleaned_data.get('height')
+    if None in (x, y, w, h):
+        # in case cropper.js failed, crop from upper left corner
+        x, y, w, h = 0, 0, settings.SIDE_LENGTH_COURSE_IMG, settings.SIDE_LENGTH_COURSE_IMG
     cropped_image = image.crop((x, y, w + x, h + y))  # left, upper, right, and lower pixel
     resized_image = cropped_image.resize((settings.SIDE_LENGTH_COURSE_IMG, settings.SIDE_LENGTH_COURSE_IMG),
                                          Image.ANTIALIAS)

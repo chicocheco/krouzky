@@ -232,7 +232,7 @@ class CourseTests(TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        print("\nDeleting temporary files...\n")
+        print(f'\nDeleting temporary files from {TEST_DIR}...\n')
         try:
             shutil.rmtree(TEST_DIR)
         except OSError:
