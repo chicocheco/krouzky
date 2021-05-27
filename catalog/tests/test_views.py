@@ -1,13 +1,17 @@
+import shutil
 from datetime import timedelta, date
 
+from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils.text import slugify
 
 from catalog.models import Organization, Course, AgeCategory
 from users.models import User
+
+TEST_DIR = settings.BASE_DIR / 'test_data'
 
 
 class StaticPagesTests(TestCase):
@@ -225,6 +229,14 @@ class CourseTests(TestCase):
                              'date_to': date.today() + timedelta(days=2),
                              }
 
+    @classmethod
+    def tearDownClass(cls):
+        print("\nDeleting temporary files...\n")
+        try:
+            shutil.rmtree(TEST_DIR)
+        except OSError:
+            pass
+
     def test_course_create_uses_correct_template_GET(self):
         url = reverse('course_create')
 
@@ -233,6 +245,7 @@ class CourseTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'catalog/course/create.html')
 
+    @override_settings(MEDIA_ROOT=(TEST_DIR / 'media'))
     def test_course_create_creates_new_object_POST(self):
         url = reverse('course_create')
 
@@ -240,6 +253,7 @@ class CourseTests(TestCase):
 
         self.assertEqual(Course.objects.count(), 1)
 
+    @override_settings(MEDIA_ROOT=(TEST_DIR / 'media'))
     def test_course_create_get_assigned_users_organization_POST(self):
         url = reverse('course_create')
 
@@ -247,6 +261,7 @@ class CourseTests(TestCase):
         course = Course.objects.first()
         self.assertEqual(course.organization, self.new_organization)
 
+    @override_settings(MEDIA_ROOT=(TEST_DIR / 'media'))
     def test_course_create_capitalizes_name_POST(self):
         url = reverse('course_create')
 
