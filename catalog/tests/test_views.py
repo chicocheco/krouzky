@@ -249,6 +249,11 @@ class CourseTests(TestCase):
         course.save()
         return course
 
+    def create_draft_course(self):
+        url = reverse('course_create')
+        self.client.post(url, self.data_regular)
+        return Course.objects.first()
+
     def test_course_create_uses_correct_template_GET(self):
         url = reverse('course_create')
 
@@ -360,3 +365,14 @@ class CourseTests(TestCase):
         self.assertEqual(course.id, course_modified.id)
         self.assertEqual(course_modified.status, course.status)
         self.assertEqual(course_modified.price, new_price)
+
+    def test_course_detail_cannot_access_someone_elses_draft(self):
+        course = self.create_draft_course()
+        self.client.logout()
+        self.other_user = User.objects.create_user(email='other@gmail.com', password='heslo123')
+        self.client.login(email='other@gmail.com', password='heslo123')
+        url = reverse('course_detail', args=(course.slug,))  # switches to DRAFT?
+
+        response = self.client.get(url)
+
+        self.assertInHTML('Přístup odepřen', response.content.decode())
