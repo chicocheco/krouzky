@@ -6,6 +6,7 @@ from django.conf import settings
 from django.core import mail
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
+from django.forms.models import model_to_dict
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils.text import slugify
@@ -240,6 +241,14 @@ class CourseTests(TestCase):
         except OSError:
             pass
 
+    def create_published_course(self):
+        url = reverse('course_create')
+        self.client.post(url, self.data_regular)
+        course = Course.objects.first()
+        course.status = Course.Status.PUBLISHED  # as if approved by admins
+        course.save()
+        return course
+
     def test_course_create_uses_correct_template_GET(self):
         url = reverse('course_create')
 
@@ -294,3 +303,60 @@ class CourseTests(TestCase):
         course = Course.objects.first()
 
         self.assertEqual(response.url, course.get_absolute_url())
+
+    def test_course_update_updating_name_changes_status_to_draft_POST(self):
+        course = self.create_published_course()
+
+        url2 = reverse('course_update', args=(course.slug,))  # switches to DRAFT?
+        new_name = 'Modifikovaný název'
+        modified_data = model_to_dict(course)
+        modified_data['name'] = new_name
+        self.client.post(url2, modified_data)
+        course_modified = Course.objects.first()
+
+        self.assertEqual(course.id, course_modified.id)
+        self.assertEqual(course_modified.status, Course.Status.DRAFT.value)
+        self.assertEqual(course_modified.name, new_name)
+
+    def test_course_update_updating_description_changes_status_to_draft_POST(self):
+        course = self.create_published_course()
+
+        url2 = reverse('course_update', args=(course.slug,))  # switches to DRAFT?
+        new_description = 'Modifikovaný popisek aktivity.'
+        modified_data = model_to_dict(course)
+        modified_data['description'] = new_description
+        self.client.post(url2, modified_data)
+        course_modified = Course.objects.first()
+        course_url_admin = course_modified.get_absolute_url_admin()
+
+        self.assertEqual(course.id, course_modified.id)
+        self.assertEqual(course_modified.status, Course.Status.DRAFT.value)
+        self.assertEqual(course_modified.description, new_description)
+        self.assertIn(course_url_admin, mail.outbox[0].body)
+
+    def test_course_update_updating_description_sends_correct_email_about_pending_reapproval_POST(self):
+        course = self.create_published_course()
+        url2 = reverse('course_update', args=(course.slug,))  # switches to DRAFT?
+
+        new_description = 'Modifikovaný popisek aktivity.'
+        modified_data = model_to_dict(course)
+        modified_data['description'] = new_description
+        self.client.post(url2, modified_data)
+        course_modified = Course.objects.first()
+        course_url_admin = course_modified.get_absolute_url_admin()
+
+        self.assertIn(course_url_admin, mail.outbox[0].body)
+
+    def test_course_update_updating_price_field_does_not_change_status_POST(self):
+        course = self.create_published_course()
+
+        url2 = reverse('course_update', args=(course.slug,))  # switches to DRAFT?
+        new_price = 500
+        modified_data = model_to_dict(course)
+        modified_data['price'] = new_price
+        self.client.post(url2, modified_data)
+        course_modified = Course.objects.first()
+
+        self.assertEqual(course.id, course_modified.id)
+        self.assertEqual(course_modified.status, course.status)
+        self.assertEqual(course_modified.price, new_price)
