@@ -366,6 +366,20 @@ class CourseTests(TestCase):
         self.assertEqual(course_modified.status, course.status)
         self.assertEqual(course_modified.price, new_price)
 
+    def test_course_detail_GET(self):
+        course = self.create_published_course()
+
+        response = self.client.get(reverse('course_detail', args=(course.slug,)))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'catalog/course/detail.html')
+
+    def test_course_detail_not_found_GET(self):
+        response = self.client.get(reverse('course_detail', args=('non-existent',)))
+
+        self.assertEqual(response.status_code, 404)
+        self.assertTemplateUsed(response, '404.html')
+
     def test_course_detail_cannot_access_someone_elses_draft(self):
         course = self.create_draft_course()
         self.client.logout()
