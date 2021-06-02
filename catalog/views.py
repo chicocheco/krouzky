@@ -1,4 +1,3 @@
-from collections import defaultdict
 from datetime import datetime
 
 from django.conf import settings
@@ -15,7 +14,8 @@ from .filters import CourseFilter
 from .forms import (UpdateOrganizationForm, RenameOrganizationForm, RegisterOrganizationForm, CourseForm,
                     OneoffCourseForm, ContactTeacherForm)
 from .models import Course, Organization
-from .utils import is_approval_requested, post_process_image, check_teacher_field, paginate, get_sponsored_courses_list
+from .utils import (is_approval_requested, post_process_image, check_teacher_field, paginate,
+                    get_sponsored_courses_list, make_week_schedule)
 
 
 def home(request):
@@ -277,14 +277,7 @@ def course_detail(request, slug=None):
         raise PermissionDenied
     form = ContactTeacherForm()
     price_hour = round(course.price / course.hours)
-
-    week_schedule = defaultdict(list)
-    for j in range(7, 23):  # create empty schedule
-        for i in range(7):
-            week_schedule[j].append(' ')
-    for i in course.week_schedule.all():
-        week_schedule[i.hour][i.day_of_week] = 'X'
-    week_schedule = dict(week_schedule)
+    week_schedule = make_week_schedule(course)
     return render(request, 'catalog/course/detail.html', {'course': course,
                                                           'form': form,
                                                           'price_hour': price_hour,

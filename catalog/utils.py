@@ -1,4 +1,5 @@
 import unicodedata
+from collections import defaultdict
 from random import shuffle
 
 from PIL import Image
@@ -95,3 +96,13 @@ def get_sponsored_courses_list(qs):
     sp_courses_list = list(sponsored_courses)[:3]
     shuffle(sp_courses_list)
     return sp_courses_list
+
+
+def make_week_schedule(course):
+    week_schedule = defaultdict(list)
+    for j in range(7, 23):  # create empty schedule
+        for i in range(7):
+            week_schedule[j].append(' ')
+    for i in course.week_schedule.all():
+        week_schedule[i.hour][i.day_of_week] = 'X'
+    return dict(week_schedule)
