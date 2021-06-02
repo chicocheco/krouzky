@@ -366,13 +366,28 @@ class CourseTests(TestCase):
         self.assertEqual(course_modified.status, course.status)
         self.assertEqual(course_modified.price, new_price)
 
-    def test_course_detail_cannot_access_someone_elses_draft(self):
-        course = self.create_draft_course()
-        self.client.logout()
-        self.other_user = User.objects.create_user(email='other@gmail.com', password='heslo123')
-        self.client.login(email='other@gmail.com', password='heslo123')
-        url = reverse('course_detail', args=(course.slug,))  # switches to DRAFT?
+    def test_course_detail_GET(self):
+        course = self.create_published_course()
 
-        response = self.client.get(url)
+        response = self.client.get(reverse('course_detail', args=(course.slug,)))
 
-        self.assertInHTML('Přístup odepřen', response.content.decode())
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'catalog/course/detail.html')
+
+    def test_course_detail_not_found_GET(self):
+        response = self.client.get(reverse('course_detail', args=('non-existent',)))
+
+        self.assertEqual(response.status_code, 404)
+        self.assertTemplateUsed(response, '404.html')
+
+
+def test_course_detail_cannot_access_someone_elses_draft(self):
+    course = self.create_draft_course()
+    self.client.logout()
+    self.other_user = User.objects.create_user(email='other@gmail.com', password='heslo123')
+    self.client.login(email='other@gmail.com', password='heslo123')
+    url = reverse('course_detail', args=(course.slug,))  # switches to DRAFT?
+
+    response = self.client.get(url)
+
+    self.assertInHTML('Přístup odepřen', response.content.decode())
