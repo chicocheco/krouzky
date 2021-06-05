@@ -380,6 +380,12 @@ class CourseTests(TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertTemplateUsed(response, '404.html')
 
+    def test_course_delete_POST(self):
+        course = self.create_published_course()
+
+        self.client.post(reverse('course_delete', args=(course.slug,)))
+        self.assertEqual(Course.objects.count(), 0)
+
     def test_course_detail_cannot_access_someone_elses_draft(self):
         course = self.create_draft_course()
         self.client.logout()
