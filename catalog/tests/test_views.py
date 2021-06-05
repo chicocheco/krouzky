@@ -215,23 +215,46 @@ class CourseTests(TestCase):
                                                        age_from=11,
                                                        age_to=13)
 
-        self.data_regular = {'name': 'Název pravidelné SUPER aktivity',
-                             'url': 'https://www.organizace.cz/pravidelna-aktivita',
-                             'tags': 'pokus-tag',
-                             'category': 'OTHER',  # predefined in Course model
-                             'description': 'Mǔj popis pravidelné aktivity',
-                             'image': SimpleUploadedFile(name='test_image_new.jpg',
-                                                         content=open('static/img/test_image.jpg',
-                                                                      'rb').read(),
-                                                         content_type='image/jpeg'),
-                             'price': 2000,
-                             'hours': 100,
-                             'capacity': 10,
-                             'teacher': 1,  # use first
-                             'age_category': 1,  # use first
-                             'date_from': date.today() + timedelta(days=1),
-                             'date_to': date.today() + timedelta(days=2),
-                             }
+        self.data_regular = {
+            'name': 'Název pravidelné SUPER aktivity',
+            'url': 'https://www.organizace.cz/pravidelna-aktivita',
+            'tags': 'pokus-tag',
+            'category': 'OTHER',  # predefined in Course model
+            'description': 'Mǔj popis pravidelné aktivity.',
+            'image': SimpleUploadedFile(name='test_image_new.jpg',
+                                        content=open('static/img/test_image.jpg',
+                                                     'rb').read(),
+                                        content_type='image/jpeg'),
+            'price': 2000,
+            'hours': 100,
+            'capacity': 10,
+            'teacher': 1,  # use first
+            'age_category': 1,  # use first
+            'date_from': date.today() + timedelta(days=1),
+            'date_to': date.today() + timedelta(days=2),
+        }
+
+        self.data_oneoff = {
+            'name': 'Název jednodenní SUPER aktivity',
+            'url': 'https://www.organizace.cz/jednodenni-aktivita',
+            'tags': 'pokus-tag',
+            'category': 'OTHER',  # predefined in Course model
+            'description': 'Mǔj popis jednodenní aktivity.',
+            'image': SimpleUploadedFile(name='test_image_new.jpg',
+                                        content=open('static/img/test_image.jpg',
+                                                     'rb').read(),
+                                        content_type='image/jpeg'),
+            'price': 2000,
+            'hours': 100,
+            'capacity': 10,
+            'teacher': 1,  # use first
+            'age_category': 1,  # use first
+            'date_from': date.today() + timedelta(days=1),
+            'date_to': date.today() + timedelta(days=1),  # same day
+            'time_from': '14:00',
+            'time_to': '16:00',
+
+        }
 
     @classmethod
     def tearDownClass(cls):
@@ -243,16 +266,29 @@ class CourseTests(TestCase):
 
     def create_published_course(self):
         url = reverse('course_create')
-        self.client.post(url, self.data_regular)
+        response = self.client.post(url, self.data_regular)
         course = Course.objects.first()
         course.status = Course.Status.PUBLISHED  # as if approved by admins
         course.save()
-        return course
+        return course, response
+
+    def create_published_oneoff_course(self):
+        url = reverse('oneoff_course_create')
+        response = self.client.post(url, self.data_oneoff)
+        course = Course.objects.first()
+        course.status = Course.Status.PUBLISHED  # as if approved by admins
+        course.save()
+        return course, response
 
     def create_draft_course(self):
         url = reverse('course_create')
-        self.client.post(url, self.data_regular)
-        return Course.objects.first()
+        response = self.client.post(url, self.data_regular)
+        return Course.objects.first(), response
+
+    def create_draft_oneoff_course(self):
+        url = reverse('oneoff_course_create')
+        response = self.client.post(url, self.data_oneoff)
+        return Course.objects.first(), response
 
     def test_course_create_uses_correct_template_GET(self):
         url = reverse('course_create')
@@ -262,6 +298,14 @@ class CourseTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'catalog/course/create.html')
 
+    def test_oneoff_course_create_uses_correct_template_GET(self):
+        url = reverse('oneoff_course_create')
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'catalog/course/create_oneoff.html')
+
     def test_course_create_creates_new_object_POST(self):
         url = reverse('course_create')
 
@@ -269,48 +313,71 @@ class CourseTests(TestCase):
 
         self.assertEqual(Course.objects.count(), 1)
 
-    def test_course_create_get_assigned_users_organization_POST(self):
-        url = reverse('course_create')
+    def test_oneoff_course_create_creates_new_object_POST(self):
+        url = reverse('oneoff_course_create')
 
-        self.client.post(url, self.data_regular)
-        course = Course.objects.first()
+        self.client.post(url, self.data_oneoff)
+
+        self.assertEqual(Course.objects.count(), 1)
+
+    def test_course_create_get_assigned_users_organization_POST(self):
+        course, response = self.create_draft_course()
+
+        self.assertEqual(course.organization, self.new_organization)
+
+    def test_oneoff_course_create_get_assigned_users_organization_POST(self):
+        course, response = self.create_draft_oneoff_course()
+
         self.assertEqual(course.organization, self.new_organization)
 
     def test_course_create_capitalizes_name_POST(self):
-        url = reverse('course_create')
+        course, response = self.create_draft_course()
 
-        self.client.post(url, self.data_regular)
-        course = Course.objects.first()
         self.assertEqual(course.name, self.data_regular['name'].capitalize())
 
-    def test_course_create_resizes_uploaded_image_POST(self):
-        url = reverse('course_create')
+    def test_oneoff_course_create_capitalizes_name_POST(self):
+        course, response = self.create_draft_oneoff_course()
 
-        self.client.post(url, self.data_regular)
-        course = Course.objects.first()
+        self.assertEqual(course.name, self.data_oneoff['name'].capitalize())
+
+    def test_course_create_resizes_uploaded_image_POST(self):
+        course, response = self.create_draft_course()
+
+        with open(course.image.path, 'rb') as fp:
+            image = Image.open(fp)
+        self.assertEqual(image.size, (settings.SIDE_LENGTH_COURSE_IMG, settings.SIDE_LENGTH_COURSE_IMG))
+
+    def test_oneoff_course_create_resizes_uploaded_image_POST(self):
+        course, response = self.create_draft_oneoff_course()
+
         with open(course.image.path, 'rb') as fp:
             image = Image.open(fp)
         self.assertEqual(image.size, (settings.SIDE_LENGTH_COURSE_IMG, settings.SIDE_LENGTH_COURSE_IMG))
 
     def test_course_create_sends_correct_email_about_pending_approval_POST(self):
-        url = reverse('course_create')
+        course, response = self.create_draft_course()
 
-        self.client.post(url, self.data_regular)
-        course = Course.objects.first()
         course_url_admin = course.get_absolute_url_admin()
+        self.assertIn(course_url_admin, mail.outbox[0].body)
 
+    def test_oneoff_course_create_sends_correct_email_about_pending_approval_POST(self):
+        course, response = self.create_draft_oneoff_course()
+
+        course_url_admin = course.get_absolute_url_admin()
         self.assertIn(course_url_admin, mail.outbox[0].body)
 
     def test_course_create_redirects_to_detail_POST(self):
-        url = reverse('course_create')
+        course, response = self.create_draft_course()
 
-        response = self.client.post(url, self.data_regular)
-        course = Course.objects.first()
+        self.assertEqual(response.url, course.get_absolute_url())
+
+    def test_oneoff_course_create_redirects_to_detail_POST(self):
+        course, response = self.create_draft_oneoff_course()
 
         self.assertEqual(response.url, course.get_absolute_url())
 
     def test_course_update_updating_name_changes_status_to_draft_POST(self):
-        course = self.create_published_course()
+        course, response = self.create_published_course()
 
         url2 = reverse('course_update', args=(course.slug,))  # switches to DRAFT?
         new_name = 'Modifikovaný název'
@@ -324,7 +391,7 @@ class CourseTests(TestCase):
         self.assertEqual(course_modified.name, new_name)
 
     def test_course_update_updating_description_changes_status_to_draft_POST(self):
-        course = self.create_published_course()
+        course, response = self.create_published_course()
 
         url2 = reverse('course_update', args=(course.slug,))  # switches to DRAFT?
         new_description = 'Modifikovaný popisek aktivity.'
@@ -340,7 +407,7 @@ class CourseTests(TestCase):
         self.assertIn(course_url_admin, mail.outbox[0].body)
 
     def test_course_update_updating_description_sends_correct_email_about_pending_reapproval_POST(self):
-        course = self.create_published_course()
+        course, response = self.create_published_course()
         url2 = reverse('course_update', args=(course.slug,))  # switches to DRAFT?
 
         new_description = 'Modifikovaný popisek aktivity.'
@@ -353,7 +420,7 @@ class CourseTests(TestCase):
         self.assertIn(course_url_admin, mail.outbox[0].body)
 
     def test_course_update_updating_price_field_does_not_change_status_POST(self):
-        course = self.create_published_course()
+        course, response = self.create_published_course()
 
         url2 = reverse('course_update', args=(course.slug,))  # switches to DRAFT?
         new_price = 500
@@ -367,7 +434,7 @@ class CourseTests(TestCase):
         self.assertEqual(course_modified.price, new_price)
 
     def test_course_detail_GET(self):
-        course = self.create_published_course()
+        course, response = self.create_published_course()
 
         response = self.client.get(reverse('course_detail', args=(course.slug,)))
 
@@ -381,13 +448,13 @@ class CourseTests(TestCase):
         self.assertTemplateUsed(response, '404.html')
 
     def test_course_delete_POST(self):
-        course = self.create_published_course()
+        course, response = self.create_published_course()
 
         self.client.post(reverse('course_delete', args=(course.slug,)))
         self.assertEqual(Course.objects.count(), 0)
 
     def test_course_detail_cannot_access_someone_elses_draft(self):
-        course = self.create_draft_course()
+        course, response = self.create_draft_course()
         self.client.logout()
         self.other_user = User.objects.create_user(email='other@gmail.com', password='heslo123')
         self.client.login(email='other@gmail.com', password='heslo123')
