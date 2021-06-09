@@ -1,5 +1,5 @@
 import shutil
-from datetime import timedelta, date
+from datetime import timedelta, date, time
 
 from PIL import Image
 from django.conf import settings
@@ -10,6 +10,7 @@ from django.forms.models import model_to_dict
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils.text import slugify
+from django.utils.timezone import localtime
 
 from catalog.models import Organization, Course, AgeCategory
 from users.models import User
@@ -233,7 +234,6 @@ class CourseTests(TestCase):
             'date_from': date.today() + timedelta(days=1),
             'date_to': date.today() + timedelta(days=2),
         }
-
         self.data_oneoff = {
             'name': 'Název jednodenní SUPER aktivity',
             'url': 'https://www.organizace.cz/jednodenni-aktivita',
@@ -251,9 +251,8 @@ class CourseTests(TestCase):
             'age_category': 1,  # use first
             'date_from': date.today() + timedelta(days=1),
             'date_to': date.today() + timedelta(days=1),  # same day
-            'time_from': '14:00',
-            'time_to': '16:00',
-
+            'time_from': time(12, 0),
+            'time_to': time(14, 0),
         }
 
     @classmethod
@@ -264,6 +263,7 @@ class CourseTests(TestCase):
         except OSError:
             pass
 
+    # helpers
     def create_published_course(self):
         url = reverse('course_create')
         response = self.client.post(url, self.data_regular)
@@ -306,6 +306,8 @@ class CourseTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'catalog/course/create_oneoff.html')
 
+    # START OF CREATE VIEWS
+    # create object
     def test_course_create_creates_new_object_POST(self):
         url = reverse('course_create')
 
@@ -320,6 +322,7 @@ class CourseTests(TestCase):
 
         self.assertEqual(Course.objects.count(), 1)
 
+    # assign organization
     def test_course_create_get_assigned_users_organization_POST(self):
         course, response = self.create_draft_course()
 
@@ -330,6 +333,7 @@ class CourseTests(TestCase):
 
         self.assertEqual(course.organization, self.new_organization)
 
+    # capitalize name
     def test_course_create_capitalizes_name_POST(self):
         course, response = self.create_draft_course()
 
@@ -340,6 +344,7 @@ class CourseTests(TestCase):
 
         self.assertEqual(course.name, self.data_oneoff['name'].capitalize())
 
+    # resize image
     def test_course_create_resizes_uploaded_image_POST(self):
         course, response = self.create_draft_course()
 
@@ -354,6 +359,7 @@ class CourseTests(TestCase):
             image = Image.open(fp)
         self.assertEqual(image.size, (settings.SIDE_LENGTH_COURSE_IMG, settings.SIDE_LENGTH_COURSE_IMG))
 
+    # send email notification
     def test_course_create_sends_correct_email_about_pending_approval_POST(self):
         course, response = self.create_draft_course()
 
@@ -366,6 +372,7 @@ class CourseTests(TestCase):
         course_url_admin = course.get_absolute_url_admin()
         self.assertIn(course_url_admin, mail.outbox[0].body)
 
+    # redirects to detail
     def test_course_create_redirects_to_detail_POST(self):
         course, response = self.create_draft_course()
 
@@ -376,14 +383,35 @@ class CourseTests(TestCase):
 
         self.assertEqual(response.url, course.get_absolute_url())
 
+    # END OF CREATE VIEWS
+    # START OF UPDATE VIEWS
+    # change to draft if modified
     def test_course_update_updating_name_changes_status_to_draft_POST(self):
         course, response = self.create_published_course()
 
-        url2 = reverse('course_update', args=(course.slug,))  # switches to DRAFT?
+        url = reverse('course_update', args=(course.slug,))  # switches to DRAFT?
         new_name = 'Modifikovaný název'
         modified_data = model_to_dict(course)
         modified_data['name'] = new_name
-        self.client.post(url2, modified_data)
+        self.client.post(url, modified_data)
+        course_modified = Course.objects.first()
+
+        self.assertEqual(course.id, course_modified.id)
+        self.assertEqual(course_modified.status, Course.Status.DRAFT.value)
+        self.assertEqual(course_modified.name, new_name)
+
+    def test_oneoff_course_update_updating_name_changes_status_to_draft_POST(self):
+        course, response = self.create_published_oneoff_course()
+
+        url = reverse('oneoff_course_update', args=(course.slug,))  # switches to DRAFT?
+        new_name = 'Modifikovaný název jednodenní aktivity'
+        modified_data = model_to_dict(course)
+        modified_data['name'] = new_name
+        # this is done in GET:
+        modified_data['time_from'] = localtime(course.date_from).strftime('%H:%M')
+        modified_data['time_to'] = localtime(course.date_to).strftime('%H:%M')
+
+        self.client.post(url, modified_data)
         course_modified = Course.objects.first()
 
         self.assertEqual(course.id, course_modified.id)
@@ -393,27 +421,61 @@ class CourseTests(TestCase):
     def test_course_update_updating_description_changes_status_to_draft_POST(self):
         course, response = self.create_published_course()
 
-        url2 = reverse('course_update', args=(course.slug,))  # switches to DRAFT?
+        url = reverse('course_update', args=(course.slug,))  # switches to DRAFT?
         new_description = 'Modifikovaný popisek aktivity.'
         modified_data = model_to_dict(course)
         modified_data['description'] = new_description
-        self.client.post(url2, modified_data)
+        self.client.post(url, modified_data)
         course_modified = Course.objects.first()
-        course_url_admin = course_modified.get_absolute_url_admin()
 
         self.assertEqual(course.id, course_modified.id)
         self.assertEqual(course_modified.status, Course.Status.DRAFT.value)
         self.assertEqual(course_modified.description, new_description)
-        self.assertIn(course_url_admin, mail.outbox[0].body)
 
+    def test_oneoff_course_update_updating_description_changes_status_to_draft_POST(self):
+        course, response = self.create_published_oneoff_course()
+
+        url = reverse('oneoff_course_update', args=(course.slug,))  # switches to DRAFT?
+        new_description = 'Modifikovaný popisek jednodenní aktivity.'
+        modified_data = model_to_dict(course)
+        modified_data['description'] = new_description
+        # this is done in GET:
+        modified_data['time_from'] = localtime(course.date_from).strftime('%H:%M')
+        modified_data['time_to'] = localtime(course.date_to).strftime('%H:%M')
+
+        self.client.post(url, modified_data)
+        course_modified = Course.objects.first()
+
+        self.assertEqual(course.id, course_modified.id)
+        self.assertEqual(course_modified.status, Course.Status.DRAFT.value)
+        self.assertEqual(course_modified.description, new_description)
+
+    # send email notification if modified
     def test_course_update_updating_description_sends_correct_email_about_pending_reapproval_POST(self):
         course, response = self.create_published_course()
-        url2 = reverse('course_update', args=(course.slug,))  # switches to DRAFT?
+        url = reverse('course_update', args=(course.slug,))  # switches to DRAFT?
 
         new_description = 'Modifikovaný popisek aktivity.'
         modified_data = model_to_dict(course)
         modified_data['description'] = new_description
-        self.client.post(url2, modified_data)
+        self.client.post(url, modified_data)
+        course_modified = Course.objects.first()
+        course_url_admin = course_modified.get_absolute_url_admin()
+
+        self.assertIn(course_url_admin, mail.outbox[0].body)
+
+    def test_oneoff_course_update_updating_description_sends_correct_email_about_pending_reapproval_POST(self):
+        course, response = self.create_published_oneoff_course()
+        url = reverse('oneoff_course_update', args=(course.slug,))  # switches to DRAFT?
+
+        new_description = 'Modifikovaný popisek jednodenní aktivity.'
+        modified_data = model_to_dict(course)
+        modified_data['description'] = new_description
+        # this is done in GET:
+        modified_data['time_from'] = localtime(course.date_from).strftime('%H:%M')
+        modified_data['time_to'] = localtime(course.date_to).strftime('%H:%M')
+
+        self.client.post(url, modified_data)
         course_modified = Course.objects.first()
         course_url_admin = course_modified.get_absolute_url_admin()
 
@@ -422,16 +484,18 @@ class CourseTests(TestCase):
     def test_course_update_updating_price_field_does_not_change_status_POST(self):
         course, response = self.create_published_course()
 
-        url2 = reverse('course_update', args=(course.slug,))  # switches to DRAFT?
+        url = reverse('course_update', args=(course.slug,))  # switches to DRAFT?
         new_price = 500
         modified_data = model_to_dict(course)
         modified_data['price'] = new_price
-        self.client.post(url2, modified_data)
+        self.client.post(url, modified_data)
         course_modified = Course.objects.first()
 
         self.assertEqual(course.id, course_modified.id)
         self.assertEqual(course_modified.status, course.status)
         self.assertEqual(course_modified.price, new_price)
+
+    # END OF UPDATE VIEWS
 
     def test_course_detail_GET(self):
         course, response = self.create_published_course()
