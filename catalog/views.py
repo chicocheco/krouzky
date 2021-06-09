@@ -7,7 +7,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMessage, mail_managers
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.text import slugify
-from django.utils.timezone import localtime
+from django.utils.timezone import localtime, make_aware
 
 from users.models import User
 from .filters import CourseFilter
@@ -192,8 +192,8 @@ def oneoff_course_create(request):
             course = form.save(commit=False)
             course.organization = request.user.organization
             course.name = cd['name'].capitalize()
-            course.date_from = datetime.combine(cd.get('date_from'), cd.get('time_from'))
-            course.date_to = datetime.combine(cd.get('date_from'), cd.get('time_to'))
+            course.date_from = make_aware(datetime.combine(cd.get('date_from'), cd.get('time_from')))
+            course.date_to = make_aware(datetime.combine(cd.get('date_from'), cd.get('time_to')))
             course.is_oneoff = True
             course.save()
             form.save_m2m()
@@ -254,8 +254,8 @@ def oneoff_course_update(request, slug=None):
             cd = form.cleaned_data
             course = form.save(commit=False)
             # TODO: do not hit db if unnecessary
-            course.date_from = datetime.combine(cd.get('date_from'), cd.get('time_from'))
-            course.date_to = datetime.combine(cd.get('date_from'), cd.get('time_to'))
+            course.date_from = make_aware(datetime.combine(cd.get('date_from'), cd.get('time_from')))
+            course.date_to = make_aware(datetime.combine(cd.get('date_from'), cd.get('time_to')))
             approval_requested = is_approval_requested(cd, course, original_desc, original_name, request)
             course.save()
             form.save_m2m()
