@@ -261,7 +261,7 @@ def oneoff_course_update(request, slug=None):
             approval_requested = is_approval_requested(cd, course, original_desc, original_name, request)
             course.save()
             form.save_m2m()
-            post_process_image(cd, course)
+            post_process_image(cd, course)  # TODO: write test
             if approval_requested:
                 messages.add_message(request, messages.SUCCESS,
                                      'Jednodenní aktivita byla úspěšně upravena a odeslána ke schválení!')

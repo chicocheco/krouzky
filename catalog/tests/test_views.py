@@ -527,3 +527,16 @@ class CourseTests(TestCase):
         response = self.client.get(url)
 
         self.assertInHTML('Přístup odepřen', response.content.decode())
+
+    def test_contact_teacher_POST(self):
+        course, response = self.create_draft_course()
+        data = {'sender_name': 'Stanik',
+                'from_email': 'stanikuv@gmail.com',
+                'body': 'Dotazující se dotazuje nějaký dotaz.'}
+
+        self.client.post(reverse('course_contact_teacher', args=(course.slug,)), data=data)
+        course_url = course.get_absolute_url()
+
+        # [<django.core.mail.message.EmailMultiAlternatives object at 0x7fa2681b0bb0>,
+        # <django.core.mail.message.EmailMessage object at 0x7fa267211fa0>]
+        self.assertIn(course_url, mail.outbox[1].body)
