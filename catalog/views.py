@@ -244,8 +244,10 @@ def oneoff_course_update(request, slug=None):
     course = get_object_or_404(Course, slug=slug)
     original_name, original_desc = course.name, course.description
     form = OneoffCourseForm(instance=course)
-    form.fields['time_from'].initial = localtime(course.date_from).strftime('%H:%M')
-    form.fields['time_to'].initial = localtime(course.date_to).strftime('%H:%M')
+    original_time_from = localtime(course.date_from).strftime('%H:%M')
+    original_time_to = localtime(course.date_to).strftime('%H:%M')
+    form.fields['time_from'].initial = original_time_from
+    form.fields['time_to'].initial = original_time_to
     check_teacher_field(form, request)
     if request.method == 'POST':
         # 'instance' parameter to relate to the existing object!
@@ -253,9 +255,9 @@ def oneoff_course_update(request, slug=None):
         if form.is_valid():
             cd = form.cleaned_data
             course = form.save(commit=False)
-            # TODO: do not hit db if unnecessary
-            course.date_from = make_aware(datetime.combine(cd.get('date_from'), cd.get('time_from')))
-            course.date_to = make_aware(datetime.combine(cd.get('date_from'), cd.get('time_to')))
+            if original_time_from != cd.get('time_from') or original_time_to != cd.get('time_to'):
+                course.date_from = make_aware(datetime.combine(cd.get('date_from'), cd.get('time_from')))
+                course.date_to = make_aware(datetime.combine(cd.get('date_from'), cd.get('time_to')))
             approval_requested = is_approval_requested(cd, course, original_desc, original_name, request)
             course.save()
             form.save_m2m()
