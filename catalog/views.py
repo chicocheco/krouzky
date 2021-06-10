@@ -150,7 +150,7 @@ def organization_delete(request):
     if request.method == 'POST':
         request.user.role = User.Roles.STUDENT
         request.user.save()
-        # todo: change status of all teachers to 'student' as well
+        # add changing status of all teachers to 'student' as well
 
         user_organization.delete()
         messages.add_message(request, messages.INFO, 'Organizace byla odstraněna.')
@@ -219,7 +219,6 @@ def course_update(request, slug=None):
     form = CourseForm(instance=course)
     check_teacher_field(form, request)
     if request.method == 'POST':
-        # 'instance' parameter to relate to the existing object!
         form = CourseForm(data=request.POST, files=request.FILES, instance=course)
         if form.is_valid():
             cd = form.cleaned_data
@@ -250,7 +249,6 @@ def oneoff_course_update(request, slug=None):
     form.fields['time_to'].initial = original_time_to
     check_teacher_field(form, request)
     if request.method == 'POST':
-        # 'instance' parameter to relate to the existing object!
         form = OneoffCourseForm(data=request.POST, files=request.FILES, instance=course)
         if form.is_valid():
             cd = form.cleaned_data
