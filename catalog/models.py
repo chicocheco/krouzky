@@ -96,7 +96,7 @@ class Course(models.Model):
         SPORT = 'SPORT', _('Sportovní')
 
     name = models.CharField(_('název'), max_length=50, blank=False)
-    slug = AutoSlugField(_('slug'), populate_from='name')  # make unique with organization?
+    slug = AutoSlugField(_('slug'), populate_from='name', unique=True)
     description = models.TextField(_('popis'), blank=True)
     url = models.URLField(_('URL'), max_length=500, blank=True, help_text='např. https://vyberaktivitu.online')
     category = models.CharField(_('Kategorie'), max_length=5, choices=Category.choices, default=Category.OTHER)
