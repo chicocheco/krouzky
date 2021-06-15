@@ -14,15 +14,10 @@ SECRET_KEY = env('DJANGO_SECRET_KEY')
 ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['vyberaktivitu.online'])
 
 if ENVIRONMENT == 'production':
-    SECURE_BROWSER_XSS_FILTER = True
-    CSRF_COOKIE_SECURE = True
-    SESSION_COOKIE_SECURE = True
-    # X_FRAME_OPTIONS = 'SAMEORIGIN'
-    SECURE_SSL_REDIRECT = True
     SECURE_HSTS_SECONDS = 3600
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
-    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'  # allows forms widget customization
 
