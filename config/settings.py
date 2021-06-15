@@ -1,13 +1,17 @@
-from os import environ
 from pathlib import Path
-from django.urls import reverse_lazy
+
+import environ as django_environ  # django-environ
 from django.contrib.messages import constants as messages
+from django.urls import reverse_lazy
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-# read environmental variables from docker-compose file
-ENVIRONMENT = environ.get('ENVIRONMENT', default='development')
-SECRET_KEY = environ.get('DJANGO_SECRET_KEY')
-DEBUG = int(environ.get('DEBUG', default=0))
+
+# environmental variables
+env = django_environ.Env()  # django-environ
+ENVIRONMENT = env('ENVIRONMENT', default='development')
+DEBUG = env.int('DEBUG', default=0)
+SECRET_KEY = env('DJANGO_SECRET_KEY')
+ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['vyberaktivitu.online'])
 
 if ENVIRONMENT == 'production':
     SECURE_BROWSER_XSS_FILTER = True
@@ -20,8 +24,6 @@ if ENVIRONMENT == 'production':
     SECURE_HSTS_PRELOAD = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
 
-ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost']
-
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'  # allows forms widget customization
 
 INSTALLED_APPS = [
@@ -30,6 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'whitenoise.runserver_nostatic',  # run collectstatic manually
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.postgres',
@@ -45,15 +48,31 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'django_filters',
     'tinymce',
-    'debug_toolbar',
     'taggit'
 ]
 
+if DEBUG:
+    INSTALLED_APPS.append('debug_toolbar')
+    # show debug_toolbar
+    DEBUG_TOOLBAR_CONFIG = {
+        'SHOW_TOOLBAR_CALLBACK': lambda request: True if DEBUG else False,
+    }
 
-# show debug_toolbar
-DEBUG_TOOLBAR_CONFIG = {
-    'SHOW_TOOLBAR_CALLBACK': lambda request: True if DEBUG else False,
-}
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+]
+
+if DEBUG:
+    MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
+
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # taggit (must declare both)
 TAGGIT_TAGS_FROM_STRING = 'catalog.utils.comma_splitter'
@@ -91,17 +110,6 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',  # 3rd party
-]
-
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
@@ -126,16 +134,21 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'  # django 3.2
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'db',
-        'PORT': 5432
+if 'DATABASE_URL' in env:  # in production
+    DATABASES["default"] = env.db("DATABASE_URL")  # noqa F405
+    DATABASES["default"]["ATOMIC_REQUESTS"] = True  # noqa F405
+    DATABASES["default"]["CONN_MAX_AGE"] = env.int("CONN_MAX_AGE", default=60)  # noqa F405
+else:  # for local development only
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'postgres',
+            'USER': 'postgres',
+            'PASSWORD': 'postgres',
+            'HOST': 'db',
+            'PORT': 5432
+        }
     }
-}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -175,12 +188,11 @@ MESSAGE_TAGS = {
 }
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-# in production
-EMAIL_HOST = environ.get('EMAIL_HOST')
+EMAIL_HOST = env('EMAIL_HOST')
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
-EMAIL_HOST_USER = environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 
 DEFAULT_FROM_EMAIL = 'info@vyberaktivitu.online'  # for allauth
 
