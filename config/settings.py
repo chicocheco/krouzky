@@ -134,12 +134,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'  # django 3.2
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-if 'DATABASE_URL' in env:  # in production
-    DATABASES["default"] = env.db("DATABASE_URL")  # noqa F405
-    DATABASES["default"]["ATOMIC_REQUESTS"] = True  # noqa F405
-    DATABASES["default"]["CONN_MAX_AGE"] = env.int("CONN_MAX_AGE", default=60)  # noqa F405
-else:  # for local development only
-    DATABASES = {
+DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'postgres',
@@ -149,6 +144,10 @@ else:  # for local development only
             'PORT': 5432
         }
     }
+if 'DATABASE_URL' in env:  # in production
+    DATABASES["default"] = env.db("DATABASE_URL")  # noqa F405
+    DATABASES["default"]["ATOMIC_REQUESTS"] = True  # noqa F405
+    DATABASES["default"]["CONN_MAX_AGE"] = env.int("CONN_MAX_AGE", default=60)  # noqa F405
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
