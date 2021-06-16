@@ -1,4 +1,5 @@
 from pathlib import Path
+from socket import gethostname, gethostbyname
 
 import environ as django_environ  # django-environ
 from django.contrib.messages import constants as messages
@@ -11,7 +12,8 @@ env = django_environ.Env()  # django-environ
 ENVIRONMENT = env('ENVIRONMENT', default='development')
 DEBUG = env.int('DEBUG', default=0)
 SECRET_KEY = env('DJANGO_SECRET_KEY')
-ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['vyberaktivitu.online'])
+ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['vyberaktivitu.online', 'www.vyberaktivitu.online'])
+ALLOWED_HOSTS.extend([gethostname(), gethostbyname(gethostname())])
 
 if ENVIRONMENT == 'production':
     SECURE_HSTS_SECONDS = 3600
@@ -133,15 +135,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'  # django 3.2
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'postgres',
-            'USER': 'postgres',
-            'PASSWORD': 'postgres',
-            'HOST': 'db',
-            'PORT': 5432
-        }
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'db',
+        'PORT': 5432
     }
+}
 if 'DATABASE_URL' in env:  # in production
     DATABASES["default"] = env.db("DATABASE_URL")  # noqa F405
     DATABASES["default"]["ATOMIC_REQUESTS"] = True  # noqa F405
