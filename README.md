@@ -44,10 +44,12 @@ ___________________
    dokku config:show vyberaktivitu
    ```
     - add domains to the app `dokku domains:add vyberaktivitu vyberaktivitu.online wwww.vyberaktivitu.online`
-    - enable SSL (https) with letsencrypt plugin
+    - enable SSL (https) with letsencrypt plugin for these domains
    ```
    dokku plugin:install https://github.com/dokku/dokku-letsencrypt.git
+   # email address for renewal warnings for your certificate
    dokku config:set --no-restart --global DOKKU_LETSENCRYPT_EMAIL=stanislav.matas@gmail.com
+   # enable command can also be used to renew
    dokku letsencrypt:enable vyberaktivitu
    dokku letsencrypt:cron-job --add
    ```  
