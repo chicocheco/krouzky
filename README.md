@@ -80,6 +80,9 @@ ___________________
 
    release: python manage.py migrate --noinput 
    ```
+   - make sure that `runtime.txt` consists of `python-3.9.5`
+   - zero downtime deploy - make sure that `CHECKS` consists of `/                       Vyber online aktivitu` and update DJANGO_ALLOWED_HOSTS
+   accordingly later on
 5. dokku post-deploy
    - create a super user `dokku run vyberaktivitu python manage.py createsuperuser`
    - fix _413 Request Entity Too Large_ error `dokku nginx:set vyberaktivitu client-max-body-size 50m`
