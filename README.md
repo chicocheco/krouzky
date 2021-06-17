@@ -54,7 +54,7 @@ ___________________
    dokku letsencrypt:cron-job --add
    ```  
     - enable Django security settings by setting `ENVIRONMENT` env. variable `dokku config:set vyberaktivitu ENVIRONMENT=production`
-    - do a deploy check `dokku run vyberaktivitu python manage.py check --deploy` and open the website to check
+    - do a deploy check `dokku --rm run vyberaktivitu python manage.py check --deploy` and open the website to check
     whether there are no infinite redirects
     - add and link persistent storage for media files
     ```
@@ -83,10 +83,12 @@ ___________________
    release: python manage.py migrate --noinput 
    ```
    - make sure that `runtime.txt` consists of `python-3.9.5`
-   - zero downtime deploy - make sure that `CHECKS` consists of `/                       Vyber online aktivitu` and update DJANGO_ALLOWED_HOSTS
-   accordingly later on
+   - zero downtime deploy - make sure that `CHECKS` consists of `//vyberaktivitu.online                       Vyber online aktivitu`
 5. dokku post-deploy
-   - create a super user `dokku run vyberaktivitu python manage.py createsuperuser`
+   - create a super user(s) `dokku --rm run vyberaktivitu python manage.py createsuperuser`
+   - populate a week schedule table `dokku --rm run vyberaktivitu python manage.py fill_weekschedule`
+   - add age categories in django admin  
+   - rename `example.com` to `vyberaktivitu.online` in django admin
    - fix _413 Request Entity Too Large_ error `dokku nginx:set vyberaktivitu client-max-body-size 50m`
    - install `unaccent` extension to the postgres database
    ```
