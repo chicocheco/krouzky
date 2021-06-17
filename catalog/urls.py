@@ -23,7 +23,7 @@ urlpatterns = [
 
     path('o-nas/', catalog_views.about_us, name='about_us'),
     path('spoluprace/', catalog_views.cooperation, name='cooperation'),
-    path('hledani/', catalog_views.search, name='search'),
+    path('vybrat/', catalog_views.search, name='search'),
     path('podminky-uzivani/', catalog_views.conditions, name='conditions'),
     path('gdpr/', catalog_views.gdpr, name='gdpr'),
 ]
