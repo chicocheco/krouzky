@@ -1,0 +1,11 @@
+/* TEAM */
+    Webmaster: Stanislav Matas
+    From: Madrid, Spain
+
+    Administrator: Klára Matasová
+    From: Kralupy nad Vltavou, Czech Republic
+
+/* SITE */
+    Language: Czech
+    Technologies: Django, Boostrap5
+    IDE: PyCharm Professional

@@ -6,6 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Vyber aktivitu online{% endblock %}</title>
+    <link rel="author" href="{% static 'other/humans.txt' %}"/>
     <link rel="icon" href="{% static 'img/art.svg' %}"/>
     <meta name="keywords"
           content="online aktivity, online kurzy, online kroužky, databáze, vyhledávač, dálkové studium">
@@ -134,28 +135,31 @@
 <div class="container-fluid">
     <footer class="row bg-light border py-4">
         <div class="col-12 col-md-4 text-center text-md-start">
-            <p class="mx-5 mb-0">
+            <div class="mx-5 mb-0">
                 © 2021 vyberaktivitu.online<br>
                 <a href="tel:+420602357678">+420 602 357 678</a><br>
                 <a href="mailto:info@vyberaktivitu.online">info@vyberaktivitu.online</a>
-            </p>
+            </div>
         </div>
         <div class="col-12 col-md-4 align-self-center text-center">
-            <p class="mx-5 my-1">
+            <div class="my-1 d-flex align-items-center justify-content-center">
                 <a href="https://www.facebook.com/VyberAktivituOnline-110275201159420"><i
                         class="fab fa-2x fa-facebook text-secondary"></i>
                 </a>
-            </p>
+                <a href="{% static 'other/humans.txt' %}">
+                    <img src="{% static 'other/humanstxt-isolated-blank.gif' %}" class="mx-1" alt="humans.txt">
+                </a>
+            </div>
         </div>
         <div class="col-12 col-md-4 align-self-center text-center text-md-end">
-            <p class="mx-5 lh-1 mb-0">
+            <div class="mx-5 lh-1 mb-0">
                 <small>
                     Provozovatelem webu je <span class="text-nowrap">Mgr. Klára Matasová</span>,
                     <span class="text-nowrap">IČ 06963838</span>, zapsaná v obchodním rejstříku.<br>
                     <a href="{% url 'conditions' %}">Podmínky užívání</a><br>
                     <a href="{% url 'gdpr' %}">Zásady ochrany osobních údajů</a>
                 </small>
-            </p>
+            </div>
         </div>
 
     </footer>
