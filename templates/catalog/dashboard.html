@@ -27,7 +27,7 @@
         <p>Přejete-li si začít zdarma registrovat aktivity, <a href="{% url 'organization_register' %}">vyplňte prosím
             nejdříve formulář</a> s informacemi o vaší organizaci.</p>
     {% endif %}
-    <a class="btn btn-primary" href="{% url 'account_logout' %}">Odhlásit se</a>
+    <a class="btn btn-outline-primary" href="{% url 'account_logout' %}">Odhlásit se</a>
 {% endblock %}
 
 {% block sidebar %}{% include 'dashboard_sidebar.html' with user_organization=user_organization %}{% endblock %}
