@@ -11,7 +11,7 @@ env = django_environ.Env()  # parse environmental variables via django-environ
 DEBUG = False
 SECRET_KEY = env('DJANGO_SECRET_KEY')
 ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS')
-SETTINGS_MODULE = env('DJANGO_SETTINGS_MODULE')
+SETTINGS_MODULE = env('DJANGO_SETTINGS_MODULE', default='config.settings.production')
 
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'  # allows forms widget customization
 
