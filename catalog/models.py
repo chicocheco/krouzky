@@ -75,7 +75,7 @@ class WeekSchedule(models.Model):
 
 class PublishedManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(status=Course.Status.PUBLISHED, date_to__gte=timezone.now())
+        return super().get_queryset().filter(status=Course.Status.PUBLISHED)
 
 
 def image_directory_path(instance, filename):
