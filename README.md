@@ -90,9 +90,14 @@ release: python manage.py migrate --noinput
 - add age categories in django admin  
 - rename `example.com` to `vyberaktivitu.online` in django admin
 - fix _413 Request Entity Too Large_ error `dokku nginx:set vyberaktivitu client-max-body-size 50m`
+- update system `sudo apt update && sudo apt upgrade`
+- having created another non-root account, disable password access to root - open `sudo nano /etc/ssh/sshd_config` and
+  change `PermitRootLogin` from `yes` to `prohibit-password`
+- configure firewall - allow inbound only at TCP ports 22, 80 and 443
 
 Dependencies:
 ```requirements.txt
+# both
 crispy-bootstrap5
 Django
 django-allauth
@@ -102,8 +107,13 @@ django-environ
 django-filter
 django-taggit
 django-tinymce
-gunicorn
 Pillow
 psycopg2-binary
 whitenoise
+
+# only production
+gunicorn
+
+# only local
+django-debug-toolbar
 ```
