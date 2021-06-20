@@ -98,7 +98,7 @@
                 {% for field in form %}
                     {% for error in field.errors %}
                         <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
-                            {{ field.label }}: {{ error|escape }}
+                            {% if field.label %}{{ field.label }}: {% endif %}{{ error|escape }}
                             <button type="button" class="btn-close" data-bs-dismiss="alert"
                                     aria-label="Zavřít"></button>
                         </div>
