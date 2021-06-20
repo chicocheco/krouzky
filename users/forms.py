@@ -36,6 +36,8 @@ class CustomLoginForm(LoginForm):
 
 
 class CustomSignupForm(SignupForm):
+    # TODO: fix "False" as in "False: Heslo je příliš krátké. Musí mít délku aspoň 8 znaků."
+
     conditions = forms.BooleanField(required=True,
                                     label='Souhlasím s podmínkami užívání a zásadami ochrany osobních dat')
 

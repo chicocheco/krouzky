@@ -37,7 +37,7 @@ dokku postgres:link vyberaktivitu_db vyberaktivitu
  - add other env. variables
 ```bash
 dokku config:set --no-restart vyberaktivitu DJANGO_ALLOWED_HOSTS=<ip-address>,vyberaktivitu.online,www.vyberaktivitu.online
-dokku config:set --no-restart vyberaktivitu DEBUG=0
+dokku config:set --no-restart vyberaktivitu DJANGO_SETTINGS_MODULE=config.settings.production
 dokku config:set --no-restart vyberaktivitu EMAIL_HOST=smtp.seznam.cz
 dokku config:set --no-restart vyberaktivitu EMAIL_HOST_USER=info@vyberaktivitu.online
 dokku config:set --no-restart vyberaktivitu EMAIL_HOST_PASSWORD=<password>
