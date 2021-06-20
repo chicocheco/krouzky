@@ -4,23 +4,14 @@ import environ as django_environ  # django-environ
 from django.contrib.messages import constants as messages
 from django.urls import reverse_lazy
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-# environmental variables
-env = django_environ.Env()  # django-environ
-ENVIRONMENT = env('ENVIRONMENT', default='development')
-DEBUG = env.int('DEBUG', default=0)
+env = django_environ.Env()  # parse environmental variables via django-environ
+
+DEBUG = False
 SECRET_KEY = env('DJANGO_SECRET_KEY')
-ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['vyberaktivitu.online', 'www.vyberaktivitu.online'])
-
-if ENVIRONMENT == 'production':
-    SECURE_HSTS_SECONDS = 3600
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    SECURE_CONTENT_TYPE_NOSNIFF = True
+ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS')
+SETTINGS_MODULE = env('DJANGO_SETTINGS_MODULE')
 
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'  # allows forms widget customization
 
@@ -49,13 +40,6 @@ INSTALLED_APPS = [
     'taggit'
 ]
 
-if DEBUG:
-    INSTALLED_APPS.append('debug_toolbar')
-    # show debug_toolbar
-    DEBUG_TOOLBAR_CONFIG = {
-        'SHOW_TOOLBAR_CALLBACK': lambda request: True if DEBUG else False,
-    }
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -66,9 +50,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
-
-if DEBUG:
-    MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
 
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
@@ -142,10 +123,6 @@ DATABASES = {
         'PORT': 5432
     }
 }
-if 'DATABASE_URL' in env:  # in production
-    DATABASES["default"] = env.db("DATABASE_URL")  # noqa F405
-    DATABASES["default"]["ATOMIC_REQUESTS"] = True  # noqa F405
-    DATABASES["default"]["CONN_MAX_AGE"] = env.int("CONN_MAX_AGE", default=60)  # noqa F405
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -173,7 +150,7 @@ STATICFILES_DIRS = [BASE_DIR / 'static', ]  # for dev
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-SIDE_LENGTH_COURSE_IMG = 500
+SIDE_LENGTH_COURSE_IMG = 500  # Course model
 
 # for bootstrap5
 MESSAGE_TAGS = {
@@ -183,13 +160,6 @@ MESSAGE_TAGS = {
     messages.WARNING: 'alert-warning',
     messages.ERROR: 'alert-danger',
 }
-
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_HOST = env('EMAIL_HOST')
-EMAIL_PORT = 465
-EMAIL_USE_SSL = True
-EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 
 DEFAULT_FROM_EMAIL = 'info@vyberaktivitu.online'  # for allauth
 
