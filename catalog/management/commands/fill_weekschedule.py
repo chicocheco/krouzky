@@ -5,7 +5,7 @@ from catalog.models import WeekSchedule
 
 
 class Command(BaseCommand):
-    help = 'Fill out all cells of a week schedule table'
+    help = 'Populate WeekSchedule table.'
 
     def handle(self, *args, **options):
         try:
