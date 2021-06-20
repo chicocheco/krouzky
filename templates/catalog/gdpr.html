@@ -1,4 +1,5 @@
 {% extends '_base.html' %}
+{% load static %}
 
 {% block title %}Zásady ochrany osobních údajů{% endblock %}
 
@@ -86,7 +87,8 @@
                 dohodnut jiný způsob doručení. Poskytnutí informace je bezplatné, ovšem pokud by ze strany subjektu
                 údajů docházelo ke zneužívání tohoto práva, zejm. pokud by žádosti byly zjevně nedůvodné nebo
                 nepřiměřené, je možné žádostem nevyhovět, případně za ně požadovat přiměřený poplatek za vynaložené
-                administrativní náklady. Formulář ke stažení zde (žádost o opravu)
+                administrativní náklady. Formulář ke stažení
+                <a href="{% static 'other/formular-zadost-o-opravu.pdf' %}" target="_blank">zde</a> (žádost o opravu).
             </p>
 
             <h6>Právo na výmaz osobních údajů</h6>
@@ -144,7 +146,7 @@
             <h6>Právo podat stížnost u dozorového úřadu</h6>
             <p style="text-indent: 3rem;">Subjekt údajů se může obrátit na dozorový úřad se stížností, pokud se
                 domnívá, tedy má důvodné podezření, že při zpracování osobních údajů dochází k porušení GDPR. Formulář
-                ke stažení zde (stížnost dozorovému orgánu)</p>
+                ke stažení <a href="{% static 'other/formular-stiznost-dozorovemu-organu.pdf' %}" target="_blank">zde</a> (stížnost dozorovému orgánu).</p>
 
             <p style="text-indent: 3rem;">Odhlášení ze zasílání newsletterů a obchodních sdělení
                 E-maily s inspirací a nabídkami dalších služeb vám zasíláme jste-li náš zákazník na základě
