@@ -10,6 +10,24 @@
                         {% if course.is_ad and flag_ads %}
                             <div class="ribbon blue"><span>Topováno</span></div>
                         {% endif %}
+                        <div class="position-absolute d-md-none" style="top: 1rem; left: 1rem;">
+                            {% if course.category == 'OTHER' %}
+                                <img style="height: 50px;" src="{% static 'img/jine.svg' %}"
+                                     alt="Ostatní">
+                            {% elif course.category == 'LANG' %}
+                                <img style="height: 50px;" src="{% static 'img/jazyky.svg' %}"
+                                     alt="Jazykové">
+                            {% elif course.category == 'ART' %}
+                                <img style="height: 50px;" src="{% static 'img/art.svg' %}"
+                                     alt="Umělecké">
+                            {% elif course.category == 'SPORT' %}
+                                <img style="height: 50px;" src="{% static 'img/sport.svg' %}"
+                                     alt="Sportovní">
+                            {% else %}
+                                <img style="height: 50px;" src="{% static 'img/music.svg' %}"
+                                     alt="Hudební">
+                            {% endif %}
+                        </div>
                         <div class="position-absolute" style="bottom: 1rem; left: 1rem;">
                             <span class="badge bg-light text-muted">{{ course.age_category }}</span>
                         </div>
@@ -23,13 +41,14 @@
             </div>
             <div class="col-12 col-md-8 d-flex p-3">
                 <div class="row flex-grow-1">
-                    <div class="col-10">
+                    <div class="col-auto col-md-10">
                         <h5 class="mb-0">
                             <a href="{{ course.get_absolute_url }}">{{ course.name|capfirst|truncatewords_html:5 }}</a>
                         </h5>
-                        <a href="{{ course.organization.get_absolute_url }}" class="text-muted mt-2 mb-3 my-lg-0"><small>{{ course.organization.name }}</small></a>
+                        <a href="{{ course.organization.get_absolute_url }}"
+                           class="text-muted mt-2 mb-3 my-lg-0"><small>{{ course.organization.name }}</small></a>
                     </div>
-                    <div class="col-2">
+                    <div class="col-auto col-md-2 d-none d-md-block">
                         {% if course.category == 'OTHER' %}
                             <img class="float-end mb-2 mb-md-0" src="{% static 'img/jine.svg' %}" alt="Ostatní">
                         {% elif course.category == 'LANG' %}
@@ -49,7 +68,7 @@
                         <div class="row pt-3 pt-md-0 justify-content-between align-items-end">
                             {# update and delete buttons #}
                             {% if course.organization == request.user.organization %}
-                                <div class="col-auto">
+                                <div class="col-12 col-md-auto order-last order-md-first mt-2 mt-md-0">
                                     {% if course.is_oneoff %}
                                         <a href="{% url 'oneoff_course_update' course.slug %}">
                                             <i class="fas fa-edit"></i>
@@ -57,17 +76,16 @@
                                     {% else %}
                                         <a href="{% url 'course_update' course.slug %}"><i class="fas fa-edit"></i></a>
                                     {% endif %}
-                                    <a class="ms-2" href="{% url 'course_delete' course.slug %}"><i class="fas fa-trash"></i></a>
+                                    <a class="ms-2" href="{% url 'course_delete' course.slug %}"><i
+                                            class="fas fa-trash"></i></a>
                                 </div>
                             {% endif %}
-                            <div class="col-auto">
-                                    <span class="text-muted">
-                                        {% if course.is_oneoff %}
-                                            {{ course.date_from|date }}
-                                        {% else %}
-                                            {{ course.date_from|date:"j.n.Y" }} - {{ course.date_to|date:"j.n.Y" }}
-                                        {% endif %}
-                                    </span>
+                            <div class="col-auto text-muted">
+                                {% if course.is_oneoff %}
+                                    {{ course.date_from|date }}
+                                {% else %}
+                                    {{ course.date_from|date:"j.n.Y" }} - {{ course.date_to|date:"j.n.Y" }}
+                                {% endif %}
                             </div>
                             <div class="col-auto text-muted">
                                 {{ course.price }} Kč
