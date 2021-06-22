@@ -94,11 +94,8 @@ release: python manage.py migrate --noinput
 - having created another non-root account, disable password access to root - open `sudo nano /etc/ssh/sshd_config` and
   change `PermitRootLogin` from `yes` to `prohibit-password`
 - configure firewall - allow inbound only at TCP ports 22, 80 and 443
-- add cron jobs `crontab -u dokku -e`:
-```
-@daily dokku --rm run vyberaktivitu python manage.py mark_finished_courses
-@daily dokku --rm run vyberaktivitu python manage.py clearsessions
-```
+- check cron jobs `dokku cron:list vyberaktivitu` or `sudo crontab -u dokku -l` (taken from _app.json_)
+
 Dependencies:
 ```requirements.txt
 # both
