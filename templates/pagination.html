@@ -1,6 +1,6 @@
 {% load catalog_tags %}
 <nav aria-label="page navigation">
-    <ul class="pagination">
+    <ul class="pagination mb-0">
         {% if page.has_previous %}
             <li class="page-item">
                 <a href="?{% param_replace page=page.previous_page_number %}"
