@@ -59,7 +59,7 @@
                             {{ tag.name }}{% if not forloop.last %}, {% endif %}
                         {% endfor %}
                     </div>
-                    <div class="col-6 col-md-12">
+                    <div class="col-auto">
                         <b>Doba konání:</b><br>
                         {% if course.is_oneoff %}
                             {{ course.date_from }} - {{ course.date_to|time }}
