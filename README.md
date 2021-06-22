@@ -95,6 +95,12 @@ release: python manage.py migrate --noinput
   change `PermitRootLogin` from `yes` to `prohibit-password`
 - configure firewall - allow inbound only at TCP ports 22, 80 and 443
 - check cron jobs `dokku cron:list vyberaktivitu` or `sudo crontab -u dokku -l` (taken from _app.json_)
+- redirect www to non-www domain name with dokku-redirect:
+```bash
+sudo dokku plugin:install https://github.com/dokku/dokku-redirect.git
+dokku redirect:set vyberaktivitu www.vyberaktivitu.online vyberaktivitu.online
+# it's still a good idea to keep both names in dokku domains and letsencrypt
+```
 
 Dependencies:
 ```requirements.txt
