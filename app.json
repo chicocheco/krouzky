@@ -2,11 +2,11 @@
   "cron": [
     {
       "command": "python manage.py clearsessions",
-      "schedule": "@daily"
+      "schedule": "@midnight"
     },
     {
       "command": "python manage.py mark_finished_courses",
-      "schedule": "@hourly"
+      "schedule": "@midnight"
     }
   ]
 }
