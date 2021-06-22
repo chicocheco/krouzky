@@ -1,11 +1,11 @@
 {
   "cron": [
     {
-      "command": "dokku --rm run vyberaktivitu python manage.py clearsessions",
+      "command": "python manage.py clearsessions",
       "schedule": "@daily"
     },
     {
-      "command": "dokku --rm run vyberaktivitu python manage.py mark_finished_courses",
+      "command": "python manage.py mark_finished_courses",
       "schedule": "@hourly"
     }
   ]
