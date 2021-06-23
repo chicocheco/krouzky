@@ -273,8 +273,10 @@ def oneoff_course_update(request, slug=None):
 
 def course_detail(request, slug=None):
     course = get_object_or_404(Course.objects.select_related(), slug=slug)
-    if course.status == Course.Status.DRAFT and course.organization != request.user.organization:
-        raise PermissionDenied
+    if course.status != Course.Status.PUBLISHED:
+        if request.user.is_authenticated and course.organization != request.user.organization \
+                or not request.user.is_authenticated:
+            raise PermissionDenied
     form = ContactTeacherForm()
     price_hour = round(course.price / course.hours)
     week_schedule = make_week_schedule(course)
