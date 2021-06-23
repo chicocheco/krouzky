@@ -124,7 +124,7 @@ class Course(models.Model):
     date_created = models.DateTimeField(_('vytvořeno'), auto_now_add=True)
     objects = models.Manager()  # define implicitly to preserve this manager
     published = PublishedManager()
-    tags = TaggableManager()
+    tags = TaggableManager(help_text='oddělujte čárkami např.: angličtina, jazyk, doučování')
 
     class Meta:
         verbose_name = 'Aktivita'
