@@ -364,13 +364,13 @@ class CourseTests(TestCase):
         course, response = self.create_draft_course()
 
         course_url_admin = course.get_absolute_url_admin()
-        self.assertIn(course_url_admin, mail.outbox[0].body)
+        self.assertIn(course_url_admin, mail.outbox[-1].body)
 
     def test_oneoff_course_create_sends_correct_email_about_pending_approval_POST(self):
         course, response = self.create_draft_oneoff_course()
 
         course_url_admin = course.get_absolute_url_admin()
-        self.assertIn(course_url_admin, mail.outbox[0].body)
+        self.assertIn(course_url_admin, mail.outbox[-1].body)
 
     # redirects to detail
     def test_course_create_redirects_to_detail_POST(self):
@@ -462,7 +462,7 @@ class CourseTests(TestCase):
         course_modified = Course.objects.first()
         course_url_admin = course_modified.get_absolute_url_admin()
 
-        self.assertIn(course_url_admin, mail.outbox[0].body)
+        self.assertIn(course_url_admin, mail.outbox[-1].body)
 
     def test_oneoff_course_update_updating_description_sends_correct_email_about_pending_reapproval_POST(self):
         course, response = self.create_published_oneoff_course()
@@ -479,7 +479,7 @@ class CourseTests(TestCase):
         course_modified = Course.objects.first()
         course_url_admin = course_modified.get_absolute_url_admin()
 
-        self.assertIn(course_url_admin, mail.outbox[0].body)
+        self.assertIn(course_url_admin, mail.outbox[-1].body)
 
     def test_course_update_updating_price_field_does_not_change_status_POST(self):
         course, response = self.create_published_course()
@@ -539,4 +539,4 @@ class CourseTests(TestCase):
 
         # [<django.core.mail.message.EmailMultiAlternatives object at 0x7fa2681b0bb0>,
         # <django.core.mail.message.EmailMessage object at 0x7fa267211fa0>]
-        self.assertIn(course_url, mail.outbox[1].body)
+        self.assertIn(course_url, mail.outbox[-1].body)

@@ -1,5 +1,6 @@
 from datetime import timedelta, datetime
 
+from django.core import mail
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.shortcuts import reverse
 from django.test import TestCase
@@ -81,3 +82,13 @@ class CourseModelTests(TestCase):
     def test_str_dunder(self):
         text = f'{self.course.name} [{self.organization.name}]'
         self.assertEqual(str(self.course), text)
+
+    def test_sends_notification_when_created(self):
+        # using signals
+        self.assertIn(f'"{self.course.name}" byla úspěšně zaregistrována a čeká na schválení', mail.outbox[-1].body)
+
+    def test_sends_notification_when_status_changes_from_DRAFT_to_PUBLISHED(self):
+        self.course.status = Course.Status.PUBLISHED
+        self.course.save()
+
+        self.assertIn(f'"{self.course.name}" byla schválena a publikována', mail.outbox[-1].body)
