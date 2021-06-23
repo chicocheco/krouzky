@@ -1,5 +1,6 @@
 from autoslug import AutoSlugField
 from django.conf import settings
+from django.core.mail import EmailMessage
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
@@ -95,6 +96,8 @@ class Course(models.Model):
         ART = 'ART', _('Umělecké')
         SPORT = 'SPORT', _('Sportovní')
 
+    _original_status = None
+
     name = models.CharField(_('název'), max_length=50, blank=False)
     slug = AutoSlugField(_('slug'), populate_from='name', unique=True)
     description = models.TextField(_('popis'), blank=True)
@@ -128,8 +131,26 @@ class Course(models.Model):
         verbose_name_plural = 'Aktivity'
         ordering = ['-date_modified']
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._original_status = self.status
+
     def __str__(self):
         return f'{self.name} [{self.organization.name}]'
+
+    def save(self, *args, **kwargs):
+        if self._original_status == self.Status.DRAFT and self.status == self.Status.PUBLISHED:
+            self.send_user_notification_approved()
+        super().save(*args, **kwargs)
+        self._original_status = self.status
+
+    def send_user_notification_approved(self):
+        subject = f'Vaše aktivita "{self.name}" byla schválena!'
+        body = f'Zdravíme z vyberaktivitu.online!\n\n' \
+               f'Vaše aktivita "{self.name}" byla schválena a publikována v našem katalogu.\n\n' \
+               f'Děkujeme, že používáte vyhledávač vyberaktivitu.online'
+        email = EmailMessage(subject, body, settings.DEFAULT_FROM_EMAIL, [self.teacher.email, ])
+        email.send()
 
     def get_absolute_url(self):
         return reverse('course_detail', args=(self.slug,))
