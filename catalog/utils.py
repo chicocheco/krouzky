@@ -4,7 +4,7 @@ from random import shuffle
 
 from PIL import Image
 from django.conf import settings
-from django.core.mail import mail_managers
+from django.core.mail import mail_managers, EmailMessage
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.utils.text import slugify
 
@@ -106,3 +106,14 @@ def make_week_schedule(course):
     for i in course.week_schedule.all():
         week_schedule[i.hour][i.day_of_week] = 'X'
     return dict(week_schedule)
+
+
+def send_user_notification_created(instance):
+    subject = f'Vaše aktivita "{instance.name}" byla zaregistrována!'
+    body = f'Zdravíme z vyberaktivitu.online!\n\n' \
+           f'Vaše aktivita "{instance.name}" byla úspěšně zaregistrována a čeká na schválení administrátory. \n' \
+           f'V momentě kdy dojde k jejímu schválení, bude aktivita publikována online v našem katalogu, o čemž ' \
+           f'budete informováni emailem.\n\n' \
+           f'Děkujeme, že používáte vyhledávač vyberaktivitu.online'
+    email = EmailMessage(subject, body, settings.DEFAULT_FROM_EMAIL, [instance.teacher.email, ])
+    email.send()
