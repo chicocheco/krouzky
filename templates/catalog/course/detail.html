@@ -76,12 +76,13 @@
         {% if not course.is_oneoff %}
             <div class="row px-0">
                 <div class="col-12">
+                    <p class="d-md-none"><b>Týdenní rozvrh:</b></p>
                     <div class="table-sm">
                         <table class="table table-sm table-bordered text-center">
                             <thead style="height: 80px;">
                             <tr>
                                 <th scope="col" style="vertical-align: middle; height: 79px; word-spacing: 100vw;">
-                                    Týdenní rozvrh
+                                    <span class="d-none d-md-block">Týdenní rozvrh</span>
                                 </th>
                                 <th scope="col" style="width: 12%; transform: rotate(-45deg); vertical-align: middle;">
                                     <span class="d-md-none">Po</span><span class="d-none d-md-block">Pondělí</span>
@@ -109,7 +110,8 @@
                             <tbody>
                             {% for hour, day in schedule.items %}
                                 <tr>
-                                    <th scope="row">{% convert_hour_block hour %}</th>
+                                    <th scope="row"><span class="d-md-none">{{ hour }}</span>
+                                        <span class="d-none d-md-block">{% convert_hour_block hour %}</span></th>
                                     {% for i in day %}
                                         <td class="{% if i == 'X' %}bg-success{% else %}bg-white{% endif %}"></td>
                                     {% endfor %}
