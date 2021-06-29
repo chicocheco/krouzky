@@ -39,7 +39,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     class Roles(models.TextChoices):
-        STUDENT = 'STUDENT', _('student')
+        STUDENT = 'STUDENT', _('Student')
         TEACHER = 'TEACHER', _('Vedoucí')
         COORDINATOR = 'COORDINATOR', _('Koordinátor')
 
