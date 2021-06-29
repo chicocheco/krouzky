@@ -47,6 +47,8 @@ def dashboard(request):
 
 
 def search(request):
+    """List of paginated courses that can be filtered. Every page includes sponsored courses at the top."""
+
     query = None
     qs = Course.published.all().select_related()
     sponsored_courses = get_sponsored_courses_list(qs)
@@ -66,6 +68,8 @@ def search(request):
 
 
 def course_list_by_organization(request, slug):
+    """List of paginated courses belonging to a single organization."""
+
     organization = get_object_or_404(Organization, slug=slug)
     qs = Course.objects.filter(organization=organization).select_related()
     is_organization_of_user = False
@@ -81,6 +85,8 @@ def course_list_by_organization(request, slug):
 
 
 def course_list(request):
+    """List of paginated courses including sponsored ones on the top on every page."""
+
     qs = Course.published.all().select_related()
     sponsored_courses = get_sponsored_courses_list(qs)
     courses, custom_page_range, counter = paginate(request, qs)
@@ -92,12 +98,14 @@ def course_list(request):
 
 @login_required
 def organization_register(request):
+    """Register an organization and assign it to the current user, changing their role on User model."""
+
     if request.method == 'POST':
         form = RegisterOrganizationForm(data=request.POST)
         if form.is_valid():
             org_name = form.cleaned_data['name']
             organization = form.save(commit=False)
-            organization.slug = slugify(org_name)  # TODO: can be done in model?
+            organization.slug = slugify(org_name)
             organization.save()
             request.user.organization = organization
             request.user.role = User.Roles.COORDINATOR
@@ -113,6 +121,8 @@ def organization_register(request):
 
 @login_required
 def organization_update(request):
+    """Update any field of the organization except for its name and slug."""
+
     user_organization = request.user.organization
     form = UpdateOrganizationForm(instance=user_organization)
     if request.method == 'POST':
@@ -128,6 +138,8 @@ def organization_update(request):
 
 @login_required
 def organization_rename(request):
+    """Update name and the related slug field."""
+
     user_organization = request.user.organization
     form = RenameOrganizationForm(instance=user_organization)
     if request.method == 'POST':
@@ -146,6 +158,8 @@ def organization_rename(request):
 
 @login_required
 def organization_delete(request):
+    """Remove the organization and change the user's role back to the default (student)."""
+
     user_organization = request.user.organization
     if request.method == 'POST':
         request.user.role = User.Roles.STUDENT
@@ -160,6 +174,8 @@ def organization_delete(request):
 
 @login_required
 def course_create(request):
+    """Create a regular course, assigning it to the user's organization and notify the managers about it by email."""
+
     if request.method == 'POST':
         form = CourseForm(data=request.POST, files=request.FILES)  # 'files' includes image upload
         if form.is_valid():
@@ -185,6 +201,11 @@ def course_create(request):
 
 @login_required
 def oneoff_course_create(request):
+    """
+    Create a one-off course, assigning it to the user's organization and notify the managers about it by email.
+    In addition, populate date_from and date_to fields sharing the same date but different hour.
+    """
+
     if request.method == 'POST':
         form = OneoffCourseForm(data=request.POST, files=request.FILES)  # 'files' includes image upload
         if form.is_valid():
@@ -214,6 +235,11 @@ def oneoff_course_create(request):
 
 @login_required
 def course_update(request, slug=None):
+    """
+    Update the regular course. If its name or description was changed, switch its status back to DRAFT and notify the
+    managers about it.
+    """
+
     course = get_object_or_404(Course, slug=slug)
     original_name, original_desc = course.name, course.description
     form = CourseForm(instance=course)
@@ -240,6 +266,15 @@ def course_update(request, slug=None):
 
 @login_required
 def oneoff_course_update(request, slug=None):
+    """
+    Update the one-off course. If its name or description was changed, switch its status back to DRAFT and notify the
+    managers about it.
+
+    In addition, decouple the datetime objects sharing the same date to be able to modify the hour only in the form.
+    In order to avoid re-building these objects every time even when nothing was changed,
+    compare the original hour values with the new ones.
+    """
+
     course = get_object_or_404(Course, slug=slug)
     original_name, original_desc = course.name, course.description
     form = OneoffCourseForm(instance=course)
@@ -259,7 +294,7 @@ def oneoff_course_update(request, slug=None):
             approval_requested = is_approval_requested(cd, course, original_desc, original_name, request)
             course.save()
             form.save_m2m()
-            post_process_image(cd, course)  # TODO: write test
+            post_process_image(cd, course)
             if approval_requested:
                 messages.add_message(request, messages.SUCCESS,
                                      'Jednodenní aktivita byla úspěšně upravena a odeslána ke schválení!')
@@ -272,12 +307,14 @@ def oneoff_course_update(request, slug=None):
 
 
 def course_detail(request, slug=None):
+    """Course detail with a contact form of the assigned user to it (teacher)."""
+
     course = get_object_or_404(Course.objects.select_related(), slug=slug)
     if course.status != Course.Status.PUBLISHED:
         if request.user.is_authenticated and course.organization != request.user.organization \
                 or not request.user.is_authenticated:
             raise PermissionDenied
-    form = ContactTeacherForm()
+    form = ContactTeacherForm()  # POST via contact_teacher view
     price_hour = round(course.price / course.hours)
     week_schedule = make_week_schedule(course)
     return render(request, 'catalog/course/detail.html', {'course': course,
@@ -288,6 +325,8 @@ def course_detail(request, slug=None):
 
 @login_required
 def course_delete(request, slug=None):
+    """Delete course"""
+
     course = get_object_or_404(Course, slug=slug)
     if request.method == 'POST':
         course.delete()
@@ -297,6 +336,8 @@ def course_delete(request, slug=None):
 
 
 def contact_teacher(request, slug=None):
+    """Contact the teacher (assigned account) of the course with an embedded URL."""
+
     course = get_object_or_404(Course, slug=slug)
     if request.method == 'POST':
         form = ContactTeacherForm(request.POST)
