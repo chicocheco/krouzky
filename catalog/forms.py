@@ -202,7 +202,6 @@ class ContactTeacherForm(forms.Form):
         )
         self.helper.form_tag = False
         self.helper.form_show_labels = False
-        self.helper.form_show_errors = False
 
     sender_name = forms.CharField(max_length=25)
     from_email = forms.EmailField()
