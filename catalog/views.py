@@ -123,6 +123,8 @@ def organization_register(request):
 def organization_update(request):
     """Update any field of the organization except for its name and slug."""
 
+    if request.user.role != User.Roles.COORDINATOR:
+        raise PermissionDenied
     user_organization = request.user.organization
     form = UpdateOrganizationForm(instance=user_organization)
     if request.method == 'POST':
@@ -140,6 +142,8 @@ def organization_update(request):
 def organization_rename(request):
     """Update name and the related slug field."""
 
+    if request.user.role != User.Roles.COORDINATOR:
+        raise PermissionDenied
     user_organization = request.user.organization
     form = RenameOrganizationForm(instance=user_organization)
     if request.method == 'POST':
@@ -160,6 +164,8 @@ def organization_rename(request):
 def organization_delete(request):
     """Remove the organization and change the user's role back to the default (student)."""
 
+    if request.user.role != User.Roles.COORDINATOR:
+        raise PermissionDenied
     user_organization = request.user.organization
     if request.method == 'POST':
         request.user.role = User.Roles.STUDENT
