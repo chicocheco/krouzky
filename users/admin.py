@@ -16,3 +16,9 @@ class UserAdmin(BaseUserAdmin):
     search_fields = ('email',)
     ordering = ('email',)
     filter_horizontal = ('groups', 'user_permissions',)
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if obj:
+            form.base_fields['organization'].required = False  # allow set back to NULL
+        return form
