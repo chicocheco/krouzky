@@ -29,8 +29,7 @@ Host aktivity_server
  - download plugin for the db `sudo dokku plugin:install https://github.com/dokku/dokku-postgres.git`
  - create database and pass `DATABASE_URL` to the app
  ```bash
-export POSTGRES_IMAGE="postgres"
-export POSTGRES_IMAGE_VERSION="11"
+dokku postgres:create vyberaktivitu_db --image-version 13.3
 sudo dokku postgres:create vyberaktivitu_db
 dokku postgres:link vyberaktivitu_db vyberaktivitu
 ```
@@ -100,6 +99,18 @@ release: python manage.py migrate --noinput
 sudo dokku plugin:install https://github.com/dokku/dokku-redirect.git
 dokku redirect:set vyberaktivitu www.vyberaktivitu.online vyberaktivitu.online
 # it's still a good idea to keep both names in dokku domains and letsencrypt
+```
+- (optional) upgrading postgres database:
+```bash
+docker sudo pull postgres:<version-to-upgrade-to>
+dokku ps:stop vyberaktivitu
+dokku postgres:export vyberaktivitu_db > /tmp/vyberaktivitu-db-export
+dokku postgres:unlink vyberaktivitu_db vyberaktivitu
+dokku postgres:destroy vyberaktivitu_db
+dokku postgres:create vyberaktivitu_db --image-version <version-to-upgrade-to>
+dokku postgres:import vyberaktivitu_db < /tmp/vyberaktivitu-db-export
+dokku postgres:link vyberaktivitu_db vyberaktivitu
+dokku ps:start vyberaktivitu
 ```
 
 Dependencies:
