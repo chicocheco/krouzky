@@ -5,6 +5,10 @@
       "schedule": "@midnight"
     },
     {
+      "command": "python manage.py clear_expired_invitations",
+      "schedule": "@midnight"
+    },
+    {
       "command": "python manage.py mark_finished_courses",
       "schedule": "@midnight"
     }
