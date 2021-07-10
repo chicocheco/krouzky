@@ -63,14 +63,17 @@ def post_process_image(cleaned_data, course):
 
 def check_teacher_field(form, request):
     """
-    Check whether only a single teacher is registered in the organization and if so, select them and make the field
-    read-only so the user does not need to bother.
+    Modify behavior of the field base on user's role and members.
+    Role COORDINATOR: If there are no other members, pre-select the coordinator.
+    Role TEACHER: Pre-select the current user.
     """
-
     teacher_field = form.fields['teacher']
-    teachers = User.objects.filter(organization_id=request.user.organization.id).order_by('date_created')
-    teacher_field.queryset = teachers
-    if teachers.count() == 1:
+    if request.user.role == User.Roles.COORDINATOR:
+        qs = User.objects.filter(organization_id=request.user.organization.id).order_by('date_created')
+    else:
+        qs = User.objects.filter(pk=request.user.pk)
+    teacher_field.queryset = qs
+    if qs.count() == 1:
         # simulate readonly attribute for <select> element
         teacher_field.widget.attrs.update({'style': 'pointer-events: none; background-color: #e9ecef;',
                                            'tabindex': "-1"})

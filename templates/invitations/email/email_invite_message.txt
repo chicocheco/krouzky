@@ -1,0 +1,7 @@
+Zdravíme z {{ site_name }}!
+
+Vaše e-mailová adresa ({{ invited_email }}) byla použita v pozvánce do organizace "{{ organization }}" na stránce {{ site_name }}
+
+Pro přijmutí pozvánky klikněte prosím zde {{ invite_url }}
+
+Pokud vám pozvánka nepatří, můžete tento e-mail bezpečně ignorovat.

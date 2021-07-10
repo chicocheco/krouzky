@@ -1,0 +1,24 @@
+{% extends '_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Pozvánka do organizace{% endblock %}
+
+{% block content %}
+    <h2>Pozvánka do organizace</h2>
+    <hr>
+    <ol>
+        <li>Pozvaný uživatel obdrží e-mailem aktivační odkaz na stránku s tlačítkem pro přijmutí pozvánky</li>
+        <li>Pokud dotyčný uživatel ještě nemá zaregistrovaný účet nebo se zaregistroval s jinou e-mailovou adresou,
+            bude po kliknutí na tlačítko přesměrován na registrační stránku a
+            po nastavení hesla automaticky přihlášen a přiřazen k vaší organizaci
+        </li>
+        <li>Přiřazený uživatel má právo vytvářet a upravovat pouze své aktivity
+            (v detailu se objeví jako vedoucí takové aktivity) nebo mu můžete přidělit správu modifikací
+            stávající aktivity či při registraci nové
+        </li>
+    </ol>
+    <p><b>Pozor: Platnost odkazu s pozvánkou je platný pouhé 3 dny.</b></p>
+    {% crispy form %}
+{% endblock %}
+
+{% block sidebar %}{% include 'dashboard_sidebar.html' %}{% endblock %}

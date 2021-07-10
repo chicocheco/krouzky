@@ -13,9 +13,14 @@ from django.utils.text import slugify
 from django.utils.timezone import localtime
 
 from catalog.models import Organization, Course, AgeCategory
+from invitations.models import Invitation
 from users.models import User
 
 TEST_DIR = settings.BASE_DIR / 'test_data'
+USERNAME = 'uzivatel@seznam.cz'
+OTHER_USERNAME = 'jiny_uzivatel@seznam.cz'
+INVITED_USERNAME = 'pozvany@seznam.cz'
+PASSWORD = 'heslo123'
 
 
 class StaticPagesTests(TestCase):
@@ -49,14 +54,34 @@ class StaticPagesTests(TestCase):
 class OrganizationTests(TestCase):
 
     def setUp(self):
-        self.new_user = User.objects.create_user(email='lofy@seznam.cz', password='heslo123')
-        self.client.login(email='lofy@seznam.cz', password='heslo123')
+        self.user = User.objects.create_user(email=USERNAME, password=PASSWORD)
+        self.client.login(email=USERNAME, password=PASSWORD)
         self.data = {'name': 'Nová organizace',
                      'url': 'https://www.nova-organizace.cz',
                      'company_id': 98765443,
                      'address': 'Moje adresa 123',
                      'town': 'Praha',
                      'zip_code': 33322}
+
+    def register_organization(self):
+        url = reverse('organization_register')
+        self.client.post(url, self.data)
+        self.user.refresh_from_db()  # necessary because of "request.user" modifications
+        return Organization.objects.first()
+
+    def invite_logged_in_teacher(self):
+        input_data = {'invited_email': USERNAME}
+        self.client.post(reverse('organization_invite_teacher'), data=input_data)
+        invitation = Invitation.objects.last()
+        invite_url = reverse('accept_invite_teacher', args=(invitation.key,))
+        return input_data, invite_url
+
+    def invite_teacher(self):
+        input_data = {'invited_email': INVITED_USERNAME}
+        self.client.post(reverse('organization_invite_teacher'), data=input_data)
+        invitation = Invitation.objects.last()
+        invite_url = reverse('accept_invite_teacher', args=(invitation.key,))
+        return input_data, invite_url
 
     def test_organization_register_uses_correct_template_GET(self):
         url = reverse('organization_register')
@@ -67,9 +92,7 @@ class OrganizationTests(TestCase):
         self.assertTemplateUsed(response, 'catalog/organization/register.html')
 
     def test_organization_update_uses_correct_template_GET(self):
-        url = reverse('organization_register')
-        self.client.post(url, self.data)
-        self.new_user.refresh_from_db()  # necessary because of "request.user" modifications
+        self.register_organization()
 
         url2 = reverse('organization_update')
         response = self.client.get(url2)
@@ -78,9 +101,7 @@ class OrganizationTests(TestCase):
         self.assertTemplateUsed(response, 'catalog/organization/update.html')
 
     def test_organization_rename_uses_correct_template_GET(self):
-        url = reverse('organization_register')
-        self.client.post(url, self.data)
-        self.new_user.refresh_from_db()  # necessary because of "request.user" modifications
+        self.register_organization()
 
         url2 = reverse('organization_rename')
         response = self.client.get(url2)
@@ -89,15 +110,42 @@ class OrganizationTests(TestCase):
         self.assertTemplateUsed(response, 'catalog/organization/rename.html')
 
     def test_organization_delete_uses_correct_template_GET(self):
-        url = reverse('organization_register')
-        self.client.post(url, self.data)
-        self.new_user.refresh_from_db()  # necessary because of "request.user" modifications
+        self.register_organization()
 
         url2 = reverse('organization_delete')
         response = self.client.get(url2)
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'catalog/organization/delete.html')
+
+    def test_organization_members_uses_correct_template_GET(self):
+        self.register_organization()
+
+        response = self.client.get(reverse('organization_members'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'catalog/organization/members.html')
+
+    def test_organization_remove_member_uses_correct_template_GET(self):
+        organization = self.register_organization()
+        other_user = User.objects.create_user(email=OTHER_USERNAME, password=PASSWORD)
+        other_user.organization = organization
+        other_user.role = User.Roles.TEACHER
+        other_user.save()
+
+        response = self.client.get(reverse('organization_remove_member', args=(other_user.pk,)))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'catalog/organization/remove_member.html')
+
+    def test_AcceptInviteTeacher_uses_correct_template_GET(self):
+        self.register_organization()
+        _, invite_url = self.invite_teacher()
+
+        response = self.client.get(invite_url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'invitations/accept_invite_teacher.html')
 
     # registering
     def test_organization_register_redirects_and_saves_data_to_db_POST(self):
@@ -122,36 +170,39 @@ class OrganizationTests(TestCase):
         self.client.post(url, self.data)
 
         new_organization = Organization.objects.first()
-        self.new_user.refresh_from_db()  # necessary because of "request.user" modifications
-        self.assertEqual(self.new_user.role, User.Roles.COORDINATOR)
-        self.assertEqual(self.new_user.organization, new_organization)
+        self.user.refresh_from_db()  # necessary because of "request.user" modifications
+        self.assertEqual(self.user.role, User.Roles.COORDINATOR)
+        self.assertEqual(self.user.organization, new_organization)
 
     # updating
     def test_organization_update_uses_users_organization_GET(self):
-        url = reverse('organization_register')
-        self.client.post(url, self.data)
-        self.new_user.refresh_from_db()  # necessary because of "request.user" modifications
+        self.register_organization()
 
         url2 = reverse('organization_update')
         response = self.client.get(url2)
 
-        self.assertEqual(self.new_user.organization, response.context['user_organization'])
+        self.assertEqual(self.user.organization, response.context['user_organization'])
+
+    def test_organization_update_cannot_be_accessed_by_teacher_GET(self):
+        self.register_organization()
+        self.user.role = User.Roles.TEACHER
+        self.user.save()
+
+        response = self.client.get(reverse('organization_update'))
+
+        self.assertInHTML('Přístup odepřen', response.content.decode())
 
     # renaming
     def test_organization_rename_uses_users_organization_GET(self):
-        url = reverse('organization_register')
-        self.client.post(url, self.data)
-        self.new_user.refresh_from_db()  # necessary because of "request.user" modifications
+        self.register_organization()
 
         url2 = reverse('organization_rename')
         response = self.client.get(url2)
 
-        self.assertEqual(self.new_user.organization, response.context['user_organization'])
+        self.assertEqual(self.user.organization, response.context['user_organization'])
 
     def test_organization_rename_redirects_and_modifies_current_slug_POST(self):
-        url = reverse('organization_register')
-        self.client.post(url, self.data)
-        self.new_user.refresh_from_db()  # necessary because of "request.user" modifications
+        self.register_organization()
 
         url2 = reverse('organization_rename')
         response = self.client.post(url2, {'name': 'Přejmenovaná organizace'})
@@ -160,21 +211,26 @@ class OrganizationTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(new_organization.slug, slugify(new_organization.name))
 
+    def test_organization_rename_cannot_be_accessed_by_teacher_GET(self):
+        self.register_organization()
+        self.user.role = User.Roles.TEACHER
+        self.user.save()
+
+        response = self.client.get(reverse('organization_rename'))
+
+        self.assertInHTML('Přístup odepřen', response.content.decode())
+
     # deleting
     def test_organization_delete_uses_users_organization_GET(self):
-        url = reverse('organization_register')
-        self.client.post(url, self.data)
-        self.new_user.refresh_from_db()  # necessary because of "request.user" modifications
+        self.register_organization()
 
         url2 = reverse('organization_delete')
         response = self.client.get(url2)
 
-        self.assertEqual(self.new_user.organization, response.context['user_organization'])
+        self.assertEqual(self.user.organization, response.context['user_organization'])
 
     def test_organization_delete_removes_organization_POST(self):
-        url = reverse('organization_register')
-        self.client.post(url, self.data)
-        self.new_user.refresh_from_db()  # necessary because of "request.user" modifications
+        self.register_organization()
 
         url2 = reverse('organization_delete')
         self.client.post(url2)
@@ -182,14 +238,197 @@ class OrganizationTests(TestCase):
         self.assertEqual(Organization.objects.count(), 0)
 
     def test_organization_delete_modifies_users_role_POST(self):
-        url = reverse('organization_register')
-        self.client.post(url, self.data)
+        self.register_organization()
 
         url2 = reverse('organization_delete')
         self.client.post(url2)
-        self.new_user.refresh_from_db()  # necessary because of "request.user" modifications
+        self.user.refresh_from_db()  # necessary because of "request.user" modifications
 
-        self.assertEqual(self.new_user.role, User.Roles.STUDENT)
+        self.assertEqual(self.user.role, User.Roles.STUDENT)
+
+    def test_organization_delete_cannot_be_accessed_by_teacher_GET(self):
+        self.register_organization()
+        self.user.role = User.Roles.TEACHER
+        self.user.save()
+
+        response = self.client.get(reverse('organization_delete'))
+
+        self.assertInHTML('Přístup odepřen', response.content.decode())
+
+    # members
+    def test_organization_members_cannot_be_accessed_by_teacher_GET(self):
+        self.register_organization()
+        self.user.role = User.Roles.TEACHER
+        self.user.save()
+
+        response = self.client.get(reverse('organization_members'))
+
+        self.assertInHTML('Přístup odepřen', response.content.decode())
+
+    def test_organization_members_lists_teachers_organization_GET(self):
+        organization = self.register_organization()
+        other_user = User.objects.create_user(email=OTHER_USERNAME, password=PASSWORD)
+        other_user.organization = organization
+        other_user.role = User.Roles.TEACHER
+        other_user.save()
+
+        response = self.client.get(reverse('organization_members'))
+
+        self.assertInHTML(other_user.email, response.content.decode())
+
+    def test_organization_remove_member_POST(self):
+        organization = self.register_organization()
+        other_user = User.objects.create_user(email=OTHER_USERNAME, password=PASSWORD)
+        other_user.organization = organization
+        other_user.role = User.Roles.TEACHER
+        other_user.save()
+
+        self.client.post(reverse('organization_remove_member', args=(other_user.pk,)))
+        other_user.refresh_from_db()
+
+        self.assertIsNone(other_user.organization)
+        self.assertEqual(other_user.role, User.Roles.STUDENT)
+
+    def test_organization_remove_member_cannot_remove_users_that_do_not_belong_to_users_organization_POST(self):
+        self.register_organization()
+        other_user = User.objects.create_user(email=OTHER_USERNAME, password=PASSWORD)  # no org. assigned
+        other_user.save()
+
+        response = self.client.post(reverse('organization_remove_member', args=(other_user.pk,)))
+        other_user.refresh_from_db()
+
+        self.assertInHTML('Přístup odepřen', response.content.decode())
+
+    def test_organization_remove_member_current_user_cannot_remove_themselves_POST(self):
+        self.register_organization()
+
+        response = self.client.post(reverse('organization_remove_member', args=(self.user.pk,)))
+        self.user.refresh_from_db()
+
+        self.assertInHTML('Přístup odepřen', response.content.decode())
+
+    def test_organization_remove_member_cannot_be_accessed_by_teacher_GET(self):
+        organization = self.register_organization()
+        self.user.role = User.Roles.TEACHER
+        self.user.save()
+        other_user = User.objects.create_user(email=OTHER_USERNAME, password=PASSWORD)
+        other_user.organization = organization
+        other_user.role = User.Roles.TEACHER
+        other_user.save()
+
+        response = self.client.get(reverse('organization_remove_member', args=(other_user.pk,)))
+
+        self.assertInHTML('Přístup odepřen', response.content.decode())
+
+    # leaving
+    def test_organization_leave_unassigns_organization_and_changes_status_to_student_POST(self):
+        self.register_organization()
+        self.user.role = User.Roles.TEACHER
+        self.user.save()
+
+        self.client.post(reverse('organization_leave'))
+        self.user.refresh_from_db()
+
+        self.assertEqual(self.user.role, User.Roles.STUDENT)
+        self.assertEqual(self.user.organization, None)
+
+    def test_organization_leave_can_be_accessed_only_by_teacher_GET(self):
+        self.register_organization()
+        response = self.client.get(reverse('organization_leave'))  # as coordinator
+
+        self.assertInHTML('Přístup odepřen', response.content.decode())
+
+    # inviting
+    def test_organization_invite_teacher_sends_invitation_POST(self):
+        self.register_organization()
+        input_data, _ = self.invite_teacher()
+
+        self.assertIn(f"Vaše e-mailová adresa ({input_data['invited_email']}) byla použita v pozvánce",
+                      mail.outbox[-1].body)
+
+    def test_organization_invite_teacher_cannot_be_accessed_by_teacher_GET(self):
+        self.register_organization()
+        self.user.role = User.Roles.TEACHER
+        self.user.save()
+
+        response = self.client.get(reverse('organization_invite_teacher'))
+
+        self.assertInHTML('Přístup odepřen', response.content.decode())
+
+    # invitations app
+    def test_AcceptInviteTeacher_logs_out_user_if_is_not_the_invited_one_GET(self):
+        self.register_organization()
+        _, invite_url = self.invite_teacher()
+
+        response = self.client.get(invite_url)
+        logout_message = str(list(response.context['messages'])[-1])
+
+        self.assertEqual(logout_message, 'Právě jste byl odhlášen.')
+
+    def test_AcceptInviteTeacher_renders_correct_variables_in_HTML_GET(self):
+        self.register_organization()
+        input_data, invite_url = self.invite_teacher()
+
+        response = self.client.get(invite_url)
+
+        self.assertInHTML(f'Přejete si přijmout pozvánku do organizace <b>{self.data["name"]}</b> '
+                          f'pro <b>{input_data["invited_email"]}</b>?', response.content.decode())
+
+    def test_AcceptInviteTeacher_redirects_nonexisting_user_to_signup_page_POST(self):
+        self.register_organization()
+        _, invite_url = self.invite_teacher()
+
+        response = self.client.post(invite_url)
+
+        self.assertEqual(response.url, reverse('account_signup'))
+
+    # TODO: test whether non-existing user accepted the invitation after signing up
+    # def test_AcceptInviteTeacher_accepts_invitation_of_after_signing_up_POST(self):
+
+    def test_AcceptInviteTeacher_accepts_invitation_of_logged_in_user_POST(self):
+        self.register_organization()
+        _, invite_url = self.invite_logged_in_teacher()
+
+        self.client.post(invite_url)
+        invitation = Invitation.objects.last()
+
+        self.assertTrue(invitation.is_accepted)
+
+    def test_AcceptInviteTeacher_redirects_logged_in_user_to_dashboard_page_POST(self):
+        self.register_organization()
+        _, invite_url = self.invite_logged_in_teacher()
+
+        response = self.client.post(invite_url)
+
+        self.assertEqual(response.url, reverse('dashboard'))
+
+    def test_AcceptInviteTeacher_redirects_existing_logged_out_user_to_invited_account_login_page_POST(self):
+        self.register_organization()
+        _, invite_url = self.invite_logged_in_teacher()
+
+        self.client.logout()
+        response = self.client.post(invite_url)
+
+        self.assertEqual(response.url, reverse('invited_account_login'))
+
+    def test_AcceptInviteTeacher_existing_logged_out_user_accepts_invitation_POST(self):
+        self.register_organization()
+        input_data, invite_url = self.invite_logged_in_teacher()
+
+        self.client.logout()
+        self.client.post(invite_url)
+        # login-page, invitation accepted...
+        invitation = Invitation.objects.get(invited_email=input_data['invited_email'])
+
+        self.assertTrue(invitation.is_accepted)
+
+    def test_AcceptInviteTeacher_existing_logged_out_user_accepts_only_after_sending_post_request_POST(self):
+        self.register_organization()
+        input_data, invite_url = self.invite_logged_in_teacher()
+
+        invitation = Invitation.objects.get(invited_email=input_data['invited_email'])
+
+        self.assertFalse(invitation.is_accepted)
 
 
 @override_settings(MEDIA_ROOT=(TEST_DIR / 'media'))
@@ -197,8 +436,8 @@ class CourseTests(TestCase):
 
     def setUp(self):
         call_command('flush', '--no-input')  # else it does clear db between tests
-        self.new_user = User.objects.create_user(email='lofy@seznam.cz', password='heslo123')
-        self.client.login(email='lofy@seznam.cz', password='heslo123')
+        self.user = User.objects.create_user(email=USERNAME, password=PASSWORD)
+        self.client.login(email=USERNAME, password=PASSWORD)
         # do what organization_register view does here:
         organization_name = 'Moje Organizace'
         self.new_organization = Organization.objects.create(name=organization_name,
@@ -208,9 +447,9 @@ class CourseTests(TestCase):
                                                             address='Moje adresa 987',
                                                             town='Praha',
                                                             zip_code=77722)
-        self.new_user.organization = self.new_organization
-        self.new_user.role = User.Roles.COORDINATOR
-        self.new_user.save()
+        self.user.organization = self.new_organization
+        self.user.role = User.Roles.COORDINATOR
+        self.user.save()
 
         self.age_category = AgeCategory.objects.create(name='Větší školáci',
                                                        age_from=11,
@@ -520,8 +759,8 @@ class CourseTests(TestCase):
     def test_course_detail_cannot_access_someone_elses_draft(self):
         course, response = self.create_draft_course()
         self.client.logout()
-        self.other_user = User.objects.create_user(email='other@gmail.com', password='heslo123')
-        self.client.login(email='other@gmail.com', password='heslo123')
+        self.other_user = User.objects.create_user(email=OTHER_USERNAME, password=PASSWORD)
+        self.client.login(email=OTHER_USERNAME, password=PASSWORD)
         url = reverse('course_detail', args=(course.slug,))  # switches to DRAFT?
 
         response = self.client.get(url)

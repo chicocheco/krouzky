@@ -29,6 +29,7 @@ INSTALLED_APPS = [
 
     'users.apps.UsersConfig',
     'catalog.apps.CatalogConfig',
+    'invitations.apps.InvitationsConfig',
 
     'crispy_forms',
     'crispy_bootstrap5',
@@ -37,7 +38,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'django_filters',
     'tinymce',
-    'taggit'
+    'taggit',
 ]
 
 MIDDLEWARE = [

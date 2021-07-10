@@ -68,17 +68,19 @@
                         <div class="row pt-3 pt-md-0 justify-content-between align-items-end">
                             {# update and delete buttons #}
                             {% if course.organization == request.user.organization %}
-                                <div class="col-12 col-md-auto order-last order-md-first mt-2 mt-md-0">
-                                    {% if course.is_oneoff %}
-                                        <a href="{% url 'oneoff_course_update' course.slug %}">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                    {% else %}
-                                        <a href="{% url 'course_update' course.slug %}"><i class="fas fa-edit"></i></a>
-                                    {% endif %}
-                                    <a class="ms-2" href="{% url 'course_delete' course.slug %}"><i
-                                            class="fas fa-trash"></i></a>
-                                </div>
+                                {% if request.user.role == 'TEACHER' and request.user == course.teacher or request.user.role == 'COORDINATOR' %}
+                                    <div class="col-12 col-md-auto order-last order-md-first mt-2 mt-md-0">
+                                        {% if course.is_oneoff %}
+                                            <a href="{% url 'oneoff_course_update' course.slug %}">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        {% else %}
+                                            <a href="{% url 'course_update' course.slug %}"><i class="fas fa-edit"></i></a>
+                                        {% endif %}
+                                        <a class="ms-2" href="{% url 'course_delete' course.slug %}"><i
+                                                class="fas fa-trash"></i></a>
+                                    </div>
+                                {% endif %}
                             {% endif %}
                             <div class="col-auto text-muted">
                                 {% if course.is_oneoff %}

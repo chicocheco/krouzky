@@ -12,6 +12,12 @@ urlpatterns = [
     path('organizace/<slug:slug>/aktivity/', catalog_views.course_list_by_organization,
          name='course_list_by_organization'),
 
+    path('organizace/pozvat', catalog_views.organization_invite_teacher, name='organization_invite_teacher'),
+    path('organizace/opustit', catalog_views.organization_leave, name='organization_leave'),
+    path('organizace/clenove', catalog_views.organization_members, name='organization_members'),
+    path('organizace/clen/<int:pk>/odebrat', catalog_views.organization_remove_member,
+         name='organization_remove_member'),
+
     path('aktivity/', catalog_views.course_list, name='course_list'),
     path('aktivita/registrovat', catalog_views.course_create, name='course_create'),
     path('aktivita/jednodenni/registrovat', catalog_views.oneoff_course_create, name='oneoff_course_create'),

@@ -1,0 +1,61 @@
+{% extends '_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Členové organizace{% endblock %}
+
+{% block content %}
+    <h2>Členové organizace</h2>
+    {% if not members %}
+        <hr>
+        <p>Tato stránka slouží pro přehled členů vaší organizace.
+            Přidat další členy můžete pomocí e-mailové pozvánky zaslané na adresu dotyčného
+            <a href="{% url 'organization_invite_teacher' %}">tímto formulářem</a>.</p>
+        <p>
+            Takto přiřazený uživatel má právo pod hlavičkou vaší organizace vytvářet a upravovat pouze své
+            aktivity (v detailu se objeví jako vedoucí takové aktivity).
+            Může také spravovat aktivity, které mu přidělíte vy při modifikaci stávající aktivity
+            či registraci nové.</p>
+    {% else %}
+        <p>
+        <table class="table align-middle">
+            <thead>
+            <tr>
+                <th scope="col">Jméno</th>
+                <th scope="col">E-mail</th>
+                <th scope="col">Telefon</th>
+                <th scope="col" class="text-end"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for member in members %}
+                <tr>
+                    <td>{{ member.name }}</td>
+                    <td><a href="mailto:{{ member.email }}">{{ member.email }}</a></td>
+                    <td>{% with phone_number=member.phone %}
+                        {% if phone_number %}
+                            <div class="col-12">
+                                <a href="tel:+420{{ phone_number }}">
+                                    +420
+                                    {% for i in phone_number %}{{ i }}
+                                        {% if forloop.counter == 3 or forloop.counter == 6 %}
+                                        {% endif %}{% endfor %}
+                                </a>
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                    </td>
+                    <td class="text-end">
+                        <a class="btn btn-danger" href="{% url 'organization_remove_member' member.pk %}">
+                            <i class="fas fa-trash me-1"></i> Odebrat
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </p>
+    {% endif %}
+
+{% endblock %}
+
+{% block sidebar %}{% include 'dashboard_sidebar.html' %}{% endblock %}

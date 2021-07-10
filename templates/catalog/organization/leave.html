@@ -1,0 +1,16 @@
+{% extends '_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Opustit organizaci{% endblock %}
+
+{% block content %}
+    <h2>Opustit organizaci</h2>
+    <hr>
+    <p>Jste si jisti, že chcete opustit organizaci <b>{{ user_organization.name }}</b>?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button class="btn btn-danger" type="submit">Opustit</button>
+    </form>
+{% endblock %}
+
+{% block sidebar %}{% include 'dashboard_sidebar.html' %}{% endblock %}

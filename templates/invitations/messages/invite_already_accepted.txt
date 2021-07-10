@@ -1,0 +1,1 @@
+Pozvánka pro uživatele s e-mailovou adresou {{ invited_email }} byla již použita!

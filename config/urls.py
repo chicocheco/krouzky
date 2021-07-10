@@ -4,10 +4,10 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('spravce/', admin.site.urls),
-    path('ucet/', include('users.urls')),  # customized czech urls of allauth
-    # path('ucet/', include('allauth.urls')),  # fallback
     path('', include('catalog.urls')),
+    path('ucet/', include('users.urls')),  # czech urls of allauth
+    path('pozvanky/', include('invitations.urls')),
+    path('spravce/', admin.site.urls),
     path('tinymce/', include('tinymce.urls')),
 ]
 

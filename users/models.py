@@ -1,14 +1,14 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 from django.utils.text import slugify
+from django.utils.translation import gettext_lazy as _
 
 from catalog.models import Organization
 
 
 def photo_directory_path(instance, filename):
     email_slug = slugify(instance.email)
-    return f'users/{email_slug}.{filename.split(".")[-1]}'  # pathlib?
+    return f'users/{email_slug}.{filename.split(".")[-1]}'  # TODO: Use pathlib
 
 
 class UserManager(BaseUserManager):
@@ -119,4 +119,8 @@ class Coordinator(User):
     def save(self, *args, **kwargs):
         if not self.pk:
             self.role = User.Roles.COORDINATOR
+            # should not exist without assigned to organization
         return super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f'{self.name or self.email} [{self.organization}]'

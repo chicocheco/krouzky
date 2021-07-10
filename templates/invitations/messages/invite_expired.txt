@@ -1,0 +1,1 @@
+Platnost pozvánky pro uživatele s e-mailovou adresou {{ invited_email }} již vypršela.

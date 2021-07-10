@@ -1,14 +1,22 @@
-from datetime import timedelta, datetime
+from datetime import datetime
+from datetime import timedelta
 
 from django.core import mail
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.shortcuts import reverse
 from django.test import TestCase
+from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.timezone import make_aware, get_default_timezone
 
 from catalog.models import Organization, Course, AgeCategory
+from invitations.models import Invitation
 from users.models import User
+
+USERNAME = 'uzivatel@seznam.cz'
+INVITED_USER = 'pozvany@seznam.cz'
+OTHER_INVITED_USER = 'dalsi_pozvany@seznam.cz'
+PASSWORD = 'heslo123'
 
 
 class OrganizationModelTests(TestCase):
@@ -92,3 +100,24 @@ class CourseModelTests(TestCase):
         self.course.save()
 
         self.assertIn(f'"{self.course.name}" byla schválena a publikována', mail.outbox[-1].body)
+
+
+class InvitationModelTests(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(email=USERNAME, password=PASSWORD)
+        self.invitation = Invitation.objects.create(invited_email=INVITED_USER,
+                                                    inviter=self.user,
+                                                    date_sent=timezone.now())
+
+    def test_str_dunder(self):
+        self.assertEqual(str(self.invitation), f'Invite: {self.invitation.invited_email}')
+
+    def test_is_key_expired_true(self):
+        self.invitation.date_sent = timezone.now() - timedelta(days=3)
+        self.invitation.save()
+
+        self.assertTrue(self.invitation.is_expired())
+
+    def test_is_expired_expired_false(self):
+        self.assertFalse(self.invitation.is_expired())

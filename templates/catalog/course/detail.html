@@ -128,19 +128,21 @@
                 <div class="col-12 col-md">
                     <span class="badge bg-{% if course.status == 'PUBLISHED' %}success{% elif course.status == 'DRAFT' %}info{% else %}warning{% endif %} align-self-center">{{ course.get_status_display }}</span>
                 </div>
-                <div class="col-6 col-md-auto">
-                    {% if course.is_oneoff %}
-                        <a class="btn btn-primary" href="{% url 'oneoff_course_update' course.slug %}"><i
-                                class="fas fa-edit me-1"></i> Upravit</a>
-                    {% else %}
-                        <a class="btn btn-primary" href="{% url 'course_update' course.slug %}"><i
-                                class="fas fa-edit me-1"></i> Upravit</a>
-                    {% endif %}
-                </div>
-                <div class="col-6 col-md-auto text-end ps-0">
-                    <a class="btn btn-danger" href="{% url 'course_delete' course.slug %}"><i
-                            class="fas fa-trash me-1"></i> Odstranit</a>
-                </div>
+                {% if request.user.role == 'TEACHER' and request.user == course.teacher or request.user.role == 'COORDINATOR' %}
+                    <div class="col-6 col-md-auto">
+                        {% if course.is_oneoff %}
+                            <a class="btn btn-primary" href="{% url 'oneoff_course_update' course.slug %}"><i
+                                    class="fas fa-edit me-1"></i> Upravit</a>
+                        {% else %}
+                            <a class="btn btn-primary" href="{% url 'course_update' course.slug %}"><i
+                                    class="fas fa-edit me-1"></i> Upravit</a>
+                        {% endif %}
+                    </div>
+                    <div class="col-6 col-md-auto text-end ps-0">
+                        <a class="btn btn-danger" href="{% url 'course_delete' course.slug %}"><i
+                                class="fas fa-trash me-1"></i> Odstranit</a>
+                    </div>
+                {% endif %}
             </div>
         {% endif %}
     </div>

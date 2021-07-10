@@ -19,9 +19,15 @@
             </h5>
             <hr>
             {% if user_organization %}
-                <p><a href="{% url 'organization_rename' %}">Úprava názvu</a></p>
-                <p><a href="{% url 'organization_update' %}">Úprava údajů</a></p>
-                <p><a href="{% url 'organization_delete' %}">Odstranit organizaci</a></p>
+                {% if request.user.role == 'COORDINATOR' %}
+                    <p><a href="{% url 'organization_rename' %}">Úprava názvu</a></p>
+                    <p><a href="{% url 'organization_update' %}">Úprava údajů</a></p>
+                    <p><a href="{% url 'organization_delete' %}">Odstranit organizaci</a></p>
+                    <p><a href="{% url 'organization_members' %}">Členové organizace</a></p>
+                    <p><a href="{% url 'organization_invite_teacher' %}">Pozvat člena</a></p>
+                {% elif request.user.role == 'TEACHER' %}
+                    <p><a href="{% url 'organization_leave' %}">Opustit organizaci</a></p>
+                {% endif %}
             {% else %}
                 <p><a class="btn btn-primary" href="{% url 'organization_register' %}">Zaregistrovat organizaci</a></p>
             {% endif %}

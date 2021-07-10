@@ -12,17 +12,36 @@
             {{ user.email }}
         {% endif %}</b></p>
     {% if user_organization %}
-        <p>Spravujete aktivity organizace <b>{{ user_organization.name }}</b></p>
-        <ul>
-            <li>Pro registraci pravidelně konané aktivity (kurzu či kroužku), <a href="{% url 'course_create' %}">klikněte
-                prosím zde</a>
-            </li>
-            <li>Pro registraci jednodenní akce, <a href="{% url 'oneoff_course_create' %}">klikněte
-                prosím zde</a>
-            </li>
-            <li>Pro přehlednou správu všech aktivit organizovaných vaší organizací přejděte do <a
-                    href="{% url 'course_list_by_organization' user_organization.slug %}">katalogu organizace</a></li>
-        </ul>
+        {% if request.user.role == 'COORDINATOR' %}
+            <p>Spravujete aktivity organizace <b>{{ user_organization.name }}</b></p>
+            <ul>
+                <li>Pro přehlednou správu všech aktivit organizovaných vaší organizací přejděte do <a
+                        href="{% url 'course_list_by_organization' user_organization.slug %}">katalogu organizace</a>
+                </li>
+                <li>Pro registraci pravidelně konané aktivity (kurzu či kroužku), <a href="{% url 'course_create' %}">
+                    klikněte prosím zde</a>
+                </li>
+                <li>Pro registraci jednodenní akce, <a href="{% url 'oneoff_course_create' %}">klikněte
+                    prosím zde</a>
+                </li>
+                <li>Pro pozvání dalších členů organizace, <a href="{% url 'organization_invite_teacher' %}">klikněte
+                    prosím zde</a></li>
+                <li>Pro přehled členů organizace, <a href="{% url 'organization_members' %}">klikněte
+                    prosím zde</a></li>
+            </ul>
+        {% elif request.user.role == 'TEACHER' %}
+            <p>Jste členem organizace <b>{{ user_organization.name }}</b></p>
+            <ul>
+                <li>Pro přehlednou správu všech aktivit organizovaných vaší organizací přejděte do <a
+                        href="{% url 'course_list_by_organization' user_organization.slug %}">katalogu organizace</a>
+                </li>
+                <li>Pro registraci pravidelně konané aktivity (kurzu či kroužku), <a href="{% url 'course_create' %}">
+                    klikněte prosím zde</a>
+                </li>
+                <li>Pro registraci jednodenní akce, <a href="{% url 'oneoff_course_create' %}">klikněte
+                    prosím zde</a>
+            </ul>
+        {% endif %}
     {% else %}
         <p>Přejete-li si začít zdarma registrovat aktivity, <a href="{% url 'organization_register' %}">vyplňte prosím
             nejdříve formulář</a> s informacemi o vaší organizaci.</p>

@@ -1,0 +1,14 @@
+{% extends '_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Přijmout pozvánku{% endblock %}
+
+{% block content %}
+    <h2>Přijmout pozvánku</h2>
+    <hr>
+    <p>Přejete si přijmout pozvánku do organizace <b>{{ to_organization }}</b> pro <b>{{ invited_email }}</b>?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button class="btn btn-primary" type="submit">Přijmout</button>
+    </form>
+{% endblock %}

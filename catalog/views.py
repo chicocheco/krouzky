@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMessage, mail_managers
@@ -9,13 +10,16 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.text import slugify
 from django.utils.timezone import localtime, make_aware
 
-from users.models import User
+from invitations.forms import InviteTeacherForm
+from invitations.models import Invitation
 from .filters import CourseFilter
 from .forms import (UpdateOrganizationForm, RenameOrganizationForm, RegisterOrganizationForm, CourseForm,
                     OneoffCourseForm, ContactTeacherForm)
 from .models import Course, Organization
 from .utils import (is_approval_requested, post_process_image, check_teacher_field, paginate,
                     get_sponsored_courses_list, make_week_schedule)
+
+User = get_user_model()
 
 
 def home(request):
@@ -162,20 +166,107 @@ def organization_rename(request):
 
 @login_required
 def organization_delete(request):
-    """Remove the organization and change the user's role back to the default (student)."""
+    """
+    Delete user's organization and change the the role of all members, if any, back to the default (STUDENT).
+    This view is allowed only to users of a COORDINATOR role.
+    """
 
     if request.user.role != User.Roles.COORDINATOR:
         raise PermissionDenied
     user_organization = request.user.organization
     if request.method == 'POST':
-        request.user.role = User.Roles.STUDENT
-        request.user.save()
-        # add changing status of all teachers to 'student' as well
-
+        update_queries = []
+        for user in user_organization.users.all():
+            user.role = User.Roles.STUDENT
+            update_queries.append(user)
+        User.objects.bulk_update(update_queries, ['role'])
         user_organization.delete()
         messages.add_message(request, messages.INFO, 'Organizace byla odstraněna.')
         return redirect(dashboard)
     return render(request, 'catalog/organization/delete.html', {'user_organization': user_organization})
+
+
+@login_required
+def organization_invite_teacher(request):
+    """
+    Send an e-mail invitation to user's organization. Invitation expires in 3 days.
+    This view is allowed only to users of a COORDINATOR role.
+    """
+
+    if request.user.role != User.Roles.COORDINATOR:
+        raise PermissionDenied
+    user_organization = request.user.organization
+    if request.method == 'POST':
+        form = InviteTeacherForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            invite = Invitation.create(cd['invited_email'], inviter=request.user)
+            invite.send_invitation(request)
+            messages.add_message(request, messages.SUCCESS,
+                                 f"Pozvánka zaslána na e-mailovou adresu {cd['invited_email']}.")
+            return redirect(dashboard)
+    else:
+        form = InviteTeacherForm()
+    return render(request, 'catalog/organization/invite.html', {'form': form, 'user_organization': user_organization})
+
+
+@login_required
+def organization_leave(request):
+    """
+    Leave user's organization and change the user's role back to the default (STUDENT).
+    Only for users of a TEACHER role, because coordinators cannot leave their own organization - they delete it.
+    """
+
+    if request.user.role != User.Roles.TEACHER:
+        raise PermissionDenied
+    user_organization = request.user.organization
+    if request.method == 'POST':
+        request.user.role = User.Roles.STUDENT
+        request.user.organization = None
+        request.user.save()
+        messages.add_message(request, messages.INFO, 'Opustil/a jste organizaci.')
+        return redirect(dashboard)
+    return render(request, 'catalog/organization/leave.html', {'user_organization': user_organization})
+
+
+@login_required
+def organization_members(request):
+    """
+    List of invited members, where all of them are of a TEACHER role.
+    This view is allowed only to users of a COORDINATOR role.
+    """
+
+    if request.user.role != User.Roles.COORDINATOR:
+        raise PermissionDenied
+    user_organization = request.user.organization
+    members = user_organization.users.all().exclude(pk=request.user.pk)
+    return render(request, 'catalog/organization/members.html', {'user_organization': user_organization,
+                                                                 'members': members})
+
+
+@login_required
+def organization_remove_member(request, pk):
+    """
+    Unassign a member from user's organization and change their role back to STUDENT.
+
+    This is allowed only to a user of a COORDINATOR role. Also, the member to be removed must be a member of user's
+    organization and they cannot remove themselves.
+    """
+
+    if request.user.role != User.Roles.COORDINATOR:
+        raise PermissionDenied
+    user_organization = request.user.organization
+    member = get_object_or_404(User, pk=pk)  # TODO: switch to UUID for external use
+    if member.organization != user_organization or member == request.user:
+        raise PermissionDenied
+    if request.method == 'POST':
+        member.role = User.Roles.STUDENT
+        member.organization = None
+        member.save()
+        messages.add_message(request, messages.INFO, 'Člen byl odebrán z organizace.')
+        return redirect(dashboard)
+    return render(request, 'catalog/organization/remove_member.html', {'user_organization': user_organization,
+                                                                       'member': member})
 
 
 @login_required
@@ -244,9 +335,13 @@ def course_update(request, slug=None):
     """
     Update the regular course. If its name or description was changed, switch its status back to DRAFT and notify the
     managers about it.
+
+    User of a TEACHER role can modify only courses that were assigned to them.
     """
 
     course = get_object_or_404(Course, slug=slug)
+    if request.user.role == User.Roles.TEACHER and request.user != course.teacher:
+        raise PermissionDenied
     original_name, original_desc = course.name, course.description
     form = CourseForm(instance=course)
     check_teacher_field(form, request)
@@ -279,9 +374,13 @@ def oneoff_course_update(request, slug=None):
     In addition, decouple the datetime objects sharing the same date to be able to modify the hour only in the form.
     In order to avoid re-building these objects every time even when nothing was changed,
     compare the original hour values with the new ones.
+
+    User of a TEACHER role can modify only courses that were assigned to them.
     """
 
     course = get_object_or_404(Course, slug=slug)
+    if request.user.role == User.Roles.TEACHER and request.user != course.teacher:
+        raise PermissionDenied
     original_name, original_desc = course.name, course.description
     form = OneoffCourseForm(instance=course)
     original_time_from = localtime(course.date_from).strftime('%H:%M')
@@ -331,9 +430,11 @@ def course_detail(request, slug=None):
 
 @login_required
 def course_delete(request, slug=None):
-    """Delete course"""
+    """Delete course. User of a TEACHER role can delete only courses that were assigned to them."""
 
     course = get_object_or_404(Course, slug=slug)
+    if request.user.role == User.Roles.TEACHER and request.user != course.teacher:
+        raise PermissionDenied
     if request.method == 'POST':
         course.delete()
         messages.add_message(request, messages.INFO, 'Aktivita byla odstraněna.')

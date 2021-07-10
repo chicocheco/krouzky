@@ -5,8 +5,10 @@ from django.urls import resolve
 from catalog.views import (home, dashboard, search, course_detail, course_list, about_us, cooperation, conditions, gdpr, \
                            course_list_by_organization, course_create, oneoff_course_create, course_update,
                            oneoff_course_update, course_delete, organization_register, organization_update,
-                           organization_rename, organization_delete)
+                           organization_rename, organization_delete, organization_invite_teacher, organization_leave,
+                           organization_members, organization_remove_member)
 
+from invitations.views import AcceptInviteTeacher
 
 class TestURLs(SimpleTestCase):
 
@@ -87,3 +89,23 @@ class TestURLs(SimpleTestCase):
     def test_organization_delete_url_resolves(self):
         url = reverse('organization_delete')
         self.assertEqual(resolve(url).func, organization_delete)
+
+    def test_organization_invite_teacher_url_resolves(self):
+        url = reverse('organization_invite_teacher')
+        self.assertEqual(resolve(url).func, organization_invite_teacher)
+
+    def test_organization_leave_url_resolves(self):
+        url = reverse('organization_leave')
+        self.assertEqual(resolve(url).func, organization_leave)
+
+    def test_organization_members_url_resolves(self):
+        url = reverse('organization_members')
+        self.assertEqual(resolve(url).func, organization_members)
+
+    def test_organization_remove_member_url_resolves(self):
+        url = reverse('organization_remove_member', args=(1,))
+        self.assertEqual(resolve(url).func, organization_remove_member)
+
+    def test_AcceptInviteTeacher_url_resolves(self):
+        url = reverse('accept_invite_teacher', args=('random_key',))
+        self.assertEqual(resolve(url).func.view_class, AcceptInviteTeacher)

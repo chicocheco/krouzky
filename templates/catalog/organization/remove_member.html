@@ -1,0 +1,15 @@
+{% extends '_base.html' %}
+
+{% block title %}Odebrat člena{% endblock %}
+
+{% block content %}
+    <h2>Odebrat člena</h2>
+    <hr>
+    <p>Jste si jisti, že chcete odebrat člena <b>{{ member }}</b> z organizace {{ user_organization.name }}?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button class="btn btn-danger" type="submit">Odebrat</button>
+    </form>
+{% endblock %}
+
+{% block sidebar %}{% include 'dashboard_sidebar.html' with user_organization=user_organization %}{% endblock %}
