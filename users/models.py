@@ -8,7 +8,7 @@ from catalog.models import Organization
 
 def photo_directory_path(instance, filename):
     email_slug = slugify(instance.email)
-    return f'users/{email_slug}.{filename.split(".")[-1]}'  # TODO: Use pathlib
+    return f'users/{email_slug}.{filename.split(".")[-1]}'
 
 
 class UserManager(BaseUserManager):

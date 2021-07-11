@@ -55,16 +55,16 @@ class Invitation(models.Model):
         current_site = kwargs.pop('site', Site.objects.get_current())
         invite_url = reverse('accept_invite_teacher', args=(self.key,))
         invite_url = request.build_absolute_uri(invite_url)
-        ctx = kwargs
-        ctx.update({'invite_url': invite_url,
-                    'site_name': current_site.name,
-                    'invited_email': self.invited_email,
-                    'inviter': self.inviter,
-                    'organization': self.inviter.organization.name,
-                    'key': self.key,
-                    })
+        context = kwargs
+        context.update({'invite_url': invite_url,
+                        'site_name': current_site.name,
+                        'invited_email': self.invited_email,
+                        'inviter': self.inviter,
+                        'organization': self.inviter.organization.name,
+                        'key': self.key,
+                        })
         email_template = 'invitations/email/email_invite'
-        get_adapter().send_mail(email_template, self.invited_email, ctx)
+        get_adapter().send_mail(email_template, self.invited_email, context)
         self.date_sent = timezone.now()
         self.save()
 
