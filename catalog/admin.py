@@ -9,8 +9,10 @@ from .models import Organization, Course, AgeCategory
 admin.site.register(Organization)
 admin.site.register(AgeCategory)
 
-
 # admin.site.register(WeekSchedule)
+admin.site.site_header = 'Správa webu vyberaktivitu.online'
+admin.site.site_title = 'vyberaktivitu.online'
+admin.site.index_title = 'Správa webu'
 
 
 @admin.register(Course)
