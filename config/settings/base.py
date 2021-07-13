@@ -164,6 +164,7 @@ MESSAGE_TAGS = {
 
 DEFAULT_FROM_EMAIL = 'info@vyberaktivitu.online'  # for allauth
 
+EMAIL_SUBJECT_PREFIX = '[VyberAktivitu] '
 SERVER_EMAIL = 'info@vyberaktivitu.online'  # for mail_admins and mail_managers
 ADMINS = [('Standa', 'stanislav.matas@gmail.com'), ]  # if DEBUG=False, sends errors
 MANAGERS = [  # for pending approvals
