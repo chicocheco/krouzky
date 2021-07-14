@@ -1,0 +1,6 @@
+{% extends "account/email/base_message.txt" %}
+{% load account %}
+{% load i18n %}
+
+{% block content %}{% autoescape off %}Vaše aktivita "{{ course_name }}" byla úspěšně zaregistrována a čeká na schválení administrátory.
+V momentě kdy dojde k jejímu schválení, bude aktivita publikována online v našem katalogu, o čemž budete informováni emailem.{% endautoescape %}{% endblock %}

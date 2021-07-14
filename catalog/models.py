@@ -1,6 +1,7 @@
+from allauth.account.adapter import get_adapter
 from autoslug import AutoSlugField
 from django.conf import settings
-from django.core.mail import EmailMessage
+from django.contrib.sites.models import Site
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
@@ -140,17 +141,15 @@ class Course(models.Model):
 
     def save(self, *args, **kwargs):
         if self._original_status == self.Status.DRAFT and self.status == self.Status.PUBLISHED:
-            self.send_user_notification_approved()
+            self.send_notification_course_approved()
         super().save(*args, **kwargs)
         self._original_status = self.status
 
-    def send_user_notification_approved(self):
-        subject = f'Vaše aktivita "{self.name}" byla schválena!'
-        body = f'Zdravíme z vyberaktivitu.online!\n\n' \
-               f'Vaše aktivita "{self.name}" byla schválena a publikována v našem katalogu.\n\n' \
-               f'Děkujeme, že používáte vyhledávač vyberaktivitu.online'
-        email = EmailMessage(subject, body, settings.DEFAULT_FROM_EMAIL, [self.teacher.email, ])
-        email.send()
+    def send_notification_course_approved(self):
+        current_site = Site.objects.get_current()
+        course_name = self.name
+        get_adapter().send_mail('catalog/course/email/approved', self.teacher.email, {'course_name': course_name,
+                                                                                      'current_site': current_site})
 
     def get_absolute_url(self):
         return reverse('course_detail', args=(self.slug,))

@@ -1,0 +1,5 @@
+{% extends "account/email/base_message.txt" %}
+{% load account %}
+{% load i18n %}
+
+{% block content %}{% autoescape off %}Vaše aktivita "{{ course_name }}" byla schválena a publikována v našem katalogu.{% endautoescape %}{% endblock %}
