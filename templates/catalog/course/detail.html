@@ -17,7 +17,7 @@
             {% with url=course.url %}
                 {% if url %}
                     <p><b>URL odkaz:</b><br>
-                        <a href="{{ url }}">{{ url }}</a>
+                        <a href="{{ url }}" class="text-break">{{ url|truncatechars:30 }}</a>
                     </p>
                 {% endif %}
             {% endwith %}
@@ -159,7 +159,8 @@
                 </h5>
                 <hr>
                 <p>{{ course.organization.name }}<br>
-                    <a href="{{ course.organization.url }}" class="text-break">{{ course.organization.url }}</a></p>
+                    <a href="{{ course.organization.url }}" class="text-break">
+                        {{ course.organization.url|truncatechars:33 }}</a></p>
             </div>
         </div>
         {# teacher section #}

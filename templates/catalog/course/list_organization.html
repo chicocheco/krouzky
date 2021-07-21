@@ -5,21 +5,21 @@
 {% block content %}
     <h1>{{ organization.name }}</h1>
     <hr>
-        {% if counter %}
-            <p>Tato organizace spravuje <b>{{ counter }}</b> aktivit.</p>
-        {% else %}
-            <p>Tato organizace nemá v tuto chvíli žádnou publikovanou aktivitu.</p>
-            {% if is_organization_of_user %}
-                <ul>
-                    <li>Pro registraci pravidelně konané aktivity (kurzu či kroužku),
-                        <a href="{% url 'course_create' %}">klikněte prosím zde</a>
-                    </li>
-                    <li>Pro registraci jednodenní akce,
-                        <a href="{% url 'oneoff_course_create' %}">klikněte prosím zde</a>
-                    </li>
-                </ul>
-            {% endif %}
+    {% if counter %}
+        <p>Tato organizace spravuje <b>{{ counter }}</b> aktivit.</p>
+    {% else %}
+        <p>Tato organizace nemá v tuto chvíli žádnou publikovanou aktivitu.</p>
+        {% if is_organization_of_user %}
+            <ul>
+                <li>Pro registraci pravidelně konané aktivity (kurzu či kroužku),
+                    <a href="{% url 'course_create' %}">klikněte prosím zde</a>
+                </li>
+                <li>Pro registraci jednodenní akce,
+                    <a href="{% url 'oneoff_course_create' %}">klikněte prosím zde</a>
+                </li>
+            </ul>
         {% endif %}
+    {% endif %}
 
     {% include 'list.html' with courses=courses %}
     {% include 'pagination.html' with page=courses custom_page_range=custom_page_range %}
@@ -51,11 +51,11 @@
                         <div class="col-6">
                             {{ organization.date_created|date }}
                         </div>
-                        <div class="col-6">
+                        <div class="col-12">
                             URL adresa
                         </div>
-                        <div class="col-6"><a href="{{ organization.url }}"
-                                                        class="text-break">{{ organization.url }}</a>
+                        <div class="col-12"><a href="{{ organization.url }}"
+                                               class="text-break">{{ organization.url|truncatechars:33 }}</a>
                         </div>
                     </div>
                 </div>
