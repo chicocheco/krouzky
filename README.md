@@ -3,7 +3,8 @@
 Guide for deploying
 ___________________
 ## 1. Hetzner VPS
-- copy public ssh key from `cat ~/.ssh/id_rsa.pub` and paste to the initial set-up page
+- create a new ssh key pair `cd ~/ssh/ && ssh-keygen -t rsa` and call it for example _vyberaktivitu_
+- copy public ssh key from `cat ~/.ssh/vyberaktivitu.pub` and paste to the initial set-up page
 - create an ssh shortcut `nano ~/.ssh/config` so you can `root@aktivity_server`
 ```
 Host aktivity_server
@@ -12,12 +13,13 @@ Host aktivity_server
    Port 22
    ServerAliveInterval 60
    ServerAliveCountMax 60
+   IdentityFile vyberaktivitu
 ```
 - change the permissions of the config file `chmod 644 ~/.ssh/config` to fix _Bad owner or permissions_ error
 - ssh in `ssh root@<ip-address>` and create another account `adduser <name>` 
    and add to sudo group `usermod -aG sudo <name>`
 - install dokku using root account (use first script from https://dokku.com/)
-- from the local machine allow ssh access (no pass needed) for the new account as well 
+- from the local machine allow ssh access (no pass needed) to the new sudo account as well 
  `ssh-copy-id <name>@aktivity_server`
 ## 2. domain
  - point A record to the IP of the server (`vyberaktivitu.online` and `*.vyberaktivitu.online`)
