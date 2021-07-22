@@ -158,9 +158,11 @@
                     Organizace
                 </h5>
                 <hr>
-                <p>{{ course.organization.name }}<br>
+                <p><a href="{% url 'course_list_by_organization' course.organization.slug %}">
+                    {{ course.organization.name }}</a><br>
                     <a href="{{ course.organization.url }}" class="text-break">
-                        {{ course.organization.url|truncatechars:33 }}</a></p>
+                        {{ course.organization.url|strip_protocol|truncatechars:33 }}</a>
+                </p>
             </div>
         </div>
         {# teacher section #}
