@@ -75,9 +75,10 @@ def course_list_by_organization(request, slug):
     """List of paginated courses belonging to a single organization."""
 
     organization = get_object_or_404(Organization, slug=slug)
-    qs = Course.objects.filter(organization=organization).select_related()
     is_organization_of_user = False
+    qs = Course.published.all().filter(organization=organization).select_related()
     if request.user.is_authenticated:
+        qs = Course.objects.filter(organization=organization).select_related()
         is_organization_of_user = (request.user.organization == organization)
     courses, custom_page_range, counter = paginate(request, qs)
     return render(request, 'catalog/course/list_organization.html', {'courses': courses,
