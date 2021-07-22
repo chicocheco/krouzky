@@ -7,7 +7,7 @@
 
 {% block content %}
     <div class="row justify-content-center">
-        <div class="col-12">
+        <div class="col-12 text-break">
             <h1>{{ course.name|capfirst }}
                 {% if course.status == 'FINISHED' %} [{{ course.get_status_display }}]
                 {% elif course.status == 'DRAFT' %} [{{ course.get_status_display }}]
@@ -17,7 +17,7 @@
             {% with url=course.url %}
                 {% if url %}
                     <p><b>URL odkaz:</b><br>
-                        <a href="{{ url }}" class="text-break">{{ url|truncatechars:30 }}</a>
+                        <a href="{{ url }}">{{ url|truncatechars:50 }}</a>
                     </p>
                 {% endif %}
             {% endwith %}
