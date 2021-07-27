@@ -277,10 +277,8 @@ def course_create(request):
     if request.method == 'POST':
         form = CourseForm(data=request.POST, files=request.FILES)  # 'files' includes image upload
         if form.is_valid():
-            cd = form.cleaned_data
             course = form.save(commit=False)
             course.organization = request.user.organization
-            course.name = cd['name'].capitalize()
             course.save()
             form.save_m2m()  # save tags
             post_process_image(form.cleaned_data, course)
@@ -310,7 +308,6 @@ def oneoff_course_create(request):
             cd = form.cleaned_data
             course = form.save(commit=False)
             course.organization = request.user.organization
-            course.name = cd['name'].capitalize()
             course.date_from = make_aware(datetime.combine(cd.get('date_from'), cd.get('time_from')))
             course.date_to = make_aware(datetime.combine(cd.get('date_from'), cd.get('time_to')))
             course.is_oneoff = True

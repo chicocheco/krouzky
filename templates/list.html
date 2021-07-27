@@ -43,7 +43,7 @@
                 <div class="row flex-grow-1">
                     <div class="col-auto col-md-10">
                         <h5 class="mb-0">
-                            <a href="{{ course.get_absolute_url }}">{{ course.name|capfirst|truncatewords_html:5 }}</a>
+                            <a href="{{ course.get_absolute_url }}">{{ course.name|truncatewords_html:5 }}</a>
                         </h5>
                         <a href="{{ course.organization.get_absolute_url }}"
                            class="text-muted mt-2 mb-3 my-lg-0"><small>{{ course.organization.name }}</small></a>

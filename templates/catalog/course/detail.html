@@ -8,7 +8,7 @@
 {% block content %}
     <div class="row justify-content-center">
         <div class="col-12 text-break">
-            <h1>{{ course.name|capfirst }}
+            <h1>{{ course.name }}
                 {% if course.status == 'FINISHED' %} [{{ course.get_status_display }}]
                 {% elif course.status == 'DRAFT' %} [{{ course.get_status_display }}]
                 {% endif %}</h1>
