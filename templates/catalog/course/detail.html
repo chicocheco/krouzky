@@ -73,7 +73,7 @@
                 </div>
             </div>
         </div>
-        {% if not course.is_oneoff %}
+        {% if not course.is_oneoff and schedule %}
             <div class="row px-0">
                 <div class="col-12">
                     <p class="d-md-none"><b>Týdenní rozvrh:</b></p>
@@ -120,6 +120,8 @@
                             </tbody>
                         </table>
                     </div>
+                    <p class="text-small mb-0">Pozor: Rozvrh slouží pouze pro vaši přibližnou orientaci.
+                        Přesné časy vždy konzultujte s vedoucím, pokud již nejsou uvedeny v popisu aktivity.</p>
                 </div>
             </div>
         {% endif %}

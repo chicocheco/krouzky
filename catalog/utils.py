@@ -104,6 +104,8 @@ def get_sponsored_courses_list(qs):
 
 
 def make_week_schedule(course):
+    if not course.week_schedule.exists():
+        return None
     week_schedule = defaultdict(list)
     for j in range(7, 23):  # create empty schedule
         for i in range(7):
