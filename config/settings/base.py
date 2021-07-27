@@ -176,14 +176,18 @@ TINYMCE_DEFAULT_CONFIG = {
     "height": "320px",
     "width": "100%",
     "placeholder": "Zde se můžete rozepsat...",
-    "plugins": "autolink lists charmap preview visualblocks "
+    "plugins": "autolink link lists preview visualblocks "
                "fullscreen paste help spellchecker",
     "menubar": False,
     "paste_as_text": True,
-    "toolbar": "undo redo | bold italic underline | alignleft "
+    "toolbar": "undo redo | bold italic underline | link | alignleft "
                "aligncenter alignright alignjustify | numlist bullist checklist | "
-               "removeformat | charmap | "
+               "removeformat | "
                "fullscreen visualblocks preview",
     "custom_undo_redo_levels": 10,
     "entity_encoding": "raw",
+    "link_assume_external_targets": "http",
+    "link_title": False,
+    "target_list": False,
+    "default_link_target": "_blank",
 }
