@@ -11,9 +11,9 @@ from taggit.managers import TaggableManager
 
 
 class Organization(models.Model):
-    name = models.CharField(_('název'), max_length=30, unique=True, blank=False)
+    name = models.CharField(_('název'), max_length=50, unique=True, blank=False)
     url = models.URLField(_('URL'), blank=False, help_text='např. https://vyberaktivitu.online')
-    slug = models.SlugField(_('slug'), max_length=30)  # automated in views
+    slug = models.SlugField(_('slug'), max_length=50)  # automated in views
     company_id = models.CharField(_('IČ'), max_length=8, blank=False)
     vat_id = models.CharField(_('DIČ'), max_length=10, blank=True)
     address = models.CharField(_('adresa'), max_length=100, blank=False)
