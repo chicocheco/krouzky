@@ -338,7 +338,8 @@ def course_update(request, slug=None):
     """
 
     course = get_object_or_404(Course, slug=slug)
-    if request.user.role == User.Roles.TEACHER and request.user != course.teacher:
+    if request.user.role == User.Roles.TEACHER and request.user != course.teacher or \
+            request.user.organization != course.organization:
         raise PermissionDenied
     original_name, original_desc = course.name, course.description
     form = CourseForm(instance=course)
@@ -377,7 +378,8 @@ def oneoff_course_update(request, slug=None):
     """
 
     course = get_object_or_404(Course, slug=slug)
-    if request.user.role == User.Roles.TEACHER and request.user != course.teacher:
+    if request.user.role == User.Roles.TEACHER and request.user != course.teacher or \
+            request.user.organization != course.organization:
         raise PermissionDenied
     original_name, original_desc = course.name, course.description
     form = OneoffCourseForm(instance=course)
@@ -431,7 +433,8 @@ def course_delete(request, slug=None):
     """Delete course. User of a TEACHER role can delete only courses that were assigned to them."""
 
     course = get_object_or_404(Course, slug=slug)
-    if request.user.role == User.Roles.TEACHER and request.user != course.teacher:
+    if request.user.role == User.Roles.TEACHER and request.user != course.teacher or \
+            request.user.organization != course.organization:
         raise PermissionDenied
     if request.method == 'POST':
         course.delete()
