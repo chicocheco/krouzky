@@ -32,7 +32,7 @@ def get_slugs(value):
     return [slugify(t.strip()) for t in value.split(',') if t.strip()]
 
 
-def is_approval_requested(cd, course, original_desc, original_name, request):
+def is_approval_requested(course, original_desc, original_name, request):
     """
     If the user changed name or description of a course, it must be re-approved by administrators.
     Set status to DRAFT and send an email notification with a link to course in admin panel.
@@ -41,7 +41,6 @@ def is_approval_requested(cd, course, original_desc, original_name, request):
     approval_requested = False
     if (original_name != course.name or original_desc != course.description) \
             and course.status != Course.Status.DRAFT:
-        course.name = cd['name'].capitalize()
         course.status = Course.Status.DRAFT
         approval_requested = True
         course_url_admin = request.build_absolute_uri(course.get_absolute_url_admin())

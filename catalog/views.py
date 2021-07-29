@@ -347,9 +347,8 @@ def course_update(request, slug=None):
     if request.method == 'POST':
         form = CourseForm(data=request.POST, files=request.FILES, instance=course)
         if form.is_valid():
-            cd = form.cleaned_data
             course = form.save(commit=False)
-            approval_requested = is_approval_requested(cd, course, original_desc, original_name, request)
+            approval_requested = is_approval_requested(course, original_desc, original_name, request)
             course.save()
             form.save_m2m()
             post_process_image(form.cleaned_data, course)
