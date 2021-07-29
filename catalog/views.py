@@ -395,7 +395,7 @@ def oneoff_course_update(request, slug=None):
             if original_time_from != cd.get('time_from') or original_time_to != cd.get('time_to'):
                 course.date_from = make_aware(datetime.combine(cd.get('date_from'), cd.get('time_from')))
                 course.date_to = make_aware(datetime.combine(cd.get('date_from'), cd.get('time_to')))
-            approval_requested = is_approval_requested(cd, course, original_desc, original_name, request)
+            approval_requested = is_approval_requested(course, original_desc, original_name, request)
             course.save()
             form.save_m2m()
             post_process_image(cd, course)
