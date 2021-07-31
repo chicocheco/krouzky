@@ -104,7 +104,7 @@ class Course(models.Model):
     description = models.TextField(_('popis'), blank=True)
     url = models.URLField(_('URL'), max_length=500, blank=True, help_text='např. https://vyberaktivitu.online')
     category = models.CharField(_('Kategorie'), max_length=5, choices=Category.choices, default=Category.OTHER)
-    image = models.ImageField(_('obrázek'), upload_to=image_directory_path, help_text='minimální rozměr 500x500 px')
+    image = models.ImageField(_('obrázek'), upload_to=image_directory_path)
     price = models.PositiveIntegerField(_('cena za kurz'), null=False, blank=False)
     hours = models.PositiveIntegerField(_('počet hodin'), null=False, blank=False, validators=[MinValueValidator(1)])
     capacity = models.PositiveIntegerField(_('maximální kapacita'), null=True, blank=True)
