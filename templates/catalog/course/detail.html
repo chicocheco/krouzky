@@ -26,8 +26,8 @@
             <div class="col-12 col-md-6 mb-4">
                 <div class="position-relative">
                     <img src="{{ course.image.url }}" alt="{{ course.name }}"
-                         class="img-fluid w-100 rounded-3" style="filter: brightness(90%);">
-                    <div class="position-absolute" style="top: 1rem; left: 1rem;">
+                         class="img-fluid w-100 rounded-3" style="filter: brightness(90%);" id="course-image">
+                    <div class="position-absolute" id="category-icon" style="top: 1rem; left: 1rem;">
                         {% if course.category == 'OTHER' %}
                             <img style="height: 50px;" src="{% static 'img/jine.svg' %}"
                                  alt="Ostatní">
@@ -185,9 +185,7 @@
                                 {% if phone_number %}
                                     <div class="col-12">
                                         <a href="tel:+420{{ phone_number }}">
-                                            +420
-                                            {% for i in phone_number %}{{ i }}{% if forloop.counter == 3 or forloop.counter == 6 %}
-                                                {% endif %}{% endfor %}
+                                            +420 {% for i in phone_number %}{{ i }}{% if forloop.counter == 3 or forloop.counter == 6 %} {% endif %}{% endfor %}
                                         </a>
                                     </div>
                                 {% endif %}
@@ -215,4 +213,14 @@
             </form>
         </div>
     </div>
+    <script>
+        let courseImage = document.getElementById('course-image');
+        let categoryIcon = document.getElementById('category-icon');
+        courseImage.addEventListener('mouseover', function () {
+            categoryIcon.style.display = 'none';
+        });
+        courseImage.addEventListener('mouseout', function () {
+            categoryIcon.style.display = 'block';
+        });
+    </script>
 {% endblock %}
