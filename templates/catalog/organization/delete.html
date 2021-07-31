@@ -8,7 +8,7 @@
     <p>Jste si jisti, že se chcete odstranit organizaci <b>{{ user_organization.name }}</b>?</p>
     <form method="post">
         {% csrf_token %}
-        <button class="btn btn-danger" type="submit">Odstranit</button>
+        <button class="btn btn-outline-danger" type="submit"><i class="fas fa-trash me-1"></i> Odstranit</button>
     </form>
 {% endblock %}
 

@@ -30,14 +30,12 @@
             {% for member in members %}
                 <tr>
                     <td>{{ member.name }}</td>
-                    <td><a href="mailto:{{ member.email }}">{{ member.email }}</a></td>
+                    <td><a href="mailto:{{ member.email }}" class="text-break">{{ member.email }}</a></td>
                     <td>{% with phone_number=member.phone %}
                         {% if phone_number %}
                             <div class="col-12">
                                 <a href="tel:+420{{ phone_number }}">
-                                    +420
-                                    {% for i in phone_number %}{{ i }}
-                                        {% if forloop.counter == 3 or forloop.counter == 6 %}
+                                    {% for i in phone_number %}{{ i }}{% if forloop.counter == 3 or forloop.counter == 6 %}
                                         {% endif %}{% endfor %}
                                 </a>
                             </div>
@@ -45,9 +43,8 @@
                     {% endwith %}
                     </td>
                     <td class="text-end">
-                        <a class="btn btn-danger" href="{% url 'organization_remove_member' member.pk %}">
-                            <i class="fas fa-trash me-1"></i> Odebrat
-                        </a>
+                        <a href="{% url 'organization_remove_member' member.pk %}">
+                            <i class="fas fa-trash"></i></a>
                     </td>
                 </tr>
             {% endfor %}

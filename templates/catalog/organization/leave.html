@@ -9,7 +9,7 @@
     <p>Jste si jisti, že chcete opustit organizaci <b>{{ user_organization.name }}</b>?</p>
     <form method="post">
         {% csrf_token %}
-        <button class="btn btn-danger" type="submit">Opustit</button>
+        <button class="btn btn-outline-danger" type="submit">Opustit</button>
     </form>
 {% endblock %}
 
