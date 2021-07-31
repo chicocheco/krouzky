@@ -572,17 +572,6 @@ class CourseTests(TestCase):
 
         self.assertEqual(course.organization, self.new_organization)
 
-    # capitalize name
-    def test_course_create_capitalizes_name_POST(self):
-        course, response = self.create_draft_course()
-
-        self.assertEqual(course.name, self.data_regular['name'].capitalize())
-
-    def test_oneoff_course_create_capitalizes_name_POST(self):
-        course, response = self.create_draft_oneoff_course()
-
-        self.assertEqual(course.name, self.data_oneoff['name'].capitalize())
-
     # resize image
     def test_course_create_resizes_uploaded_image_POST(self):
         course, response = self.create_draft_course()
