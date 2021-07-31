@@ -14,7 +14,30 @@
     <p><b>Pozor: Z názvu bude odvozena URL adresa této aktivity. Název lze později kdykoliv upravit, nikoliv
         však URL adresa.</b></p>
     {% crispy form %}
-    <!-- MODAL TO CROP THE IMAGE -->
+
+    <!-- Modal - notification when using default dates -->
+    <div class="modal" id="modalDates" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nastavení dat</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Data buď nebyla změněna nebo jste nastavili datum začátku aktivity na zítra a datum konce na
+                        pozítří.<br>
+                        Souhlasíte se zachováním těchto dat?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zavřít</button>
+                    <button type="submit" class="btn btn-primary" id="modal-submit-button">Souhlasím
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal - crop image -->
     <div class="modal fade" id="modalCrop" data-bs-keyboard="false" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -40,7 +63,7 @@
                             <i class="fas fa-undo"></i>
                         </button>
                     </div>
-                    <button type="button" class="btn btn-danger js-cancel" data-bs-dismiss="modal">Zrušit
+                    <button type="button" class="btn btn-outline-danger js-cancel" data-bs-dismiss="modal">Zrušit
                     </button>
                     <button type="button" class="btn btn-primary js-crop" data-bs-dismiss="modal">Ořezat
                     </button>
@@ -117,9 +140,12 @@
     </script>
     <script src="{% static 'js/litepicker.js' %}"></script>
     <script>
-        let today = new Date();
-        let tomorrow = new Date().setDate(today.getDate() + 1)
-        let day_after = new Date().setDate(today.getDate() + 2)
+        let todayDate = new Date();
+        let options = {month: '2-digit', day: '2-digit', year: 'numeric'};
+        let tomorrowDate = new Date(new Date().setDate(todayDate.getDate() + 1)).toLocaleDateString('cs-cs', options).replace(/\s/g, '')
+        let dayAfterDate = new Date(new Date().setDate(todayDate.getDate() + 2)).toLocaleDateString('cs-cs', options).replace(/\s/g, '')
+        let dateFromElement = document.getElementById('id_date_from');
+        let dateToElement = document.getElementById('id_date_to');
         new Litepicker({
             lang: 'cs',
             singleMode: false,
@@ -129,10 +155,24 @@
             },
             format: 'DD.MM.YYYY',
             minDays: 2,
-            startDate: tomorrow,
-            endDate: day_after,
-            element: document.getElementById('id_date_from'),
-            elementEnd: document.getElementById('id_date_to'),
+            startDate: tomorrowDate,
+            endDate: dayAfterDate,
+            element: dateFromElement,
+            elementEnd: dateToElement,
+        });
+        /* check default value of date fields */
+        let courseForm = document.getElementById('course-form');
+        let datesModalSubmitButton = document.getElementById('modal-submit-button');
+        let datesModal = new bootstrap.Modal(document.getElementById('modalDates'))
+        courseForm.addEventListener('submit', function (event) {
+            if (dateFromElement.value === tomorrowDate && dateToElement.value === dayAfterDate) {
+                event.preventDefault();
+                datesModal.show();
+                datesModalSubmitButton.focus();
+                datesModalSubmitButton.addEventListener('click', function () {
+                    courseForm.submit();
+                })
+            }
         });
     </script>
 {% endblock %}

@@ -2,7 +2,7 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
-{% block title %}Upravit aktivitu{% endblock %}
+{% block title %}Upravit jednodenní aktivitu{% endblock %}
 {% block head_extra %}
     <link href="{% static 'css/cropper.min.css' %}" rel="stylesheet">
     {{ form.media }}
@@ -15,11 +15,34 @@
 {% endblock %}
 
 {% block content %}
-    <h2>Upravit aktivitu</h2>
+    <h2>Upravit jednodenní aktivitu</h2>
+    <hr>
     <p><b>Pozor: Pokud upravíte název nebo popis aktivity, bude odeslána k novému schválení a až poté znovu
         publikována.</b></p>
-    <hr>
     {% crispy form %}
+
+    <!-- Modal - notification when using default date -->
+    <div class="modal" id="modalDates" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nastavení data</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Datum buď nebylo změněno nebo jste jej nastavili na zítra.<br>
+                        Souhlasíte se zachováním tohoto data?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zavřít</button>
+                    <button type="submit" class="btn btn-primary" id="modal-submit-button">Souhlasím
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal - crop image -->
     <div class="modal fade" id="modalCrop" data-bs-keyboard="false" data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -45,7 +68,7 @@
                             <i class="fas fa-undo"></i>
                         </button>
                     </div>
-                    <button type="button" class="btn btn-danger js-cancel" data-bs-dismiss="modal">Zrušit
+                    <button type="button" class="btn btn-outline-danger js-cancel" data-bs-dismiss="modal">Zrušit
                     </button>
                     <button type="button" class="btn btn-primary js-crop" data-bs-dismiss="modal">Ořezat
                     </button>
@@ -122,6 +145,10 @@
     </script>
     <script src="{% static 'js/litepicker.js' %}"></script>
     <script>
+        let todayDate = new Date();
+        let options = {month: '2-digit', day: '2-digit', year: 'numeric'};
+        let tomorrowDate = new Date(new Date().setDate(todayDate.getDate() + 1)).toLocaleDateString('cs-cs', options).replace(/\s/g, '')
+        let dateFromElement = document.getElementById('id_date_from');
         new Litepicker({
             lang: 'cs',
             singleMode: true,
@@ -130,26 +157,40 @@
                 other: 'dní'
             },
             format: 'DD.MM.YYYY',
-            element: document.getElementById('id_date_from'),
+            element: dateFromElement,
+        });
+        /* check default value of date field */
+        let courseForm = document.getElementById('course-form');
+        let dateModalSubmitButton = document.getElementById('modal-submit-button');
+        let dateModal = new bootstrap.Modal(document.getElementById('modalDates'))
+        courseForm.addEventListener('submit', function (event) {
+            if (dateFromElement.value === tomorrowDate) {
+                event.preventDefault();
+                dateModal.show();
+                dateModalSubmitButton.focus();
+                dateModalSubmitButton.addEventListener('click', function () {
+                    courseForm.submit();
+                })
+            }
         });
         /* calculate hours */
-        let startElement = document.getElementById('id_time_from');
-        let endElement = document.getElementById('id_time_to');
-        [startElement, endElement].forEach(element => {
+        let timeFromElement = document.getElementById('id_time_from');
+        let timeToElement = document.getElementById('id_time_to');
+        [timeFromElement, timeToElement].forEach(element => {
             element.addEventListener('input', () => {
                 /* care only about time in local TZ */
-                let startTime = new Date('1970-01-01T' + startElement.value).getHours();
-                let endTime = new Date('1970-01-01T' + endElement.value).getHours();
+                let startTime = new Date('1970-01-01T' + timeFromElement.value).getHours();
+                let endTime = new Date('1970-01-01T' + timeToElement.value).getHours();
                 let timeDiff = endTime - startTime;
                 if (timeDiff < 0) {
                     document.getElementById('id_hours').value = 0
-                    startElement.style.color = "red";
-                    endElement.style.color = "red";
+                    timeFromElement.style.color = 'red';
+                    timeToElement.style.color = 'red';
                 }
                 if (timeDiff >= 0) {
                     document.getElementById('id_hours').value = endTime - startTime
-                    startElement.style.removeProperty('color');
-                    endElement.style.removeProperty('color');
+                    timeFromElement.style.removeProperty('color');
+                    timeToElement.style.removeProperty('color');
                 }
             })
         })
