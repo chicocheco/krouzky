@@ -79,6 +79,7 @@ class CourseForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['teacher'].empty_label = None  # can't create course w/o org
         self.helper = FormHelper()
+        self.helper.form_id = 'course-form'
         # Column() adds 'col-md' automatically
         self.helper.layout = Layout(
             'name',
@@ -102,14 +103,16 @@ class CourseForm(forms.ModelForm):
             Field('image', css_class='form-control'),
             'x', 'y', 'width', 'height',  # hidden
             'description',
-            Submit('submit', 'Odeslat')
+            Submit('submit_button', 'Odeslat')
+            # don't use name="submit" (first arg.), it breaks .submit() function in JS
         )
 
-    def clean_date_to(self):  # clean_<fieldname>()
+    def clean(self):
         cd = self.cleaned_data
         if cd['date_from'] == cd['date_to']:
-            raise forms.ValidationError('Shoduje se s datem začátku.')
-        return cd['date_to']
+            self.add_error('date_from', 'Shoda s datem konce.')
+            self.add_error('date_to', 'Shoda s datem začátku.')
+        return self.cleaned_data
 
     class Meta:
         model = Course
@@ -141,6 +144,7 @@ class OneoffCourseForm(forms.ModelForm):
         self.fields['hours'].initial = 0
         self.fields['date_from'].label = 'Dne'
         self.helper = FormHelper()
+        self.helper.form_id = 'course-form'
         # Column() adds 'col-md' automatically
         self.helper.layout = Layout(
             'name',
@@ -164,18 +168,20 @@ class OneoffCourseForm(forms.ModelForm):
             Field('image', css_class='form-control'),
             'x', 'y', 'width', 'height',  # hidden
             'description',
-            Submit('submit', 'Potvrdit')
+            Submit('submit_button', 'Potvrdit')
         )
 
-    def clean_time_to(self):  # clean_<fieldname>()
+    def clean(self):
         cd = self.cleaned_data
-        date_from = datetime.combine(cd.get('date_from'), cd.get('time_from'))
-        date_to = datetime.combine(cd.get('date_from'), cd.get('time_to'))
-        if date_from > date_to:
-            raise forms.ValidationError('Čas začátku je později než čas konce.')
+        time_from = datetime.combine(cd.get('date_from'), cd.get('time_from'))
+        time_to = datetime.combine(cd.get('date_from'), cd.get('time_to'))
+        if time_from > time_to:
+            self.add_error('time_from', 'Čas začátku je později než čas konce.')
+            self.add_error('time_to', 'Čas začátku je později než čas konce.')
         elif cd['time_from'] == cd['time_to']:
-            raise forms.ValidationError('Čas začátku roven času konce.')
-        return cd['time_to']
+            self.add_error('time_from', 'Shoda času začátku a konce.')
+            self.add_error('time_to', 'Shoda času začátku a konce.')
+        return self.cleaned_data
 
     class Meta:
         model = Course
