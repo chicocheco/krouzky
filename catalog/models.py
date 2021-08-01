@@ -130,7 +130,7 @@ class Course(models.Model):
     class Meta:
         verbose_name = 'Aktivita'
         verbose_name_plural = 'Aktivity'
-        ordering = ['-date_from']
+        ordering = ['date_from']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
