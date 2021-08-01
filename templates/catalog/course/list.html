@@ -9,8 +9,8 @@
             <div class="border p-4 bg-light">
                 <h1>Katalog</h1>
                 <hr>
-                    <p>V katalogu najdete všechny registrované aktivity pohromadě.
-                        Můžete se orientovat podle tematických ikonek nebo přejít na <a href="{% url 'search' %}">vyhledávání</a>.
+                    <p>V katalogu najdete všechny registrované aktivity pohromadě <b>seřazené dle data začátku</b>.
+                        Můžete se orientovat podle tematických ikonek nebo přejít do <a href="{% url 'search' %}">vyhledávání</a>.
                     </p>
                 {% include 'list.html' with courses=sponsored_courses flag_ads=True %}
                 {% include 'list.html' with courses=courses %}
