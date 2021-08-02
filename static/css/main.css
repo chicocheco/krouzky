@@ -43,30 +43,50 @@ a {
     right: -5px;
     padding: 8px;
 }
+
 .ribbon.blue {
     background: #311ca7;
     color: #fff;
     border-right: 5px solid #6956d5;
 }
+
 .ribbon:before, .ribbon:after {
     content: '';
     position: absolute;
     left: -9px;
     border-left: 10px solid transparent;
 }
+
 .ribbon:before {
     top: 0;
 }
+
 .ribbon:after {
     bottom: 0;
 }
+
 .ribbon.blue:before {
     border-top: 27px solid #311ca7;
 }
+
 .ribbon.blue:after {
     border-bottom: 27px solid #311ca7;
 }
 
 .ribbon span {
     display: block;
+}
+
+/* mimics .border of bootstrap with md breakpoint */
+@media (min-width: 768px) {
+    .border-custom-md {
+        border: #dee2e6 solid 1px;
+    }
+}
+
+/* mimics .bg-light of bootstrap with md breakpoint */
+@media (min-width: 768px) {
+    .bg-light-custom-md {
+        background-color: #f8f9fa;
+    }
 }
