@@ -5,17 +5,11 @@
 
 {% block content %}
     <h2>Členové organizace</h2>
-    {% if not members %}
-        <hr>
-        <p>Tato stránka slouží pro přehled členů vaší organizace.
-            Přidat další členy můžete pomocí e-mailové pozvánky zaslané na adresu dotyčného
-            <a href="{% url 'organization_invite_teacher' %}">tímto formulářem</a>.</p>
-        <p>
-            Takto přiřazený uživatel má právo pod hlavičkou vaší organizace vytvářet a upravovat pouze své
-            aktivity (v detailu se objeví jako vedoucí takové aktivity).
-            Může také spravovat aktivity, které mu přidělíte vy při modifikaci stávající aktivity
-            či registraci nové.</p>
-    {% else %}
+    <hr>
+    <p>Tato stránka slouží pro přehled členů vaší organizace.
+        Přidat členy můžete pomocí e-mailové pozvánky zaslané na adresu dotyčného
+        <a href="{% url 'organization_invite_teacher' %}">tímto formulářem</a>.</p>
+    {% if members %}
         <p>
         <table class="table align-middle">
             <thead>
@@ -52,7 +46,12 @@
         </table>
         </p>
     {% endif %}
-
+    <h5>Jak to funguje?</h5>
+    <p class="mb-0">Každý vámi pozvaný uživatel získá právo vytvářet a upravovat
+        aktivity <b>pod hlavičkou vaší organizace</b> (zobrazí se jako vedoucí aktivity).
+        Rovněž může také spravovat aktivity, které mu přidělíte vy jako koordinátor při úpravě stávající aktivity
+        či registraci nové. Tento uživatel nemůže provádět úpravy aktivit jiných vedoucích v organizaci,
+        protože toto právo je vyhrazeno pouze pro koordinátora (vás).</p>
 {% endblock %}
 
 {% block sidebar %}{% include 'dashboard_sidebar.html' %}{% endblock %}

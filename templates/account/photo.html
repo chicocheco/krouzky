@@ -15,12 +15,13 @@
 {% block content %}
     <h2>Profilová fotografie</h2>
     <hr>
+    <p>Profilová fotografie bude zobrazena v sekci Vedoucí u každé aktivity, kterou spravujete.</p>
     <form method="post" enctype="multipart/form-data" id="uploadForm">
         {% crispy form %}
         {% if user.photo %}
             <div class="row mb-3" id="currentPhoto">
-                <div class="col-lg-3">Současná fotografie:</div>
-                <div class="col-lg-9">
+                <div class="col-lg-3">Aktuálně:</div>
+                <div class="col-lg-9 mt-3 d-flex justify-content-center">
                     <img src="{{ user.photo.url }}" alt="(vaše profilová fotografie)" class="rounded-circle">
                 </div>
             </div>
