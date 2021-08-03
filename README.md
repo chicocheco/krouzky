@@ -5,9 +5,9 @@ ___________________
 ## 1. Hetzner VPS
 - create a new ssh key pair `cd ~/ssh/ && ssh-keygen -t rsa` and call it for example _vyberaktivitu_
 - copy public ssh key from `cat ~/.ssh/vyberaktivitu.pub` and paste to the initial set-up page
-- create an ssh shortcut `nano ~/.ssh/config` so you can `root@aktivity_server`
+- create an ssh shortcut `nano ~/.ssh/config` so you can `ssh root@vyberaktivitu`
 ```
-Host aktivity_server
+Host vyberaktivitu
    ForwardAgent yes
    Hostname <ip-address>
    Port 22
@@ -16,11 +16,11 @@ Host aktivity_server
    IdentityFile vyberaktivitu
 ```
 - change the permissions of the config file `chmod 644 ~/.ssh/config` to fix _Bad owner or permissions_ error
-- ssh in `ssh root@<ip-address>` and create another account `adduser <name>` 
-   and add to sudo group `usermod -aG sudo <name>`
-- install dokku using root account (use first script from https://dokku.com/)
-- from the local machine allow ssh access (no pass needed) to the new sudo account as well 
- `ssh-copy-id <name>@aktivity_server`
+- ssh in `ssh root@vyberaktivitu` and create another user `adduser <name>` 
+   and add it to the sudo group `usermod -aG sudo <name>`
+- install dokku using (as root user) using the first script from https://dokku.com/
+- from the local machine allow ssh access (no pass needed) to the new sudo user as well 
+ `ssh-copy-id -i ~/.ssh/vyberaktivitu <name>@vyberaktivitu`
 ## 2. domain
  - point A record to the IP of the server (`vyberaktivitu.online` and `*.vyberaktivitu.online`)
 ## 3. dokku
@@ -73,7 +73,7 @@ location /media {
 ```
 - restart the container `dokku ps:restart vyberaktivitu`
 ## 4. git and deployment
-- add a remote repository for dokku user `git remote add dokku dokku@aktivity_server:vyberaktivitu`
+- add a remote repository for dokku user `git remote add dokku dokku@vyberaktivitu:vyberaktivitu`
 - make sure that there are the latest migration files
 - make sure that `.buildpacks` consists of `https://github.com/heroku/heroku-buildpack-python.git` so it gets used instead of Dockerfile 
 - make sure that `DOKKU_SCALE` consists of `web=1`
@@ -94,6 +94,7 @@ release: python manage.py migrate --noinput
 - update system `sudo apt update && sudo apt upgrade`
 - having created another non-root account, disable password access to root - open `sudo nano /etc/ssh/sshd_config` and
   change `PermitRootLogin` from `yes` to `prohibit-password`
+- remove authorized SSH key from /root/.ssh/authorized_keys (if you want to switch to root user, run `sudo su -` from the sudo user)
 - configure firewall - allow inbound only at TCP ports 22, 80 and 443
 - check cron jobs `dokku cron:list vyberaktivitu` or `sudo crontab -u dokku -l` (taken from _app.json_)
 - redirect www to non-www domain name with dokku-redirect:
