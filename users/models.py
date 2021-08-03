@@ -49,7 +49,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     role = models.CharField(max_length=30, choices=Roles.choices, default=Roles.STUDENT)  # another FK?
     organization = models.ForeignKey(Organization, verbose_name='organizace', null=True, related_name='users',
                                      on_delete=models.SET_NULL)
-    photo = models.ImageField(_('fotografie'), help_text='minimální rozměr 200x200 px', upload_to=photo_directory_path,
+    photo = models.ImageField(_('fotografie'), upload_to=photo_directory_path,
                               blank=True)
     is_staff = models.BooleanField(_('správce'), default=False)
     is_superuser = models.BooleanField(_('supersprávce'), default=False)
