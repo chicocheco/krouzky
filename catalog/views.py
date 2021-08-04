@@ -416,7 +416,7 @@ def course_detail(request, slug=None):
     course = get_object_or_404(Course.objects.select_related(), slug=slug)
     if course.status != Course.Status.PUBLISHED:
         if request.user.is_authenticated and course.organization != request.user.organization \
-                or not request.user.is_authenticated:
+                and not request.user.is_superuser or not request.user.is_authenticated:
             raise PermissionDenied
     form = ContactTeacherForm()  # POST via contact_teacher view
     price_hour = round(course.price / course.hours)
