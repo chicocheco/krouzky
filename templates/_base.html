@@ -1,4 +1,5 @@
 {% load static %}
+{% load cookielaw_tags %}
 
 <!DOCTYPE html>
 <html lang="cs">
@@ -166,6 +167,8 @@
 
     </footer>
 </div>
+{% cookielaw_banner %}
+<script src="{% static 'cookielaw/js/cookielaw.js' %}"></script>
 <script src="{% static 'js/bootstrap.min.js' %}"></script>
 {% block js %}
 {% endblock %}

@@ -157,6 +157,7 @@ crispy-bootstrap5
 Django
 django-allauth
 django-autoslug
+django-cookie-law
 django-crispy-forms
 django-environ
 django-filter
