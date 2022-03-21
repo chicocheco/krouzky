@@ -149,6 +149,14 @@ dokku postgres:link vyberaktivitu_db vyberaktivitu
 dokku ps:start vyberaktivitu
 ```
 
+- (optional) updating system and dokku with dokku-update:
+```bash
+git clone https://github.com/dokku/dokku-update.git
+cd dokku-update/
+sudo ./dokku-update run -s
+dokku ps:start vyberaktivitu
+```
+
 Dependencies:
 
 ```requirements.txt
