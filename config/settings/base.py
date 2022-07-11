@@ -170,7 +170,6 @@ SERVER_EMAIL = 'info@vyberaktivitu.online'  # for mail_admins and mail_managers
 ADMINS = [('Standa', 'stanislav.matas@gmail.com'), ]  # if DEBUG=False, sends errors
 MANAGERS = [  # for pending approvals
     ('Standa', 'stanislav.matas@gmail.com'),
-    ('Klára', 'klara.matasova@gmail.com'),
 ]
 
 TINYMCE_DEFAULT_CONFIG = {
