@@ -1,6 +1,18 @@
 # vyberaktivitu.online project
 
-Guide for deploying
+Vyberaktivitu.online was an aggregator of czech online course providers running online in years 2021 and 2022.
+It is a CRUD application with a searchable catalog consisting of one-day or long-term online activities.
+Website includes a simple invitation app for registered users.
+
+Used technologies:
+Languages - Python 3.9, JS, HTML, CSS
+Backend - Django 3.2 with various 3rd party apps (allauth, crispy-forms, etc.)
+Frontend - Django templates with Boostrap 5, Javascript 3rd party libraries, sprinkled with some simple JS
+Database - Postgres 13.3
+Development - Pycharm, Docker
+Production - VPS, Dokku
+
+Guide for deploying (reference for future projects)
 ___________________
 
 ## 1. Hetzner VPS
@@ -62,7 +74,7 @@ dokku config:show vyberaktivitu
 ```bash
 dokku plugin:install https://github.com/dokku/dokku-letsencrypt.git
 # email address for renewal warnings for your certificate
-dokku config:set --no-restart --global DOKKU_LETSENCRYPT_EMAIL=stanislav.matas@gmail.com
+dokku config:set --no-restart --global DOKKU_LETSENCRYPT_EMAIL=<e-mail address>
 # enable command can also be used to renew
 dokku letsencrypt:enable vyberaktivitu
 dokku letsencrypt:cron-job --add
