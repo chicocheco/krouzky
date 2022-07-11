@@ -74,7 +74,7 @@ dokku config:show vyberaktivitu
 ```bash
 dokku plugin:install https://github.com/dokku/dokku-letsencrypt.git
 # email address for renewal warnings for your certificate
-dokku config:set --no-restart --global DOKKU_LETSENCRYPT_EMAIL=<e-mail address>
+dokku config:set --no-restart --global DOKKU_LETSENCRYPT_EMAIL=stanislav.matas@gmail.com
 # enable command can also be used to renew
 dokku letsencrypt:enable vyberaktivitu
 dokku letsencrypt:cron-job --add
