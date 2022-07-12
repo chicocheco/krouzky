@@ -12,6 +12,8 @@ Used technologies:
 * Development - Pycharm, Docker
 * Production - VPS, Dokku
 
+![](preview.png)
+
 ___________________
 ### Guide for deploying (reference for future projects):
 ## 1. Hetzner VPS
