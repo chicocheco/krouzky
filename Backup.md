@@ -1,38 +1,37 @@
 # Automated daily database backup
-0. Setup [Dropbox-Uploader](https://github.com/andreafabrizi/Dropbox-Uploader) on server at `/home/standa/dropbox_uploader.sh`
+Setup [Dropbox-Uploader](https://github.com/andreafabrizi/Dropbox-Uploader) on server at `/home/standa/dropbox_uploader.sh`
 
-
-2. Generate keys on laptop (public and secret)
+Generate keys on laptop (public and secret)
 
 ```bash
 gpg --gen-key
 ```
 
-2. Export public key to file
+Export public key to file
 
 ```bash
 gpg --export > public_gpg.key
 ```
 
-3. Copy it from laptop to server
+Copy it from laptop to server
 
 ```bash
 scp public_gpg.key standa@vyberaktivitu:/home/standa/
 ```
 
-4. On server (standa@vyberaktivitu) switch to root
+On server (standa@vyberaktivitu) switch to root
 
 ```bash
 su -
 ```
 
-5. Import public key
+Import public key
 
 ```bash
 gpg --import public_gpg.key
 ```
 
-6. Edit to ultimately trust
+Edit to ultimately trust
 
 ```bash
 gpg --edit-key stanislav.matas@gmail.com 
@@ -42,7 +41,7 @@ y
 ctrl + c
 ```
 
-7. Create backup script at `/home/standa/`
+Create backup script at `/home/standa/`
 
 ```bash
 nano /home/standa/backup_vyberaktivitu_db.sh
@@ -55,31 +54,31 @@ gpg --encrypt --recipient stanislav.matas@gmail.com $LAST_DB_DUMP_FILE &&
 rm $LAST_DB_DUMP_FILE*
 ```
 
-9. Make it executable
+Make it executable
 
 ```bash
 chmod +x /home/standa/backup_vyberaktivitu_db.sh
 ```
 
-10. Open crontab (as root)
+Open crontab (as root)
 
 ```bash
 crontab -e
 ```
 
-11. Add line
+Add line
 
 ```
 30 0 * * * /home/standa/backup_vyberaktivitu_db.sh
 ```
 
-12. Decrypt example on laptop (had been uploaded to dropbox)
+Decrypt example on laptop (had been uploaded to dropbox)
 
 ```bash
 gpg --decrypt vyberaktivitu_db_09-12-2021-1805.dump.gpg > ~/decrypted.dump
 ```
 
-13. Remove public key file from laptop
+Remove public key file from laptop
 
 ```bash
 rm public_gpg.key
