@@ -5,16 +5,15 @@ It is a CRUD application with a searchable catalog consisting of one-day or long
 Website includes a simple invitation app for registered users.
 
 Used technologies:
-Languages - Python 3.9, JS, HTML, CSS
-Backend - Django 3.2 with various 3rd party apps (allauth, crispy-forms, etc.)
-Frontend - Django templates with Boostrap 5, Javascript 3rd party libraries, sprinkled with some simple JS
-Database - Postgres 13.3
-Development - Pycharm, Docker
-Production - VPS, Dokku
+* Languages - Python 3.9, JS, HTML, CSS
+* Backend - Django 3.2 with various 3rd party apps (allauth, crispy-forms, etc.)
+* Frontend - Django templates with Boostrap 5, Javascript 3rd party libraries, sprinkled with some simple JS
+* Database - Postgres 13.3
+* Development - Pycharm, Docker
+* Production - VPS, Dokku
 
-Guide for deploying (reference for future projects)
 ___________________
-
+### Guide for deploying (reference for future projects):
 ## 1. Hetzner VPS
 
 - create a new ssh key pair `cd ~/ssh/ && ssh-keygen -t rsa` and call it for example _vyberaktivitu_
