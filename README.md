@@ -13,7 +13,11 @@ Used technologies:
 * Production - VPS, Dokku
 
 ![](preview.png)
-
+![](preview2.png)
+![](preview3.png)
+![](preview4.png)
+![](preview5.png)
+![](preview6.png)
 ___________________
 ### Guide for deploying (reference for future projects):
 ## 1. Hetzner VPS
